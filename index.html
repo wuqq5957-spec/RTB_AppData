@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RTB 首页经营数据 · 移动端原型</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --brand: #fb2e42;
+      --brand-dark: #eb2036;
+      --brand-soft: #fff0f2;
+      --page: #eef0f5;
+      --panel: #ffffff;
+      --surface: #f7f8fb;
+      --text: #232329;
+      --secondary: #686b75;
+      --muted: #979aa4;
+      --line: #e7e8ee;
+      --success: #149764;
+      --shadow: 0 22px 56px rgba(41, 43, 58, .16);
+    }
+    html, body { height: 100%; }
+    body {
+      display: grid;
+      grid-template-columns: 320px minmax(438px, 1fr) 470px;
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--page);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    button { font: inherit; }
+    .prototype-menu,
+    .prototype-notes {
+      min-width: 0;
+      height: 100dvh;
+      overflow-y: auto;
+      background: var(--panel);
+    }
+    .prototype-menu { border-right: 1px solid var(--line); padding: 28px 22px 40px; }
+    .prototype-notes { border-left: 1px solid var(--line); padding: 28px 26px 44px; }
+    .prototype-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 28px; }
+    .prototype-logo {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(145deg, #ff5165, var(--brand));
+      font-size: 17px;
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(251, 46, 66, .24);
+    }
+    .prototype-brand strong { display: block; font-size: 15px; }
+    .prototype-brand small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .prototype-menu-group { margin-top: 24px; }
+    .prototype-menu-group h2 {
+      margin: 0 0 8px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .08em;
+    }
+    .prototype-link {
+      display: flex;
+      width: 100%;
+      min-height: 42px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 3px 0;
+      padding: 9px 11px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--secondary);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    .prototype-link:hover { background: var(--surface); }
+    .prototype-link:focus-visible { outline: 2px solid rgba(251, 46, 66, .35); outline-offset: 2px; }
+    .prototype-link.active { color: var(--brand-dark); background: var(--brand-soft); font-weight: 700; }
+    .prototype-link span:last-child { color: #b3b5bd; }
+    .prototype-link.active span:last-child { color: var(--brand); }
+    .prd-mark { padding: 2px 6px; border-radius: 5px; color: #7067a8; background: #efedff; font-size: 9px; }
+    .prototype-stage {
+      position: relative;
+      min-width: 0;
+      height: 100dvh;
+      overflow: auto;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(251, 46, 66, .06), transparent 35%),
+        var(--page);
+    }
+    .phone {
+      position: relative;
+      width: min(100%, 390px);
+      height: min(calc(100dvh - 48px), 844px);
+      min-height: 650px;
+      overflow: hidden;
+      border: 1px solid rgba(28, 29, 38, .09);
+      border-radius: 34px;
+      background: #f5f6fa;
+      box-shadow: var(--shadow);
+    }
+    .prototype-page {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+    .prototype-page.show { opacity: 1; visibility: visible; pointer-events: auto; }
+    .prototype-page iframe { display: block; width: 100%; height: 100%; border: 0; background: #f5f6fa; }
+    .employee-privacy-toggle {
+      position: absolute;
+      top: 137px;
+      left: 112px;
+      z-index: 12;
+      display: grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #696a73;
+      background: transparent;
+      cursor: pointer;
+    }
+    .employee-privacy-toggle:hover { background: rgba(48, 49, 58, .06); }
+    .employee-privacy-toggle:focus-visible { outline: 2px solid rgba(251, 46, 66, .35); outline-offset: 2px; }
+    .employee-privacy-toggle svg { width: 18px; height: 18px; }
+    .employee-privacy-toggle[aria-pressed="true"] .employee-eye-slash { display: none; }
+    .employee-privacy-mask {
+      position: absolute;
+      top: 169px;
+      right: 12px;
+      left: 12px;
+      z-index: 11;
+      height: 161px;
+      padding: 0 12px 13px;
+      border-radius: 0 0 18px 18px;
+      background: #fff;
+      pointer-events: none;
+    }
+    .employee-mask-main {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 10px;
+    }
+    .employee-mask-metric { padding: 11px 10px; border-radius: 11px; background: #f7f8fb; }
+    .employee-mask-metric:first-child { background: linear-gradient(135deg, #fff1f3, #fff8f9); }
+    .employee-mask-label { display: block; margin-bottom: 7px; color: #777882; font-size: 10px; }
+    .employee-mask-dots { color: #55565f; font-size: 15px; font-weight: 650; letter-spacing: 2px; }
+    .employee-mask-parts { margin-top: 9px; padding-top: 9px; border-top: 1px dashed #ececf1; }
+    .employee-mask-parts-title { margin-bottom: 7px; color: #767882; font-size: 10px; font-weight: 700; }
+    .employee-mask-track { height: 6px; margin-bottom: 10px; border-radius: 999px; background: #f0f1f5; }
+    .employee-mask-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; color: #55565f; font-size: 9px; text-align: center; white-space: nowrap; }
+    .employee-mask-items span::after { content: "••••"; margin-left: 3px; font-size: 9px; letter-spacing: 1px; }
+    .report-app {
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      color: #25252c;
+      background: #f3f4f8;
+      scrollbar-width: none;
+    }
+    .report-app::-webkit-scrollbar { display: none; }
+    .report-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      color: #fff;
+      background: #fb2e42;
+    }
+    .report-status { display: flex; align-items: center; justify-content: space-between; height: 34px; padding: 8px 21px 0; font-size: 13px; font-weight: 750; }
+    .report-title-row { position: relative; display: grid; height: 51px; place-items: center; padding: 0 48px; }
+    .report-title-row h2 { margin: 0; font-size: 18px; font-weight: 760; }
+    .report-back { position: absolute; left: 15px; display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; color: #fff; background: transparent; cursor: pointer; }
+    .report-back svg { width: 22px; height: 22px; }
+    .report-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 10px;
+      overflow-x: auto;
+      border-bottom: 1px solid #ececf1;
+      background: #fff;
+      scrollbar-width: none;
+    }
+    .report-tabs::-webkit-scrollbar { display: none; }
+    .report-tab {
+      position: relative;
+      flex: 0 0 auto;
+      min-height: 46px;
+      padding: 0 10px;
+      border: 0;
+      color: #777983;
+      background: transparent;
+      font-size: 12px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .report-tab[aria-selected="true"] { color: #232329; font-weight: 750; }
+    .report-tab[aria-selected="true"]::after { content: ""; position: absolute; right: 10px; bottom: 0; left: 10px; height: 3px; border-radius: 3px 3px 0 0; background: #fb2e42; }
+    .report-tab[disabled] { color: #b9bbc3; cursor: default; }
+    .report-panel { padding: 13px 12px 32px; }
+    .report-panel[hidden] { display: none; }
+    .report-filter-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 9px; }
+    .report-periods { display: flex; gap: 5px; }
+    .report-period {
+      min-height: 29px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: #777983;
+      background: #fff;
+      font-size: 11px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .report-period[aria-pressed="true"] { color: #ed263b; border-color: #ffdce1; background: #fff0f2; font-weight: 700; }
+    .report-date-label {
+      display: inline-flex;
+      min-height: 29px;
+      align-items: center;
+      gap: 3px;
+      padding: 0 2px;
+      border: 0;
+      color: #777983;
+      background: transparent;
+      font-size: 10px;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .report-date-label::after { content: "›"; color: #a6a8b0; font-size: 13px; transform: rotate(90deg); }
+    .report-card { margin-bottom: 12px; padding: 15px 14px; border: 1px solid #ebecef; border-radius: 17px; background: #fff; }
+    .report-trend-block { margin-top: 13px; padding: 12px 12px 10px; border-radius: 13px; background: #fafbfc; }
+    .report-trend-head { margin-bottom: 8px; padding: 0 1px; }
+    .report-trend-head h3 { font-size: 12px; font-weight: 600; color: #555761; }
+    .report-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .report-section-head.transaction-head { align-items: center; }
+    .report-section-head h3 { display: flex; align-items: center; gap: 5px; margin: 0; font-size: 15px; }
+    .report-section-head span { color: #9698a2; font-size: 10px; }
+    .report-head-meta { display: flex; align-items: center; gap: 7px; }
+    .report-spec-button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 16px; height: 16px; padding: 0; border: 1px solid #cfd1d9; border-radius: 50%; color: #91939c; background: #fff; font-size: 10px; font-weight: 600; line-height: 1; cursor: pointer; }
+    .report-spec-button:active { color: #ed263b; border-color: #f6bcc3; background: #fff6f7; }
+    .report-kpis { display: grid; gap: 10px; }
+    .report-kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: hidden; border-top: 1px solid #f0f0f3; border-left: 1px solid #f0f0f3; border-radius: 12px; }
+    .report-kpi {
+      min-width: 0;
+      min-height: 66px;
+      padding: 10px 7px 8px;
+      border: 0;
+      border-right: 1px solid #f0f0f3;
+      border-bottom: 1px solid #f0f0f3;
+      color: #777983;
+      background: #fff;
+      text-align: center;
+      cursor: pointer;
+    }
+    .report-kpi strong { display: block; margin-top: 7px; color: #303038; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .report-kpi span { display: block; font-size: 10px; line-height: 1.25; white-space: normal; }
+    .report-kpi-primary {
+      min-height: 82px;
+      padding: 11px 12px;
+      border: 1px solid #f0f0f3;
+      border-radius: 12px;
+      text-align: left;
+    }
+    .report-kpi-primary span { color: #555761; font-size: 11px; font-weight: 700; }
+    .report-kpi-primary-value { display: flex !important; align-items: baseline; gap: 8px; margin-top: 7px; }
+    .report-kpi-primary strong { display: inline; margin: 0; color: #f3263e; font-size: 24px; }
+    .report-kpi-primary small { color: #159666; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .report-kpi[aria-pressed="true"] { position: relative; color: #e82439; background: #fff6f7; }
+    .report-kpi[aria-pressed="true"] strong { color: #e82439; }
+    .report-kpi[aria-pressed="true"]::after { content: ""; position: absolute; right: 8px; bottom: 0; left: 8px; height: 3px; border-radius: 3px 3px 0 0; background: #fb2e42; }
+    .report-trend-plot { position: relative; }
+    .report-trend-chart { display: block; width: 100%; height: 132px; overflow: visible; cursor: crosshair; outline: none; touch-action: pan-y; }
+    .report-trend-chart:focus-visible { border-radius: 8px; box-shadow: 0 0 0 2px #ffbdc5; }
+    .report-trend-grid { stroke: #e8e9ee; stroke-width: 1; stroke-dasharray: 3 4; }
+    .report-trend-axis-label { fill: #a9abb5; font-size: 8px; text-anchor: end; font-variant-numeric: tabular-nums; }
+    .report-trend-area { fill: #fff0f2; }
+    .report-trend-line { fill: none; stroke: #fb2e42; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .report-trend-point { fill: #fff; stroke: #fb2e42; stroke-width: 2; }
+    .report-trend-guide { stroke: #a4a6ae; stroke-width: 1; stroke-dasharray: 3 3; }
+    .report-trend-selected-point { fill: #fb2e42; stroke: #fff; stroke-width: 2.5; }
+    .report-trend-interaction { fill: transparent; pointer-events: all; }
+    .report-trend-tooltip {
+      position: absolute;
+      z-index: 2;
+      min-width: 96px;
+      max-width: 132px;
+      padding: 6px 8px;
+      border-radius: 7px;
+      color: #fff;
+      background: rgba(72, 73, 82, .72);
+      font-size: 9px;
+      line-height: 1.45;
+      transform: translateX(-50%);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      pointer-events: none;
+    }
+    .report-trend-tooltip.edge-start { transform: none; }
+    .report-trend-tooltip.edge-end { transform: translateX(-100%); }
+    .report-trend-tooltip strong { display: block; margin-bottom: 2px; font-size: 10px; }
+    .report-trend-tooltip span { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .report-trend-tooltip i { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #fb2e42; }
+    .report-trend-labels { position: relative; height: 13px; margin-top: 2px; color: #9b9da6; font-size: 8px; }
+    .report-trend-labels span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
+    .report-trend-labels span:first-child { transform: translateX(-18%); }
+    .report-trend-labels span:last-child { transform: translateX(-82%); }
+    .report-trend-labels span.is-selected { color: #303038; font-weight: 700; }
+    .report-switches { display: flex; width: fit-content; gap: 3px; padding: 2px; overflow-x: auto; border-radius: 9px; background: #f5f6f9; scrollbar-width: none; }
+    .report-switch { flex: 0 0 auto; min-height: 24px; padding: 0 9px; border: 0; border-radius: 7px; color: #858791; background: transparent; font-size: 10px; cursor: pointer; }
+    .report-switch[aria-pressed="true"] { color: #e82439; background: #fff; font-weight: 700; }
+    .report-transaction-body { display: grid; grid-template-columns: 112px 1fr; align-items: center; gap: 14px; min-height: 132px; }
+    .report-donut { position: relative; width: 104px; height: 104px; border-radius: 50%; background: conic-gradient(#fb2e42 0 43%, #ff826d 43% 69%, #ffb36b 69% 86%, #d997ad 86% 95%, #a9abb5 95% 100%); }
+    .report-donut::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: #fff; }
+    .report-donut-center { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; text-align: center; }
+    .report-donut-center strong { font-size: 15px; }
+    .report-donut-center span { margin-top: 2px; color: #94969f; font-size: 8px; }
+    .report-legend { display: grid; gap: 7px; }
+    .report-legend-row { display: grid; grid-template-columns: 7px minmax(38px, 1fr) auto 27px; align-items: center; gap: 5px; color: #62646d; font-size: 9px; }
+    .report-legend-row i { width: 7px; height: 7px; border-radius: 50%; background: var(--legend-color); }
+    .report-legend-row strong { color: #303038; font-size: 9px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .report-legend-row b { color: #8a8c95; font-size: 8px; font-variant-numeric: tabular-nums; text-align: right; }
+    .report-card-sales-bar { display: flex; height: 9px; overflow: hidden; border-radius: 5px; background: #f4f5f8; }
+    .report-card-sales-bar i { display: block; width: var(--card-share); background: var(--card-color); }
+    .report-card-sales-bar i + i { border-left: 2px solid #fff; }
+    .report-card-sales-list { display: grid; min-width: 0; margin-top: 4px; }
+    .report-card-sales-item { min-width: 0; padding: 10px 0; border-bottom: 1px solid #f4f5f8; }
+    .report-card-sales-item:first-child { padding-top: 11px; }
+    .report-card-sales-item:last-child { padding-bottom: 0; border-bottom: 0; }
+    .report-card-sales-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 8px; }
+    .report-card-sales-name { display: flex; min-width: 0; align-items: center; gap: 6px; color: #45464f; font-size: 10px; }
+    .report-card-sales-name i { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--card-color); }
+    .report-card-sales-name b { margin-left: 1px; color: #a0a2ab; font-size: 9px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .report-card-sales-main strong { color: #303038; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .report-card-sales-main em { margin-left: 5px; color: #a0a2ab; font-size: 9px; font-style: normal; font-variant-numeric: tabular-nums; }
+    .report-card-sales-detail { display: flex; justify-content: flex-end; gap: 8px; margin-top: 3px; color: #9a9ca5; font-size: 9px; white-space: nowrap; }
+    .report-rank-modes { display: flex; align-items: center; gap: 8px; }
+    .report-rank-mode { position: relative; min-height: 24px; padding: 0; border: 0; color: #a0a2ab; background: transparent; font-size: 10px; cursor: pointer; }
+    .report-rank-more { display: flex; width: 100%; min-height: 32px; align-items: center; justify-content: center; gap: 3px; margin-top: 10px; padding: 0; border: 0; border-radius: 10px; color: #858791; background: #f6f7fa; font-size: 10px; cursor: pointer; }
+    .report-rank-more::after { content: "⌄"; font-size: 12px; line-height: 1; transform: translateY(-1px); }
+    .report-rank-more[aria-expanded="true"]::after { transform: rotate(180deg) translateY(1px); }
+    .report-ranking-head { align-items: center; gap: 8px; margin-bottom: 9px; }
+    .report-ranking-filter { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+    .report-rank-mode + .report-rank-mode::before { content: ""; position: absolute; top: 50%; left: -4px; width: 1px; height: 9px; margin-top: -4.5px; background: #e4e5ea; }
+    .report-rank-mode[aria-pressed="true"] { color: #e82439; font-weight: 700; }
+    .report-rank-mode:focus-visible { outline: 2px solid #ff9caa; outline-offset: 2px; border-radius: 4px; }
+    .report-ranking { display: grid; }
+    .report-rank-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid #f3f4f7; }
+    .report-rank-row:last-of-type { border-bottom: 0; }
+    .report-rank-no { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 6px; color: #8d8f99; background: #f2f3f6; font-size: 9px; }
+    .report-rank-row:first-child .report-rank-no { color: #fff; background: #fb2e42; }
+    .report-rank-name { min-width: 0; }
+    .report-rank-name strong { display: block; overflow: hidden; font-size: 11px; font-weight: 500; color: #3c3d45; text-overflow: ellipsis; white-space: nowrap; }
+    .report-rank-value { color: #303038; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .receipt-hero { padding: 18px 14px; background: linear-gradient(160deg, #fff, #fff4f5); }
+    .receipt-dual { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .receipt-dual-metric { min-width: 0; padding-right: 13px; }
+    .receipt-dual-metric + .receipt-dual-metric { padding-right: 0; padding-left: 13px; border-left: 1px solid #ececf1; }
+    .receipt-dual-metric > span { color: #777983; font-size: 10px; }
+    .receipt-dual-value { margin-top: 6px; }
+    .receipt-dual-value strong { display: block; color: #303038; font-size: 21px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .receipt-dual-value em { display: block; margin-top: 4px; color: #159666; font-size: 9px; font-style: normal; font-weight: 700; }
+    .receipt-trend { margin-top: 15px; padding-top: 12px; border-top: 1px solid #f0e7e9; }
+    .receipt-trend-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+    .receipt-trend-legend { display: flex; align-items: center; gap: 10px; color: #777983; font-size: 8px; }
+    .receipt-trend-legend span { display: flex; align-items: center; gap: 4px; }
+    .receipt-trend-legend i { width: 7px; height: 7px; border-radius: 50%; background: var(--trend-color); }
+    .receipt-trend-head > span { color: #9698a2; font-size: 8px; }
+    .receipt-trend-chart { display: block; width: 100%; height: 120px; overflow: visible; }
+    .receipt-trend-line-sales { fill: none; stroke: #fb2e42; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .receipt-trend-line-receipt { fill: none; stroke: #8f7bd8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .receipt-trend-point-sales { fill: #fff; stroke: #fb2e42; stroke-width: 1.8; }
+    .receipt-trend-point-receipt { fill: #fff; stroke: #8f7bd8; stroke-width: 1.8; }
+    .receipt-trend-labels { position: relative; height: 13px; color: #9b9da6; font-size: 8px; }
+    .receipt-trend-labels span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
+    .receipt-trend-labels span:first-child { transform: translateX(-18%); }
+    .receipt-trend-labels span:last-child { transform: translateX(-82%); }
+    .receipt-composition-body { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 16px; }
+    .receipt-composition-donut { position: relative; width: 88px; height: 88px; border-radius: 50%; background: conic-gradient(#fb2e42 0 62.5%, #ff8a70 62.5% 85.4%, #d997ad 85.4% 100%); }
+    .receipt-composition-donut::after { content: ""; position: absolute; inset: 19px; border-radius: 50%; background: #fff; }
+    .receipt-composition-center { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; color: #303038; font-size: 10px; font-weight: 700; text-align: center; }
+    .receipt-composition-list { display: grid; gap: 9px; }
+    .receipt-composition-row { display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; align-items: center; gap: 6px; color: #60626c; font-size: 9px; }
+    .receipt-composition-row i { width: 7px; height: 7px; border-radius: 50%; background: var(--composition-color); }
+    .receipt-composition-row strong { color: #303038; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .receipt-composition-row em { margin-left: 4px; color: #9698a2; font-size: 8px; font-style: normal; font-weight: 500; }
+    .receipt-hero-label { color: #777983; font-size: 11px; }
+    .receipt-hero-value { display: flex; align-items: baseline; gap: 8px; margin: 7px 0 13px; }
+    .receipt-hero-value strong { color: #f3263e; font-size: 27px; font-variant-numeric: tabular-nums; }
+    .receipt-hero-value span { color: #159666; font-size: 10px; font-weight: 700; }
+    .receipt-equation { padding: 10px 11px; border-radius: 10px; color: #70727c; background: #f7f8fb; font-size: 10px; line-height: 1.6; }
+    .receipt-split { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .receipt-split.two { grid-template-columns: repeat(2, 1fr); }
+    .receipt-split div { padding-right: 8px; border-right: 1px solid #ececf1; }
+    .receipt-split div:last-child { border-right: 0; }
+    .receipt-split span { display: block; color: #858791; font-size: 9px; }
+    .receipt-split strong { display: block; margin-top: 5px; font-size: 13px; }
+    .receipt-split small { display: block; margin-top: 3px; color: #a0a2aa; font-size: 8px; }
+    .receipt-channel { display: grid; grid-template-columns: 45px 1fr 72px; align-items: center; gap: 8px; margin-top: 10px; font-size: 10px; }
+    .receipt-channel-track { height: 7px; overflow: hidden; border-radius: 8px; background: #f0f1f5; }
+    .receipt-channel-track i { display: block; height: 100%; border-radius: 8px; background: #ff6b7b; }
+    .receipt-channel strong { text-align: right; font-variant-numeric: tabular-nums; }
+    .receipt-channel strong em { margin-left: 4px; color: #9b9da6; font-size: 8px; font-style: normal; font-weight: 500; }
+    .receipt-settlement-bar { display: flex; height: 9px; overflow: hidden; border-radius: 5px; background: #f1f2f5; }
+    .receipt-settlement-bar i { display: block; width: var(--settlement-share); background: var(--settlement-color); }
+    .receipt-settlement-bar i + i { border-left: 2px solid #fff; }
+    .receipt-settlement-row { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto 34px; align-items: center; gap: 7px; margin-top: 12px; color: #555761; font-size: 10px; }
+    .receipt-settlement-row > i { width: 8px; height: 8px; border-radius: 50%; background: var(--settlement-color); }
+    .receipt-settlement-row strong { color: #303038; font-size: 11px; font-variant-numeric: tabular-nums; text-align: right; }
+    .receipt-settlement-row > em { color: #989aa3; font-size: 8px; font-style: normal; font-weight: 500; text-align: right; }
+    .receipt-expand-detail { display: grid; gap: 7px; margin: 8px 0 5px 15px; padding: 9px 11px 9px 16px; border-left: 2px solid var(--settlement-color); border-radius: 0 10px 10px 0; background: #f7f8fb; }
+    .receipt-expand-detail div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; color: #777983; font-size: 9px; }
+    .receipt-expand-detail strong { color: #45464f; font-size: 9px; font-weight: 400; font-variant-numeric: tabular-nums; }
+    .receipt-risk-list { display: grid; gap: 9px; }
+    .receipt-risk-item { padding: 11px 12px; border-radius: 12px; background: #f8f8fb; }
+    .receipt-risk-link { width: 100%; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .16s ease, transform .16s ease; }
+    .receipt-risk-link:active { background: #f1f2f7; transform: scale(.99); }
+    .receipt-risk-link:focus-visible { outline: 2px solid #fb2e42; outline-offset: 2px; }
+    .receipt-risk-main { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 7px; }
+    .receipt-risk-main i { width: 8px; height: 8px; border-radius: 50%; background: var(--risk-color); }
+    .receipt-risk-main span { color: #555761; font-size: 10px; font-weight: 600; }
+    .receipt-risk-main strong { color: #303038; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .receipt-risk-meta { display: flex; gap: 14px; margin: 6px 0 0 15px; color: #92949d; font-size: 9px; }
+    .receipt-risk-meta b { color: #60626c; font-weight: 600; }
+    .report-toast { position: sticky; bottom: 16px; z-index: 35; width: fit-content; max-width: calc(100% - 32px); margin: -46px auto 16px; padding: 9px 13px; border-radius: 10px; color: #fff; background: rgba(35, 35, 42, .9); box-shadow: 0 8px 24px rgba(27, 27, 34, .2); font-size: 10px; line-height: 1.4; text-align: center; backdrop-filter: blur(8px); }
+    .report-date-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: flex-end;
+      background: rgba(24, 25, 31, .36);
+    }
+    .report-date-layer[hidden] { display: none; }
+    .report-date-sheet {
+      width: 100%;
+      padding: 0 0 18px;
+      border-radius: 22px 22px 0 0;
+      background: #fff;
+      box-shadow: 0 -12px 34px rgba(30, 31, 40, .14);
+    }
+    .report-date-sheet-head { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; min-height: 54px; padding: 0 10px; border-bottom: 1px solid #eff0f3; }
+    .report-date-sheet-head h3 { margin: 0; font-size: 15px; text-align: center; }
+    .report-date-head-action { min-height: 44px; padding: 0 8px; border: 0; color: #777983; background: transparent; font-size: 12px; cursor: pointer; }
+    .report-date-head-action.primary { color: #ed263b; font-weight: 700; }
+    .report-date-fields { display: grid; gap: 10px; padding: 14px 18px 0; }
+    .report-date-fields[hidden] { display: none; }
+    .report-date-range-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 3px; border-radius: 10px; background: #f4f5f8; }
+    .report-date-range-tab { min-height: 40px; padding: 0 8px; border: 0; border-radius: 8px; color: #777983; background: transparent; font-size: 10px; cursor: pointer; }
+    .report-date-range-tab[aria-pressed="true"] { color: #ed263b; background: #fff; font-weight: 700; }
+    .report-date-wheel { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); height: 180px; overflow: hidden; }
+    .report-date-wheel.month { grid-template-columns: repeat(2, 1fr); }
+    .report-date-wheel::before,
+    .report-date-wheel::after { content: ""; position: absolute; z-index: 2; right: 0; left: 0; height: 72px; pointer-events: none; }
+    .report-date-wheel::before { top: 0; background: linear-gradient(#fff 12%, rgba(255,255,255,.82), rgba(255,255,255,0)); }
+    .report-date-wheel::after { bottom: 0; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.82), #fff 88%); }
+    .report-date-wheel-selection { position: absolute; top: 72px; right: 0; left: 0; height: 36px; border-radius: 9px; background: #f4f5f8; pointer-events: none; }
+    .report-date-wheel-column { position: relative; z-index: 1; display: grid; grid-template-rows: repeat(5, 36px); }
+    .report-date-wheel-option { min-height: 36px; padding: 0; border: 0; color: #a0a2aa; background: transparent; font-size: 12px; cursor: pointer; }
+    .report-date-wheel-option.is-selected { color: #272830; font-size: 14px; font-weight: 700; }
+    .report-date-error { min-height: 16px; margin: 2px 18px 0; color: #e82439; font-size: 10px; text-align: center; }
+    .report-week-preview { margin: -2px 18px 2px; color: #777983; font-size: 10px; text-align: center; }
+    .report-spec-layer { position: absolute; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 0 14px; background: rgba(24, 25, 31, .42); }
+    .report-spec-layer[hidden] { display: none; }
+    .report-spec-panel { display: flex; width: 100%; max-height: 82%; flex-direction: column; overflow: hidden; border-radius: 18px; background: #fff; box-shadow: 0 18px 42px rgba(28, 29, 38, .22); }
+    .report-spec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 15px 12px; border-bottom: 1px solid #eff0f3; }
+    .report-spec-head h3 { margin: 0; font-size: 15px; }
+    .report-spec-close { display: grid; width: 26px; height: 26px; place-items: center; padding: 0; border: 0; border-radius: 50%; color: #858791; background: #f4f5f8; font-size: 14px; line-height: 1; cursor: pointer; }
+    .report-spec-intro { margin: 0; padding: 11px 15px 0; color: #9698a2; font-size: 10px; line-height: 1.7; }
+    .report-spec-body { overflow-y: auto; padding: 11px 15px 18px; }
+    .report-spec-item { padding: 11px 0; border-bottom: 1px solid #f3f4f7; }
+    .report-spec-item:last-child { border-bottom: 0; padding-bottom: 2px; }
+    .report-spec-item h4 { margin: 0 0 5px; color: #2c2d35; font-size: 12px; }
+    .report-spec-item p { margin: 0; color: #6f717b; font-size: 10px; line-height: 1.75; }
+    .report-spec-item p + p { margin-top: 4px; }
+    .report-spec-item em { color: #a0a2ab; font-style: normal; }
+    .prototype-notes > h1 { margin: 0; font-size: 20px; }
+    .prototype-note-context { margin: 7px 0 22px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .prototype-states { margin-bottom: 20px; padding: 14px; border-radius: 14px; background: var(--surface); }
+    .prototype-states h2 { margin: 0 0 10px; font-size: 13px; }
+    .prototype-state-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .prototype-state-button {
+      min-height: 34px;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      color: var(--secondary);
+      background: #fff;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .prototype-state-button[aria-pressed="true"] { color: #fff; border-color: var(--brand); background: var(--brand); }
+    .page-logic[hidden] { display: none; }
+    .page-logic-title { margin: 0; font-size: 17px; }
+    .page-logic-source { margin: 8px 0 18px; color: var(--secondary); font-size: 12px; line-height: 1.65; }
+    .page-logic-section { border-top: 1px solid var(--line); }
+    .page-logic-section:last-child { border-bottom: 1px solid var(--line); }
+    .page-logic-section summary {
+      padding: 15px 2px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .page-logic-body { padding: 0 2px 16px; color: var(--secondary); font-size: 12px; line-height: 1.75; }
+    .page-logic-body p { margin: 0 0 9px; }
+    .page-logic-body ul { margin: 5px 0 0; padding-left: 19px; }
+    .page-logic-body li + li { margin-top: 5px; }
+    .logic-formula { padding: 9px 11px; border-radius: 9px; color: var(--brand-dark); background: var(--brand-soft); font-weight: 700; }
+    .logic-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    .logic-table th, .logic-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .logic-table th { color: var(--text); font-size: 11px; }
+    .prototype-prd {
+      display: none;
+      width: min(900px, 100%);
+      min-height: calc(100dvh - 48px);
+      padding: 42px 48px;
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: 0 12px 36px rgba(41, 43, 58, .08);
+    }
+    .prototype-prd.show { display: block; }
+    .prototype-prd h1 { margin: 0; font-size: 25px; }
+    .prototype-prd .version { margin: 7px 0 30px; color: var(--muted); font-size: 12px; }
+    .prototype-prd h2 { margin: 28px 0 12px; font-size: 17px; }
+    .prototype-prd h3 { margin: 24px 0 10px; font-size: 15px; }
+    .prototype-prd p, .prototype-prd li { color: var(--secondary); font-size: 13px; line-height: 1.75; }
+    .prototype-prd table { width: 100%; border-collapse: collapse; }
+    .prototype-prd th, .prototype-prd td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; font-size: 12px; }
+    .prototype-prd th { background: var(--surface); }
+    .prd-source-note {
+      margin: 0 0 22px;
+      padding: 13px 15px;
+      border: 1px solid #f4d6ac;
+      border-radius: 12px;
+      color: #76501e;
+      background: #fff8ed;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .prd-source-note strong { color: #4c3415; }
+    .prd-field-list { display: grid; gap: 10px; }
+    .prd-field {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .prd-field summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 15px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      list-style: none;
+    }
+    .prd-field summary::-webkit-details-marker { display: none; }
+    .prd-field summary::after { content: "+"; color: var(--muted); font-size: 18px; font-weight: 500; }
+    .prd-field[open] summary { border-bottom: 1px solid var(--line); background: #fffafb; }
+    .prd-field[open] summary::after { content: "−"; }
+    .prd-field-body { padding: 4px 15px 14px; }
+    .prd-field-table th { width: 126px; color: var(--text); vertical-align: top; }
+    .prd-field-table td { color: var(--secondary); line-height: 1.7; vertical-align: top; }
+    .prd-field-table code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: #a13d4c;
+      background: #fff1f3;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+    }
+    .prd-formula { color: var(--brand-dark); font-weight: 750; }
+    body.prd-mode .prototype-notes { display: none; }
+    body.prd-mode .prototype-stage {
+      grid-column: 2 / 4;
+      place-items: start center;
+      scroll-padding-top: 24px;
+    }
+    @media (max-width: 1180px) and (min-width: 761px) {
+      body { grid-template-columns: 250px minmax(400px, 1fr) 360px; }
+      .prototype-menu { padding-inline: 15px; }
+      .prototype-notes { padding-inline: 18px; }
+    }
+    @media (max-width: 760px) {
+      body { display: block; overflow: hidden; }
+      .prototype-menu, .prototype-notes { display: none; }
+      .prototype-stage { width: 100%; height: 100dvh; padding: 0; overflow: hidden; }
+      .phone { width: 100%; height: 100dvh; min-height: 100dvh; border: 0; border-radius: 0; box-shadow: none; }
+      .prototype-prd { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="prototype-menu" aria-label="原型导航">
+    <div class="prototype-brand"><span class="prototype-logo">RTB</span><div><strong>首页经营数据</strong><small>移动端交互原型 · V1</small></div></div>
+
+    <section class="prototype-menu-group">
+      <h2>概览与公共文档</h2>
+      <button class="prototype-link" type="button" data-prd-document="doc-data-rules"><span>数据口径说明</span><span class="prd-mark">PRD</span></button>
+    </section>
+
+    <section class="prototype-menu-group">
+      <h2>首页</h2>
+      <button class="prototype-link active" type="button" data-prototype-page="home-owner" aria-current="page"><span>店主首页</span><span>›</span></button>
+      <button class="prototype-link" type="button" data-prototype-page="home-employee"><span>店员首页</span><span>›</span></button>
+    </section>
+
+    <section class="prototype-menu-group">
+      <h2>经营分析</h2>
+      <button class="prototype-link" type="button" data-prototype-page="revenue-analysis" data-report-target="overview"><span>数据总览</span><span>›</span></button>
+      <button class="prototype-link" type="button" data-prototype-page="revenue-analysis" data-report-target="receipt"><span>营收分析</span><span>›</span></button>
+    </section>
+  </aside>
+
+  <main class="prototype-stage">
+    <div class="phone" data-phone-canvas>
+      <section class="prototype-page show" id="home-owner" aria-label="店主首页" aria-hidden="false">
+        <iframe src="store-home-data-cards.html?embed=owner" title="店主首页原型"></iframe>
+      </section>
+      <section class="prototype-page" id="home-employee" aria-label="店员首页" aria-hidden="true">
+        <iframe src="store-home-data-cards.html?embed=employee" title="店员首页原型"></iframe>
+        <button class="employee-privacy-toggle" type="button" aria-label="显示业绩数据" aria-pressed="false" data-employee-privacy-toggle>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/><path class="employee-eye-slash" d="M4 4l16 16"/></svg>
+        </button>
+        <div class="employee-privacy-mask" data-employee-privacy-mask>
+          <div class="employee-mask-main">
+            <div class="employee-mask-metric"><span class="employee-mask-label">总业绩</span><span class="employee-mask-dots">••••</span></div>
+            <div class="employee-mask-metric"><span class="employee-mask-label">预计提成</span><span class="employee-mask-dots">••••</span></div>
+          </div>
+          <div class="employee-mask-parts">
+            <div class="employee-mask-parts-title">业绩构成</div>
+            <div class="employee-mask-track"></div>
+            <div class="employee-mask-items"><span>劳动业绩</span><span>售卡业绩</span><span>产品业绩</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="prototype-page" id="revenue-analysis" aria-label="经营分析收款页面" aria-hidden="true">
+        <div class="report-app" data-screen-label="门店经营报表">
+          <header class="report-header">
+            <div class="report-status"><span>15:36</span><span>▮▮▮　⌁　66</span></div>
+            <div class="report-title-row">
+              <button class="report-back" type="button" aria-label="返回店主首页" data-report-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+              <h2>门店经营报表</h2>
+            </div>
+            <nav class="report-tabs" role="tablist" aria-label="经营报表栏目">
+              <button class="report-tab" type="button" role="tab" aria-selected="true" data-report-tab="overview">数据总览</button>
+              <button class="report-tab" type="button" role="tab" aria-selected="false" data-report-tab="receipt">营收分析</button>
+              <button class="report-tab" type="button" role="tab" aria-selected="false" disabled>员工业绩分析</button>
+              <button class="report-tab" type="button" role="tab" aria-selected="false" disabled>卡相关</button>
+              <button class="report-tab" type="button" role="tab" aria-selected="false" disabled>客流分析</button>
+            </nav>
+          </header>
+
+          <section class="report-panel" data-report-panel="overview">
+            <div class="report-filter-row">
+              <div class="report-periods" aria-label="报表日期类型">
+                <button class="report-period" type="button" aria-pressed="true" data-report-period="day">日报</button>
+                <button class="report-period" type="button" aria-pressed="false" data-report-period="week">周报</button>
+                <button class="report-period" type="button" aria-pressed="false" data-report-period="month">月报</button>
+              </div>
+              <button class="report-date-label" type="button" data-report-date-label data-report-date-trigger>2026年09月15日</button>
+            </div>
+
+            <article class="report-card">
+              <div class="report-section-head"><h3>核心数据<button class="report-spec-button" type="button" aria-label="查看核心数据口径" data-report-spec="core">i</button></h3><span>点击指标查看趋势</span></div>
+              <div class="report-kpis" data-report-kpis>
+                <div class="report-kpi-grid">
+                  <button class="report-kpi" type="button" aria-pressed="true" data-metric="开单实收" data-value="¥2,800.00"><span>开单实收</span><strong>¥2,800.00</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="办卡/充值" data-value="¥700.00"><span>办卡/充值</span><strong>¥700.00</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="订单退款" data-value="¥400.00"><span>订单退款</span><strong>¥400.00</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="客单价" data-value="¥350.00"><span>客单价</span><strong>¥350.00</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="成交客户" data-value="8人"><span>成交客户</span><strong>8人</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="新增客户" data-value="2人"><span>新增客户</span><strong>2人</strong></button>
+                </div>
+              </div>
+              <div class="report-trend-block">
+                <div class="report-section-head report-trend-head"><h3 data-trend-title>收款合计趋势</h3><span data-trend-range>近 7 日</span></div>
+                <div class="report-trend-plot">
+                  <svg class="report-trend-chart" viewBox="0 0 330 132" role="img" tabindex="0" aria-label="核心指标趋势图，点击或使用左右方向键查看各时间点数据" data-trend-chart>
+                    <line class="report-trend-grid" x1="42" y1="22" x2="322" y2="22"></line><line class="report-trend-grid" x1="42" y1="65" x2="322" y2="65"></line><line class="report-trend-grid" x1="42" y1="108" x2="322" y2="108"></line>
+                    <g data-trend-axis></g>
+                    <path class="report-trend-area" data-trend-area d="M8 95 L60 76 L112 87 L165 45 L217 62 L270 34 L322 66 L322 108 L8 108 Z"></path>
+                    <polyline class="report-trend-line" data-trend-line points="8,95 60,76 112,87 165,45 217,62 270,34 322,66"></polyline>
+                    <g data-trend-points><circle class="report-trend-point" cx="8" cy="95" r="3.5"></circle><circle class="report-trend-point" cx="60" cy="76" r="3.5"></circle><circle class="report-trend-point" cx="112" cy="87" r="3.5"></circle><circle class="report-trend-point" cx="165" cy="45" r="3.5"></circle><circle class="report-trend-point" cx="217" cy="62" r="3.5"></circle><circle class="report-trend-point" cx="270" cy="34" r="3.5"></circle><circle class="report-trend-point" cx="322" cy="66" r="3.5"></circle></g>
+                    <g data-trend-selection hidden><line class="report-trend-guide" y1="14" y2="108"></line><circle class="report-trend-selected-point" r="5"></circle></g>
+                    <rect class="report-trend-interaction" x="0" y="0" width="330" height="118"></rect>
+                  </svg>
+                  <div class="report-trend-tooltip" data-trend-tooltip hidden><strong data-trend-tooltip-date></strong><span><i></i><b data-trend-tooltip-value></b></span></div>
+                </div>
+                <div class="report-trend-labels" data-trend-labels><span style="left:12.73%">09/09</span><span style="left:26.87%">09/10</span><span style="left:41.01%">09/11</span><span style="left:55.15%">09/12</span><span style="left:69.29%">09/13</span><span style="left:83.43%">09/14</span><span style="left:97.58%">今日</span></div>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-section-head transaction-head">
+                <h3>交易看板<button class="report-spec-button" type="button" aria-label="查看交易看板口径" data-report-spec="transaction">i</button></h3>
+                <div class="report-switches" data-transaction-tabs>
+                  <button class="report-switch" type="button" aria-pressed="true" data-transaction="consume-method">消费方式</button>
+                  <button class="report-switch" type="button" aria-pressed="false" data-transaction="consume-composition">消费构成</button>
+                </div>
+              </div>
+              <div class="report-transaction-body">
+                <div class="report-donut" data-report-donut><div class="report-donut-center"><strong data-donut-value>¥2,800</strong><span data-donut-label>消费合计</span></div></div>
+                <div class="report-legend" data-report-legend></div>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-section-head"><h3>办卡充值<button class="report-spec-button" type="button" aria-label="查看办卡充值口径" data-report-spec="cards">i</button></h3><span>合计 ¥41,000 · 共 36 笔</span></div>
+              <div class="report-card-sales-list">
+                <div class="report-card-sales-bar" role="img" aria-label="办卡充值金额构成：储值卡17000元，套餐卡15000元，计次卡4000元，折扣卡5000元">
+                  <i style="--card-color:#fb2e42;--card-share:41.5%"></i><i style="--card-color:#ff826d;--card-share:36.6%"></i><i style="--card-color:#ffb36b;--card-share:9.8%"></i><i style="--card-color:#d997ad;--card-share:12.2%"></i>
+                </div>
+                <div class="report-card-sales-item">
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#fb2e42"></i>储值卡<b>12 笔</b></span><strong>¥17,000<em>41.5%</em></strong></div>
+                  <div class="report-card-sales-detail"><span>本金 ¥12,000</span><span>赠金 ¥5,000</span></div>
+                </div>
+                <div class="report-card-sales-item">
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ff826d"></i>套餐卡<b>10 笔</b></span><strong>¥15,000<em>36.6%</em></strong></div>
+                  <div class="report-card-sales-detail"><span>本金 ¥10,000</span><span>赠金 ¥5,000</span></div>
+                </div>
+                <div class="report-card-sales-item">
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ffb36b"></i>计次卡<b>12 笔</b></span><strong>¥4,000<em>9.8%</em></strong></div>
+                </div>
+                <div class="report-card-sales-item">
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#d997ad"></i>折扣卡<b>2 笔</b></span><strong>¥5,000<em>12.2%</em></strong></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="report-card">
+              <div class="report-section-head report-ranking-head">
+                <h3>销售排行<button class="report-spec-button" type="button" aria-label="查看销售排行口径" data-report-spec="ranking">i</button></h3>
+                <span data-ranking-summary></span>
+              </div>
+              <div class="report-ranking-filter">
+                <div class="report-switches" data-ranking-tabs>
+                  <button class="report-switch" type="button" aria-pressed="true" data-ranking="service">服务</button>
+                  <button class="report-switch" type="button" aria-pressed="false" data-ranking="product">产品</button>
+                  <button class="report-switch" type="button" aria-pressed="false" data-ranking="card">卡项</button>
+                </div>
+                <div class="report-rank-modes" role="group" aria-label="排行口径">
+                  <button class="report-rank-mode" type="button" aria-pressed="true" data-ranking-mode="amount">销售额</button>
+                  <button class="report-rank-mode" type="button" aria-pressed="false" data-ranking-mode="quantity">数量</button>
+                </div>
+              </div>
+              <div class="report-ranking" data-report-ranking></div>
+            </article>
+          </section>
+
+          <section class="report-panel" data-report-panel="receipt" hidden>
+            <div class="report-filter-row">
+              <div class="report-periods"><button class="report-period" type="button" aria-pressed="true" data-report-period="day">日报</button><button class="report-period" type="button" aria-pressed="false" data-report-period="week">周报</button><button class="report-period" type="button" aria-pressed="false" data-report-period="month">月报</button></div>
+              <button class="report-date-label" type="button" data-report-date-label data-report-date-trigger>2026年09月15日</button>
+            </div>
+            <article class="report-card receipt-hero">
+              <div class="report-section-head"><h3>核心数据<button class="report-spec-button" type="button" aria-label="查看营收核心数据口径" data-report-spec="revenue-core">i</button></h3></div>
+              <div class="receipt-dual">
+                <div class="receipt-dual-metric"><span>营业额</span><div class="receipt-dual-value"><strong>¥4,800.00</strong><em>较昨日 +4.8%</em></div></div>
+                <div class="receipt-dual-metric"><span>收款合计</span><div class="receipt-dual-value"><strong>¥3,100.00</strong><em>较昨日 +6.2%</em></div></div>
+              </div>
+              <div class="receipt-trend">
+                <div class="receipt-trend-head"><div class="receipt-trend-legend"><span><i style="--trend-color:#fb2e42"></i>营业额</span><span><i style="--trend-color:#8f7bd8"></i>收款合计</span></div><span data-receipt-trend-range>近 7 日</span></div>
+                <svg class="receipt-trend-chart" viewBox="0 0 330 120" role="img" aria-label="营业额与收款合计趋势">
+                  <g><line class="report-trend-grid" x1="42" y1="17" x2="322" y2="17"></line><line class="report-trend-grid" x1="42" y1="60" x2="322" y2="60"></line><line class="report-trend-grid" x1="42" y1="103" x2="322" y2="103"></line></g>
+                  <g data-receipt-trend-axis></g>
+                  <polyline class="receipt-trend-line-sales" data-receipt-trend-sales></polyline>
+                  <polyline class="receipt-trend-line-receipt" data-receipt-trend-receipt></polyline>
+                  <g data-receipt-trend-sales-points></g>
+                  <g data-receipt-trend-receipt-points></g>
+                </svg>
+                <div class="receipt-trend-labels" data-receipt-trend-labels></div>
+              </div>
+            </article>
+            <article class="report-card">
+              <div class="report-section-head"><h3>消费构成<button class="report-spec-button" type="button" aria-label="查看消费构成口径" data-report-spec="revenue-composition">i</button></h3><span>退款前 ¥5,200</span></div>
+              <div class="receipt-composition-body">
+                <div class="receipt-composition-donut"><div class="receipt-composition-center">¥4,800</div></div>
+                <div class="receipt-composition-list">
+                  <div class="receipt-composition-row" style="--composition-color:#fb2e42"><i></i><span>项目消费</span><strong>¥3,000<em>62.5%</em></strong></div>
+                  <div class="receipt-composition-row" style="--composition-color:#ff8a70"><i></i><span>产品消费</span><strong>¥1,100<em>22.9%</em></strong></div>
+                  <div class="receipt-composition-row" style="--composition-color:#d997ad"><i></i><span>办卡/充值</span><strong>¥700<em>14.6%</em></strong></div>
+                </div>
+              </div>
+            </article>
+            <article class="report-card">
+              <div class="report-section-head"><h3>消费方式<button class="report-spec-button" type="button" aria-label="查看消费方式口径" data-report-spec="revenue-method">i</button></h3><span>退款前 ¥5,200</span></div>
+              <div class="receipt-settlement-bar" aria-label="开单实收67.3%，团购记账11.5%，卡付15.4%，经理签单5.8%">
+                <i style="--settlement-share:67.3%;--settlement-color:#fb2e42"></i><i style="--settlement-share:11.5%;--settlement-color:#8f7bd8"></i><i style="--settlement-share:15.4%;--settlement-color:#ff8a70"></i><i style="--settlement-share:5.8%;--settlement-color:#a9abb5"></i>
+              </div>
+              <div class="receipt-settlement-row" style="--settlement-color:#fb2e42"><i></i><span>开单实收</span><strong>¥3,500</strong><em>67.3%</em></div>
+              <div class="receipt-expand-detail" style="--settlement-color:#fb2e42">
+                <div><span>微信</span><strong>¥1,500</strong></div>
+                <div><span>支付宝</span><strong>¥900</strong></div>
+                <div><span>银行卡</span><strong>¥600</strong></div>
+                <div><span>信用卡</span><strong>¥300</strong></div>
+                <div><span>现金</span><strong>¥200</strong></div>
+              </div>
+              <div class="receipt-settlement-row" style="--settlement-color:#8f7bd8"><i></i><span>团购记账</span><strong>¥600</strong><em>11.5%</em></div>
+              <div class="receipt-expand-detail" style="--settlement-color:#8f7bd8">
+                <div><span>抖音</span><strong>¥250</strong></div>
+                <div><span>美团</span><strong>¥180</strong></div>
+                <div><span>大众点评</span><strong>¥120</strong></div>
+                <div><span>其他平台</span><strong>¥50</strong></div>
+              </div>
+              <div class="receipt-settlement-row" style="--settlement-color:#ff8a70"><i></i><span>卡付</span><strong>¥800</strong><em>15.4%</em></div>
+              <div class="receipt-settlement-row" style="--settlement-color:#a9abb5"><i></i><span>经理签单</span><strong>¥300</strong><em>5.8%</em></div>
+            </article>
+            <article class="report-card">
+              <div class="report-section-head"><h3>退款与异常<button class="report-spec-button" type="button" aria-label="查看退款与异常口径" data-report-spec="revenue-risk">i</button></h3><span>需关注</span></div>
+              <div class="receipt-risk-list">
+                <button class="receipt-risk-item receipt-risk-link" type="button" style="--risk-color:#fb2e42" aria-label="查看订单退款流水" data-refund-flow-link>
+                  <div class="receipt-risk-main"><i></i><span>订单退款</span><strong>¥400</strong></div>
+                  <div class="receipt-risk-meta"><span>共 <b>2 笔</b></span><span>退款率 <b>7.7%</b></span></div>
+                </button>
+                <div class="receipt-risk-item" style="--risk-color:#ff8a70">
+                  <div class="receipt-risk-main"><i></i><span>经理签单</span><strong>¥300</strong></div>
+                  <div class="receipt-risk-meta"><span>共 <b>3 笔</b></span><span>签单占比 <b>5.8%</b></span></div>
+                </div>
+              </div>
+              <div class="receipt-equation" style="margin-top:11px">退款率、签单占比均按退款前营业额 ¥5,200 计算。</div>
+            </article>
+          </section>
+
+          <div class="report-toast" role="status" aria-live="polite" data-report-toast hidden>将进入「订单流水－退款」Tab 页（原型暂不展示目标页面）</div>
+
+          <div class="report-spec-layer" data-report-spec-layer hidden>
+            <section class="report-spec-panel" role="dialog" aria-modal="true" aria-labelledby="reportSpecTitle">
+              <div class="report-spec-head"><h3 id="reportSpecTitle" data-report-spec-title>数据口径说明</h3><button class="report-spec-close" type="button" aria-label="关闭" data-report-spec-close>×</button></div>
+              <p class="report-spec-intro" data-report-spec-intro></p>
+              <div class="report-spec-body" data-report-spec-body></div>
+            </section>
+          </div>
+          <div class="report-date-layer" data-report-date-layer hidden>
+            <section class="report-date-sheet" role="dialog" aria-modal="true" aria-labelledby="reportDateTitle">
+              <div class="report-date-sheet-head"><button class="report-date-head-action" type="button" data-report-date-cancel>取消</button><h3 id="reportDateTitle" data-report-date-title>选择日报日期</h3><button class="report-date-head-action primary" type="button" data-report-date-confirm>确定</button></div>
+              <div class="report-date-fields" data-date-fields="day"><div class="report-date-wheel" data-date-wheel="day"><div class="report-date-wheel-selection"></div></div></div>
+              <div class="report-date-fields" data-date-fields="week" hidden><div class="report-date-wheel" data-date-wheel="week"><div class="report-date-wheel-selection"></div></div><p class="report-week-preview" data-week-range-preview></p></div>
+              <div class="report-date-fields" data-date-fields="month" hidden><div class="report-date-wheel month" data-date-wheel="month"><div class="report-date-wheel-selection"></div></div></div>
+              <p class="report-date-error" data-report-date-error></p>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <article class="prototype-prd" data-prd-document="doc-data-rules" hidden>
+      <h1>首页经营数据口径说明</h1>
+      <p class="version">适用版本：单门店 V1 · 更新日期：2026-09-15 · 来源：飞书数据口径说明</p>
+      <h2>一、角色与权限</h2>
+      <table><thead><tr><th>角色</th><th>首页可见数据</th><th>业务目的</th></tr></thead><tbody><tr><td>店主</td><td>收款合计、门店业绩、我的业绩</td><td>掌握现金流入及门店产出</td></tr><tr><td>店员</td><td>我的业绩、预计提成</td><td>了解个人产出及收入预估</td></tr></tbody></table>
+
+      <h2>二、数据口径说明</h2>
+      <div class="prd-source-note"><strong>统一规则：</strong>统计区间采用“开始时间 ≤ 统计时间 &lt; 结束时间”；所有金额字段数据库按分存储、接口按分返回，前端转换为元并保留两位小数。</div>
+
+      <h3>页面：首页－收款卡片</h3>
+      <div class="prd-field-list">
+        <details class="prd-field" open>
+          <summary>收款合计</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>建议字段编码：<code>gross_receipt_amount</code><br>数据类型：金额；默认值：0.00；统计维度：门店、统计周期</td></tr>
+            <tr><th>业务定义</th><td>统计周期内门店实际收到的资金扣除实际退款后的净额，用于反映门店资金净流入，不等同于销售收入或员工业绩。允许出现负数，例如当期没有新增收款但发生历史订单退款。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">收款合计 = 开单实收 + 办卡/充值 − 订单退款</span></td></tr>
+            <tr><th>时间归属规则</th><td>开单实收和办卡/充值按支付成功时间计入；订单退款按退款成功时间扣减，不回写原订单所在周期。</td></tr>
+            <tr><th>计入范围</th><td>只统计实际资金流入与流出。卡付、团购记账和经理签单不产生当期实际资金流入，不计入收款合计。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>开单实收</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>order_actual_receipt_amount</code><br>数据类型：金额；默认值：0；统计维度：门店、统计周期</td></tr>
+            <tr><th>业务定义</th><td>统计周期内，门店通过项目消费或产品购买订单实际收到的资金。只统计实际资金支付部分，不统计卡付、团购、经理签单等非当期资金流入，为退款前金额。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">开单实收 = Σ 消费订单支付明细中的实际资金支付金额</span><br>混合支付时，只汇总现金、微信、支付宝、银行卡和信用卡对应的支付明细金额。</td></tr>
+            <tr><th>时间归属规则</th><td>支付状态为支付成功时，按支付成功时间计入。后续退款不冲减原开单实收，在退款成功周期计入订单退款。</td></tr>
+            <tr><th>计入范围</th><td>计入项目消费、产品购买中的现金、微信、支付宝、银行卡和信用卡支付；不计入储值卡或次卡卡付、团购记账、经理签单、办卡充值、支付失败、取消或已作废支付流水。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>办卡/充值</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>card_actual_receipt_amount</code><br>数据类型：金额；默认值：0；统计维度：门店、统计周期</td></tr>
+            <tr><th>业务定义</th><td>统计周期内，顾客买卡、续卡、充值、续次或卡升降级时门店实际收到的资金，属于预收款，不代表顾客已经完成消费。赠送储值金额和赠送次数不计入。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">办卡/充值 = Σ 卡业务支付明细中的实际资金支付金额</span></td></tr>
+            <tr><th>时间归属规则</th><td>支付状态为支付成功且卡业务生效时，按支付成功时间计入。后续退款通过订单退款字段在退款成功周期扣减。</td></tr>
+            <tr><th>计入范围</th><td>计入买卡、续卡、充值、续次和卡升降级中的现金、微信、支付宝、银行卡和信用卡支付；不计入赠送金额或次数、已有卡余额支付、团购记账、经理签单及未支付或已作废业务。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>订单退款</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>order_refund_amount</code><br>数据类型：金额；默认值：0；页面始终按正数展示；统计维度：门店、统计周期</td></tr>
+            <tr><th>业务定义</th><td>统计周期内，门店通过退款操作实际退回给顾客的资金金额。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">订单退款 = Σ 退款成功流水中的实际资金退款金额</span><br>部分退款按本次实际退回资金统计；同一退款不得因关联多个原支付明细而重复累计。</td></tr>
+            <tr><th>时间归属规则</th><td>按退款成功时间归属统计周期，不按照原订单创建、支付或完成时间统计，不回写历史收款数据。</td></tr>
+            <tr><th>计入范围</th><td>计入消费订单和卡业务中，通过现金、微信、支付宝、银行卡或信用卡实际退回的资金；不计入退回卡余额、恢复次卡次数、取消团购记账、撤销经理签单，以及失败或已取消退款。</td></tr>
+          </tbody></table></div>
+        </details>
+      </div>
+
+      <h3>页面：首页－业绩卡片</h3>
+      <div class="prd-field-list">
+        <details class="prd-field" open>
+          <summary>总业绩</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>total_performance_amount</code><br>数据类型：金额；默认值：0；允许为负数；统计维度：门店、员工个人、统计周期</td></tr>
+            <tr><th>业务定义</th><td>统计对象在统计周期内产生并归属到其名下的有效业绩金额，用于衡量业务产出，不等于收款合计或营业额。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">总业绩 = 劳动业绩 + 售卡业绩 + 产品业绩</span><br>员工总业绩汇总当前员工三类业绩流水；门店总业绩汇总当前门店全部有效业绩流水。</td></tr>
+            <tr><th>时间归属规则</th><td>各分类业绩分别按照其正向业务生效时间和退款冲减时间归属，总业绩不另设独立时间字段。</td></tr>
+            <tr><th>计入范围</th><td>只汇总三类有效业绩流水。同一业务明细多人协作时，全部员工分配金额之和必须等于该明细可计业绩金额，禁止重复累计整笔订单。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>劳动业绩</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>labor_performance_amount</code><br>数据类型：金额；存储单位：分；展示单位：元；统计维度：门店、员工、统计周期</td></tr>
+            <tr><th>业务定义</th><td>员工为客户完成项目服务后产生，并按服务归属或业绩分配规则归属到统计对象名下的有效业绩。衡量服务产出，与支付方式无关。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">劳动业绩 = Σ 订单明细可计劳动业绩金额 − Σ 项目退款冲减金额</span></td></tr>
+            <tr><th>时间归属规则</th><td>订单已完成且支付状态有效时，按订单完成时间生成正向业绩；项目退款或撤销成功时，按退款或撤销成功时间生成负向业绩。部分退款仅冲减对应项目金额，并沿用原订单员工归属快照。</td></tr>
+            <tr><th>计入范围</th><td>不计入产品销售、买卡、续卡、充值、挂单、已取消或已作废订单，以及未设置业绩金额的赠送项目。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>产品业绩</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>product_performance_amount</code><br>数据类型：金额；存储单位：分；展示单位：元；统计维度：门店、员工、统计周期</td></tr>
+            <tr><th>业务定义</th><td>员工销售门店实物产品后产生，并按销售归属或业绩分配规则归属到统计对象名下的有效业绩。支付方式不影响产品业绩分类。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">产品业绩 = Σ 订单明细可计产品销售业绩金额 − Σ 产品退款冲减金额</span></td></tr>
+            <tr><th>时间归属规则</th><td>产品订单已完成且支付状态有效时，按订单完成时间生成正向业绩；退款成功时按退款成功时间生成负向业绩。部分退货仅冲减对应产品明细金额，并沿用原订单员工归属快照。</td></tr>
+            <tr><th>计入范围</th><td>不计入项目服务、买卡、续卡、充值、赠品、未完成订单、已取消或已作废订单。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>售卡业绩</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>card_performance_amount</code><br>数据类型：金额；存储单位：分；展示单位：元；统计维度：门店、员工、统计周期</td></tr>
+            <tr><th>业务定义</th><td>员工通过买卡、续卡或充值业务获得，并按售卡归属规则归属到统计对象名下的有效业绩。属于员工绩效指标，不属于客户消费金额，也不等同于会计收入。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">售卡业绩 = Σ 卡业务可计售卡业绩金额 − Σ 退卡或充值退款冲减金额</span><br>可计业绩金额取客户实际支付本金，不包含赠送储值金额和赠送次数。</td></tr>
+            <tr><th>时间归属规则</th><td>买卡、续卡或充值支付成功且业务生效时生成正向业绩；退卡、充值退款或业务撤销成功时生成负向业绩。部分退款按实际退回本金冲减，并沿用原业务员工归属快照。</td></tr>
+            <tr><th>计入范围</th><td>计入支付成功的买卡、续卡、充值、升降级、续次；不计入赠送金额或次数、已有卡的消费卡付、未支付、取消或已作废业务，以及项目服务和产品销售。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>业绩构成</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>字段编码：<code>performance_composition</code><br>数据类型：复合字段；组成：劳动业绩、售卡业绩、产品业绩及其构成比例</td></tr>
+            <tr><th>业务定义</th><td>用于说明总业绩分别由劳动、售卡和产品三类业务贡献了多少，分类金额必须与总业绩使用完全相同的统计对象和时间范围。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">分类占比 = 分类业绩金额 ÷ 总业绩 × 100%</span><br>仅当总业绩大于 0 且三项分类金额均不小于 0 时计算。展示比例四舍五入，三项之和通过尾差修正保持为 100%。</td></tr>
+            <tr><th>特殊状态</th><td>总业绩等于 0，或任一分类金额小于 0 时，不计算占比、不展示构成条，只展示三项金额；接口占比字段统一返回 <code>null</code>，不得使用 0 冒充有效占比。</td></tr>
+          </tbody></table></div>
+        </details>
+        <details class="prd-field">
+          <summary>预计提成</summary>
+          <div class="prd-field-body"><table class="prd-field-table"><tbody>
+            <tr><th>字段基本信息</th><td>建议字段编码：<code>estimated_commission_amount</code><br>数据类型：金额；默认值：0；允许因退款冲减出现负数；统计维度：门店、员工个人、统计周期</td></tr>
+            <tr><th>业务定义</th><td>根据统计对象的有效业绩和业务发生时生效的员工提成方案计算出的预估提成，不代表最终已结算或已发放金额。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">预计提成 = Σ 单条有效业绩金额 × 该业绩命中的提成规则 − Σ 退款对应提成冲减</span></td></tr>
+            <tr><th>时间归属规则</th><td>正向提成跟随对应业绩生效时间计入；退款冲减跟随退款业绩流水生效时间计入；使用业务发生时保存的提成规则快照，不用当前最新方案重算历史数据。</td></tr>
+            <tr><th>计入范围</th><td>计入命中有效提成规则的劳动、售卡和产品业绩；不计入未配置规则、明确不计提成、未生效或已作废业绩；门店预计提成为全部员工预计提成之和。</td></tr>
+          </tbody></table></div>
+        </details>
+      </div>
+
+      <h2>三、隐私规则</h2>
+      <p>店主进入首页时，收款卡片金额默认隐藏，可点击收款卡片的小眼睛显示或隐藏；店员进入首页时，“我的业绩”卡片金额默认隐藏，可点击卡片小眼睛显示或隐藏。店主的业绩卡片数据直接展示。</p>
+    </article>
+  </main>
+
+  <aside class="prototype-notes" aria-label="页面逻辑说明">
+    <h1>页面逻辑说明</h1>
+    <p class="prototype-note-context">此处仅描述页面展示与交互逻辑，并随中间页面同步切换；字段定义、计算公式及统计口径统一维护在「数据口径说明」PRD 中。</p>
+
+    <section class="prototype-states" data-state-controls>
+      <h2>页面状态演示</h2>
+      <div class="prototype-state-row">
+        <button class="prototype-state-button" type="button" data-demo-state="hidden" aria-pressed="true">默认隐藏</button>
+        <button class="prototype-state-button" type="button" data-demo-state="visible" aria-pressed="false">正常数据</button>
+        <button class="prototype-state-button" type="button" data-demo-state="performance-zero" aria-pressed="false">业绩为 0</button>
+        <button class="prototype-state-button" type="button" data-demo-state="performance-negative" aria-pressed="false">业绩为负</button>
+      </div>
+    </section>
+
+    <div id="prototypeNotesContent">
+      <section class="page-logic" data-prototype-note-for="home-owner" aria-label="店主首页逻辑说明">
+        <h2 class="page-logic-title">店主首页逻辑说明</h2>
+        <p class="page-logic-source">面向店主展示首页快捷入口、收款信息和业绩信息；明细分析通过指定入口进入二级页面。</p>
+        <details class="page-logic-section" open><summary>一、收款卡片</summary><div class="page-logic-body"><ul><li>卡片展示收款合计、开单实收、办卡/充值、订单退款及当前周期的对比结果。</li><li>点击“今日 / 本周 / 本月”切换展示周期，金额和对比文案随所选周期刷新。</li><li>进入页面时金额及对比结果默认隐藏；点击标题旁的小眼睛显示，再次点击恢复隐藏。</li><li>仅点击大金额区域或右侧“›”按钮进入「门店经营报表－营收分析」；日期标签、信息图标及卡片空白区域均不触发跳转。</li><li>点击标题旁的信息图标打开收款字段说明弹窗；点击关闭按钮或遮罩关闭弹窗。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、业绩卡片</summary><div class="page-logic-body"><ul><li>点击“门店业绩 / 我的业绩”切换数据范围；点击“今日 / 本周 / 本月”切换展示周期。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成数据。</li><li>正常状态展示业绩构成条及三项构成数据；总业绩为 0 或负数时隐藏构成条，只保留三项金额。</li><li>店主首页的业绩数据直接展示，不提供隐藏按钮。</li><li>点击标题旁的信息图标打开业绩字段说明弹窗；弹窗集中展示该卡片内全部字段说明。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、其他区域</summary><div class="page-logic-body"><ul><li>快捷功能以独立入口展示，点击后进入对应业务功能；本原型仅演示首页布局，不展开快捷功能的后续页面。</li><li>页面状态演示按钮只用于切换原型数据状态，不改变首页导航层级。</li></ul></div></details>
+      </section>
+
+      <section class="page-logic" data-prototype-note-for="home-employee" aria-label="店员首页逻辑说明" hidden>
+        <h2 class="page-logic-title">店员首页逻辑说明</h2>
+        <p class="page-logic-source">店员首页只展示“我的业绩”卡片，不展示门店收款，也不提供门店与个人的数据范围切换。</p>
+        <details class="page-logic-section" open><summary>一、页面展示</summary><div class="page-logic-body"><ul><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成数据。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内全部数据同步刷新。</li><li>正常状态展示业绩构成条；总业绩为 0 或负数时隐藏构成条，只保留三项金额。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、隐藏与显示</summary><div class="page-logic-body"><ul><li>进入页面时，总业绩、预计提成、构成金额及构成条默认隐藏。</li><li>点击标题旁的小眼睛显示全部业绩数据，再次点击恢复隐藏；切换周期不会改变当前隐藏状态。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、字段说明</summary><div class="page-logic-body"><p>点击标题旁的信息图标打开业绩字段说明弹窗；弹窗集中展示卡片内全部字段，点击关闭按钮或遮罩关闭。</p></div></details>
+      </section>
+
+      <section class="page-logic" data-prototype-note-for="revenue-overview" aria-label="数据总览页面逻辑说明" hidden>
+        <h2 class="page-logic-title">数据总览页面逻辑说明</h2>
+        <p class="page-logic-source">顶部五个栏目中，本期仅“数据总览”和“营收分析”可进入；其余栏目显示为不可用状态，点击不切换页面。</p>
+        <details class="page-logic-section" open><summary>一、日期筛选</summary><div class="page-logic-body"><ul><li>点击“日报 / 周报 / 月报”只切换报表周期，不直接打开日期面板。</li><li>点击右侧日期区域，从页面底部打开移动端日期选择面板：日报选择年月日，周报选择年份、月份与月内周次，月报选择年月。</li><li>周报选择面板在滚轮下方实时展示当前所选周的周一至周日起止日期。</li><li>点击“确定”应用选择并刷新当前页全部模块；点击“取消”、关闭按钮或遮罩放弃本次修改。</li><li>选择周报后，右侧日期展示所选自然周的具体起止日期。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与趋势</summary><div class="page-logic-body"><ul><li>核心数据展示开单实收、办卡/充值、订单退款、客单价、成交客户和新增客户。</li><li>点击任一指标后，该指标进入选中状态，下方标题和趋势数据同步切换。</li><li>日报横轴展示选中日期及此前 6 天，共 7 个日期点；周报横轴展示选中周及此前 7 周，共 8 个周数据点；月报横轴展示选中月份及此前 11 个月，共 12 个月份点。</li><li>纵轴根据当前指标的数据最小值、最大值及数值类型自动调整区间；金额显示货币单位，人数显示人数单位。</li><li>点击趋势图横轴区域会吸附到最近的数据点，并显示日期、指标名称和数值；键盘可用左右方向键切换数据点，Home / End 跳到首尾数据点。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、交易看板与办卡充值</summary><div class="page-logic-body"><ul><li>交易看板暂时只保留“消费方式 / 消费构成”切换；点击标签后，圆环图、中心合计和右侧明细同步刷新。</li><li>每条明细同时展示分类名称、金额和占比，颜色与圆环分段一一对应。</li><li>办卡充值模块展示合计金额、总笔数、卡类型构成条及各类型明细；储值卡和套餐卡在金额下方补充本金与赠金。</li></ul></div></details>
+        <details class="page-logic-section"><summary>四、销售排行</summary><div class="page-logic-body"><ul><li>左侧类型标签可切换服务、产品和卡项排行；右侧排序控件可切换销售额和销售数量。</li><li>切换任一条件后，标题合计、总笔数、名次、数值及单位同步刷新。</li><li>默认展示前 5 项；存在更多数据时显示“查看全部”，点击展开完整列表，再次点击收起。</li></ul></div></details>
+        <details class="page-logic-section"><summary>五、字段说明弹窗</summary><div class="page-logic-body"><p>每个模块标题右侧的信息图标用于打开该模块的字段说明弹窗；点击关闭按钮、遮罩或按 Esc 关闭，关闭后焦点返回原入口。</p></div></details>
+      </section>
+
+      <section class="page-logic" data-prototype-note-for="revenue-receipt" aria-label="营收分析页面逻辑说明" hidden>
+        <h2 class="page-logic-title">营收分析页面逻辑说明</h2>
+        <p class="page-logic-source">页面将营业额、收款结果、消费内容、消费方式及退款异常信息放在同一时间范围内展示。</p>
+        <details class="page-logic-section" open><summary>一、页面导航与日期</summary><div class="page-logic-body"><ul><li>点击顶部“数据总览”返回总览页；“员工业绩分析 / 卡相关 / 客流分析”为不可用状态，点击不切换内容。</li><li>点击左上角返回按钮回到店主首页。</li><li>日报、周报、月报及右侧日期区域的操作方式与数据总览保持一致；确认新日期后，本页全部卡片同步刷新。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与双趋势</summary><div class="page-logic-body"><ul><li>首张卡片并列展示营业额、收款合计及各自的周期对比结果，下方用两条不同颜色的折线展示趋势。</li><li>日报横轴展示选中日期及此前 6 天；周报横轴展示选中周及此前 7 周；月报横轴展示选中月份及此前 11 个月。</li><li>纵轴同时读取两条折线的数据范围并自动调整上下限，保证两组数据都完整显示；纵轴金额根据数值大小使用元或万元格式。</li><li>切换周期或日期后，两条折线、横轴标签、纵轴刻度和右上角范围文案同步更新。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、消费构成</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前金额，圆环中心展示当前营业额金额。</li><li>圆环按项目消费、产品消费、办卡/充值分段；右侧明细展示分类名称、金额和占比，颜色与圆环分段对应。</li></ul></div></details>
+        <details class="page-logic-section"><summary>四、消费方式</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前金额，并用一条构成条展示开单实收、团购记账、卡付、经理签单四个大类。</li><li>四个大类按“名称在左，金额和占比在右”的结构展示；金额与占比统一右对齐。</li><li>开单实收下方直接展开微信、支付宝、银行卡、信用卡、现金明细；团购记账下方直接展开各团购平台明细。</li><li>子分类相对大类缩进展示，子分类金额使用常规字重，以区分主次层级。</li></ul></div></details>
+        <details class="page-logic-section"><summary>五、退款与异常</summary><div class="page-logic-body"><ul><li>卡片展示订单退款和经理签单两类信息，每类显示金额、笔数及对应比例。</li><li>点击“订单退款”整行跳转至「订单流水－退款」Tab 页；本原型不绘制目标页面，点击后以轻提示反馈跳转目标。</li><li>经理签单当前仅展示数据，不提供跳转。</li><li>核心数据、消费构成、消费方式、退款与异常的标题右侧均提供信息图标；点击后打开对应模块的数据口径说明弹窗。</li></ul></div></details>
+      </section>
+    </div>
+  </aside>
+
+  <script>
+    const pageButtons = [...document.querySelectorAll('[data-prototype-page]')];
+    const prdButtons = [...document.querySelectorAll('.prototype-link[data-prd-document]')];
+    const pages = [...document.querySelectorAll('.prototype-page')];
+    const notes = [...document.querySelectorAll('[data-prototype-note-for]')];
+    const notesPanel = document.querySelector('.prototype-notes');
+    const stage = document.querySelector('.prototype-stage');
+    const phone = document.querySelector('[data-phone-canvas]');
+    const prd = document.querySelector('.prototype-prd');
+    const stateControls = document.querySelector('[data-state-controls]');
+    let currentPage = 'home-owner';
+
+    function setActiveMenu(target) {
+      document.querySelectorAll('.prototype-link').forEach(button => {
+        const active = button === target;
+        button.classList.toggle('active', active);
+        if (active) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+      });
+    }
+
+    const employeePrivacyToggle = document.querySelector('[data-employee-privacy-toggle]');
+    const employeePrivacyMask = document.querySelector('[data-employee-privacy-mask]');
+    function setEmployeePrivacyVisible(visible) {
+      employeePrivacyMask.hidden = visible;
+      employeePrivacyToggle.setAttribute('aria-pressed', String(visible));
+      employeePrivacyToggle.setAttribute('aria-label', `${visible ? '隐藏' : '显示'}业绩数据`);
+    }
+    employeePrivacyToggle.addEventListener('click', event => {
+      event.stopPropagation();
+      setEmployeePrivacyVisible(employeePrivacyToggle.getAttribute('aria-pressed') !== 'true');
+    });
+
+    const reportApp = document.querySelector('.report-app');
+    const reportTabs = [...document.querySelectorAll('[data-report-tab]')];
+    const reportPanels = [...document.querySelectorAll('[data-report-panel]')];
+    function showLogicNote(noteKey) {
+      notes.forEach(note => { note.hidden = note.dataset.prototypeNoteFor !== noteKey; });
+      notesPanel.scrollTop = 0;
+    }
+    function showReportPanel(panelKey) {
+      reportTabs.forEach(item => item.setAttribute('aria-selected', String(item.dataset.reportTab === panelKey)));
+      reportPanels.forEach(panel => { panel.hidden = panel.dataset.reportPanel !== panelKey; });
+      if (currentPage === 'revenue-analysis') {
+        showLogicNote(panelKey === 'receipt' ? 'revenue-receipt' : 'revenue-overview');
+      }
+      reportApp.scrollTop = 0;
+    }
+    reportTabs.forEach(tab => tab.addEventListener('click', () => showReportPanel(tab.dataset.reportTab)));
+    document.querySelector('[data-report-back]').addEventListener('click', () => showPrototypePage('home-owner'));
+
+    const reportPeriodData = {
+      day: { label: '2026年09月15日', range: '近 7 日', labels: ['09/09', '09/10', '09/11', '09/12', '09/13', '09/14', '今日'], values: [42, 55, 48, 76, 64, 84, 61] },
+      week: { label: '2026年09月14日－09月20日', range: '近 8 周', labels: ['第31周', '第32周', '第33周', '第34周', '第35周', '第36周', '第37周', '第38周'], values: [35, 48, 43, 67, 58, 76, 70, 82] },
+      month: { label: '2026年09月', range: '近 12 个月', labels: ['10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'], values: [38, 46, 44, 57, 53, 66, 61, 73, 69, 82, 77, 88] }
+    };
+    let activeReportPeriod = 'day';
+    let activeMetricIndex = 0;
+    let selectedTrendIndex = null;
+    let renderedTrendPoints = [];
+    let renderedTrendValues = [];
+
+    function formatTrendValue(metricValue, value) {
+      if (metricValue.startsWith('¥')) {
+        return `¥${value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+      return `${Math.max(0, Math.round(value))}人`;
+    }
+
+    function renderTrendSelection(index) {
+      const data = reportPeriodData[activeReportPeriod];
+      const metric = document.querySelectorAll('.report-kpi')[activeMetricIndex];
+      const selection = document.querySelector('[data-trend-selection]');
+      const tooltip = document.querySelector('[data-trend-tooltip]');
+      const point = renderedTrendPoints[index];
+      if (!point || renderedTrendValues[index] === undefined) return;
+
+      selectedTrendIndex = index;
+      selection.hidden = false;
+      selection.querySelector('line').setAttribute('x1', point[0]);
+      selection.querySelector('line').setAttribute('x2', point[0]);
+      selection.querySelector('circle').setAttribute('cx', point[0]);
+      selection.querySelector('circle').setAttribute('cy', point[1]);
+
+      tooltip.hidden = false;
+      tooltip.classList.toggle('edge-start', point[0] < 62);
+      tooltip.classList.toggle('edge-end', point[0] > 284);
+      tooltip.style.left = `${point[0] / 330 * 100}%`;
+      tooltip.style.top = `${point[1] < 58 ? point[1] + 13 : point[1] - 46}px`;
+      tooltip.querySelector('[data-trend-tooltip-date]').textContent = data.labels[index];
+      tooltip.querySelector('[data-trend-tooltip-value]').textContent = `${metric.dataset.metric}：${renderedTrendValues[index]}`;
+
+      document.querySelectorAll('[data-trend-labels] span').forEach((label, labelIndex) => label.classList.toggle('is-selected', labelIndex === index));
+      document.querySelector('[data-trend-chart]').setAttribute('aria-label', `${data.labels[index]}，${metric.dataset.metric}${renderedTrendValues[index]}。使用左右方向键切换数据点`);
+    }
+
+    function renderReceiptTrend() {
+      const data = reportPeriodData[activeReportPeriod];
+      const salesBase = data.values[data.values.length - 1] || 1;
+      const receiptShape = data.values.map((value, index) => value * .82 + ((index % 3) - 1) * 4);
+      const receiptBase = receiptShape[receiptShape.length - 1] || 1;
+      const salesValues = data.values.map((value, index) => index === data.values.length - 1 ? 4800 : Math.round(4800 * value / salesBase / 10) * 10);
+      const receiptValues = receiptShape.map((value, index) => index === receiptShape.length - 1 ? 3100 : Math.round(3100 * value / receiptBase / 10) * 10);
+      const allValues = [...salesValues, ...receiptValues];
+      const rawMin = Math.min(...allValues);
+      const rawMax = Math.max(...allValues);
+      const padding = Math.max(200, (rawMax - rawMin) * .16);
+      const axisMin = Math.max(0, rawMin - padding);
+      const axisMax = rawMax + padding;
+      const axisMid = (axisMin + axisMax) / 2;
+      const left = 42;
+      const right = 322;
+      const top = 17;
+      const bottom = 103;
+      const makePoints = values => values.map((value, index) => {
+        const x = left + (right - left) * index / Math.max(1, values.length - 1);
+        const y = bottom - (value - axisMin) / Math.max(1, axisMax - axisMin) * (bottom - top);
+        return [Number(x.toFixed(1)), Number(y.toFixed(1))];
+      });
+      const salesPoints = makePoints(salesValues);
+      const receiptPoints = makePoints(receiptValues);
+      const axisText = value => value >= 10000 ? `¥${(value / 10000).toFixed(1)}万` : `¥${Math.round(value).toLocaleString('zh-CN')}`;
+      document.querySelector('[data-receipt-trend-axis]').innerHTML =
+        `<text class="report-trend-axis-label" x="${left - 6}" y="${top + 3}">${axisText(axisMax)}</text>` +
+        `<text class="report-trend-axis-label" x="${left - 6}" y="${(top + bottom) / 2 + 3}">${axisText(axisMid)}</text>` +
+        `<text class="report-trend-axis-label" x="${left - 6}" y="${bottom + 3}">${axisText(axisMin)}</text>`;
+      document.querySelector('[data-receipt-trend-sales]').setAttribute('points', salesPoints.map(point => point.join(',')).join(' '));
+      document.querySelector('[data-receipt-trend-receipt]').setAttribute('points', receiptPoints.map(point => point.join(',')).join(' '));
+      document.querySelector('[data-receipt-trend-sales-points]').innerHTML = salesPoints.map(([x, y]) => `<circle class="receipt-trend-point-sales" cx="${x}" cy="${y}" r="3"></circle>`).join('');
+      document.querySelector('[data-receipt-trend-receipt-points]').innerHTML = receiptPoints.map(([x, y]) => `<circle class="receipt-trend-point-receipt" cx="${x}" cy="${y}" r="3"></circle>`).join('');
+      document.querySelector('[data-receipt-trend-labels]').innerHTML = data.labels.map((label, index) => `<span style="left:${(salesPoints[index][0] / 330 * 100).toFixed(2)}%">${label}</span>`).join('');
+      document.querySelector('[data-receipt-trend-range]').textContent = data.range;
+    }
+
+    function renderTrend() {
+      const data = reportPeriodData[activeReportPeriod];
+      const metric = document.querySelectorAll('.report-kpi')[activeMetricIndex];
+      const adjusted = data.values.map((value, index) => Math.max(8, Math.min(96, value + ((activeMetricIndex * 7 + index * 3) % 15) - 7)));
+      const rawMin = Math.min(...adjusted);
+      const rawMax = Math.max(...adjusted);
+      const span = Math.max(1, rawMax - rawMin);
+      const pad = span * 0.18;
+      const axisMin = Math.max(0, rawMin - pad);
+      const axisMax = rawMax + pad;
+      const axisMid = (axisMin + axisMax) / 2;
+      const PLOT_LEFT = 42;
+      const PLOT_RIGHT = 322;
+      const PLOT_TOP = 22;
+      const PLOT_BOTTOM = 108;
+      const points = adjusted.map((value, index) => {
+        const x = PLOT_LEFT + ((PLOT_RIGHT - PLOT_LEFT) * index / Math.max(1, adjusted.length - 1));
+        const y = PLOT_BOTTOM - ((value - axisMin) / Math.max(1, axisMax - axisMin)) * (PLOT_BOTTOM - PLOT_TOP);
+        return [Number(x.toFixed(1)), Number(y.toFixed(1))];
+      });
+      const metricNumber = Number(metric.dataset.value.replace(/[^0-9.-]/g, '')) || 0;
+      const lastAdjusted = adjusted[adjusted.length - 1] || 1;
+      renderedTrendPoints = points;
+      renderedTrendValues = adjusted.map((value, index) => formatTrendValue(metric.dataset.value, index === adjusted.length - 1 ? metricNumber : metricNumber * value / lastAdjusted));
+      selectedTrendIndex = null;
+      const pointText = points.map(point => point.join(',')).join(' ');
+      document.querySelector('[data-trend-title]').textContent = `${metric.dataset.metric}趋势`;
+      document.querySelector('[data-trend-range]').textContent = data.range;
+      const axisText = value => {
+        const rounded = Math.round(value);
+        if (metric.dataset.value.startsWith('¥')) return rounded >= 10000 ? `¥${(rounded / 10000).toFixed(1)}万` : `¥${rounded}`;
+        return `${rounded}人`;
+      };
+      document.querySelector('[data-trend-axis]').innerHTML =
+        `<text class="report-trend-axis-label" x="${PLOT_LEFT - 6}" y="${PLOT_TOP + 3}">${axisText(axisMax)}</text>` +
+        `<text class="report-trend-axis-label" x="${PLOT_LEFT - 6}" y="${(PLOT_TOP + PLOT_BOTTOM) / 2 + 3}">${axisText(axisMid)}</text>` +
+        `<text class="report-trend-axis-label" x="${PLOT_LEFT - 6}" y="${PLOT_BOTTOM + 3}">${axisText(axisMin)}</text>`;
+      document.querySelector('[data-trend-line]').setAttribute('points', pointText);
+      document.querySelector('[data-trend-area]').setAttribute('d', `M${points.map(point => point.join(' ')).join(' L')} L${PLOT_RIGHT} ${PLOT_BOTTOM} L${PLOT_LEFT} ${PLOT_BOTTOM} Z`);
+      document.querySelector('[data-trend-points]').innerHTML = points.map(([x, y]) => `<circle class="report-trend-point" cx="${x}" cy="${y}" r="3.5"></circle>`).join('');
+      document.querySelector('[data-trend-labels]').innerHTML = data.labels.map((label, index) => `<span style="left:${(points[index][0] / 330 * 100).toFixed(2)}%">${label}</span>`).join('');
+      document.querySelector('[data-trend-selection]').hidden = true;
+      document.querySelector('[data-trend-tooltip]').hidden = true;
+      document.querySelector('[data-trend-chart]').setAttribute('aria-label', `${metric.dataset.metric}趋势图，点击或使用左右方向键查看各时间点数据`);
+      document.querySelectorAll('[data-report-date-label]').forEach(label => { label.textContent = data.label; });
+      renderReceiptTrend();
+    }
+
+    const reportDateLayer = document.querySelector('[data-report-date-layer]');
+    const reportDateTitle = document.querySelector('[data-report-date-title]');
+    const reportDateError = document.querySelector('[data-report-date-error]');
+    let reportDateTrigger;
+    const reportDateState = {
+      day: new Date(2026, 8, 15),
+      weekYear: 2026,
+      weekMonth: 9,
+      weekOfMonth: 3,
+      monthYear: 2026,
+      month: 9
+    };
+
+    function parseLocalDate(value) { return new Date(`${value}T12:00:00`); }
+    function padDatePart(value) { return String(value).padStart(2, '0'); }
+    function formatShortDate(date) { return `${padDatePart(date.getMonth() + 1)}/${padDatePart(date.getDate())}`; }
+    function formatChineseDate(date) { return `${date.getFullYear()}年${padDatePart(date.getMonth() + 1)}月${padDatePart(date.getDate())}日`; }
+    function daysInMonth(year, month) { return new Date(year, month, 0).getDate(); }
+    function wheelColumn(part, selected, min, max, unit, wheelKey) {
+      const options = Array.from({ length: 5 }, (_, index) => selected + index - 2).map(value => {
+        if (value < min || value > max) return '<span class="report-date-wheel-option"></span>';
+        const label = part === 'weekOfMonth' ? `第${value}周` : `${value}${unit}`;
+        return `<button class="report-date-wheel-option${value === selected ? ' is-selected' : ''}" type="button" data-wheel-key="${wheelKey}" data-wheel-part="${part}" data-wheel-value="${value}">${label}</button>`;
+      }).join('');
+      return `<div class="report-date-wheel-column">${options}</div>`;
+    }
+    function renderDateWheel() {
+      const dayDate = reportDateState.day;
+      document.querySelector('[data-date-wheel="day"]').innerHTML = `<div class="report-date-wheel-selection"></div>${wheelColumn('year', dayDate.getFullYear(), 2000, 2099, '年', 'day')}${wheelColumn('month', dayDate.getMonth() + 1, 1, 12, '月', 'day')}${wheelColumn('day', dayDate.getDate(), 1, daysInMonth(dayDate.getFullYear(), dayDate.getMonth() + 1), '日', 'day')}`;
+      const maxWeekOfMonth = weeksInMonth(reportDateState.weekYear, reportDateState.weekMonth);
+      reportDateState.weekOfMonth = Math.min(reportDateState.weekOfMonth, maxWeekOfMonth);
+      document.querySelector('[data-date-wheel="week"]').innerHTML = `<div class="report-date-wheel-selection"></div>${wheelColumn('year', reportDateState.weekYear, 2000, 2099, '年', 'week')}${wheelColumn('weekMonth', reportDateState.weekMonth, 1, 12, '月', 'week')}${wheelColumn('weekOfMonth', reportDateState.weekOfMonth, 1, maxWeekOfMonth, '', 'week')}`;
+      const previewStart = getMonthWeekStart(reportDateState.weekYear, reportDateState.weekMonth, reportDateState.weekOfMonth);
+      const previewEnd = new Date(previewStart);
+      previewEnd.setDate(previewStart.getDate() + 6);
+      document.querySelector('[data-week-range-preview]').textContent = `${formatChineseDate(previewStart)}－${formatChineseDate(previewEnd)}`;
+      document.querySelector('[data-date-wheel="month"]').innerHTML = `<div class="report-date-wheel-selection"></div>${wheelColumn('year', reportDateState.monthYear, 2000, 2099, '年', 'month')}${wheelColumn('month', reportDateState.month, 1, 12, '月', 'month')}`;
+    }
+    function setWheelValue(wheelKey, part, value) {
+      if (wheelKey === 'month') {
+        if (part === 'year') reportDateState.monthYear = value;
+        if (part === 'month') reportDateState.month = value;
+      } else if (wheelKey === 'week') {
+        if (part === 'year') reportDateState.weekYear = value;
+        if (part === 'weekMonth') reportDateState.weekMonth = value;
+        if (part === 'weekOfMonth') reportDateState.weekOfMonth = value;
+      } else {
+        const date = new Date(reportDateState.day);
+        if (part === 'year') {
+          const currentDay = date.getDate();
+          date.setDate(1);
+          date.setFullYear(value);
+          date.setDate(Math.min(currentDay, daysInMonth(date.getFullYear(), date.getMonth() + 1)));
+        }
+        if (part === 'month') {
+          const currentDay = date.getDate();
+          date.setDate(1);
+          date.setMonth(value - 1);
+          date.setDate(Math.min(currentDay, daysInMonth(date.getFullYear(), value)));
+        }
+        if (part === 'day') date.setDate(value);
+        reportDateState.day = date;
+      }
+      reportDateError.textContent = '';
+      renderDateWheel();
+    }
+    function makeDayLabels(endDate, count = 7) {
+      return Array.from({ length: count }, (_, index) => {
+        const date = new Date(endDate);
+        date.setDate(endDate.getDate() - (count - index - 1));
+        return formatShortDate(date);
+      });
+    }
+    function makeMonthLabels(year, monthIndex) {
+      return Array.from({ length: 12 }, (_, index) => {
+        const date = new Date(year, monthIndex - (11 - index), 1);
+        return `${date.getMonth() + 1}月`;
+      });
+    }
+    function weeksInMonth(year, month) {
+      const firstDayOffset = (new Date(year, month - 1, 1, 12).getDay() + 6) % 7;
+      return Math.ceil((firstDayOffset + daysInMonth(year, month)) / 7);
+    }
+    function getMonthWeekStart(year, month, weekOfMonth) {
+      const firstDay = new Date(year, month - 1, 1, 12);
+      const mondayOffset = (firstDay.getDay() + 6) % 7;
+      const firstWeekStart = new Date(year, month - 1, 1 - mondayOffset, 12);
+      const weekStart = new Date(firstWeekStart);
+      weekStart.setDate(firstWeekStart.getDate() + (weekOfMonth - 1) * 7);
+      return weekStart;
+    }
+    function getWeekNumber(date) {
+      const target = new Date(date);
+      target.setHours(12, 0, 0, 0);
+      target.setDate(target.getDate() + 3 - ((target.getDay() + 6) % 7));
+      const firstThursday = new Date(target.getFullYear(), 0, 4, 12);
+      return 1 + Math.round((target - firstThursday) / 604800000 - (3 - ((firstThursday.getDay() + 6) % 7)) / 7);
+    }
+    function makeWeekLabels(year, month, weekOfMonth) {
+      const selectedWeekStart = getMonthWeekStart(year, month, weekOfMonth);
+      return Array.from({ length: 8 }, (_, index) => {
+        const date = new Date(selectedWeekStart);
+        date.setDate(selectedWeekStart.getDate() - (7 - index) * 7);
+        return formatShortDate(date);
+      });
+    }
+    function makeTrendValues(count, seed) {
+      return Array.from({ length: count }, (_, index) => 42 + ((index * 17 + seed * 11) % 41));
+    }
+    function syncPeriodButtons() {
+      document.querySelectorAll('[data-report-period]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.reportPeriod === activeReportPeriod)));
+    }
+    function openReportDatePicker(periodKey = activeReportPeriod, trigger) {
+      activeReportPeriod = periodKey;
+      reportDateTrigger = trigger || document.querySelector('[data-report-date-trigger]');
+      syncPeriodButtons();
+      reportDateError.textContent = '';
+      const titles = { day: '选择日报日期', week: '选择周报日期', month: '选择月报月份' };
+      reportDateTitle.textContent = titles[activeReportPeriod];
+      document.querySelectorAll('[data-date-fields]').forEach(fields => { fields.hidden = fields.dataset.dateFields !== activeReportPeriod; });
+      renderDateWheel();
+      renderTrend();
+      reportDateLayer.hidden = false;
+      window.setTimeout(() => reportDateLayer.querySelector(`[data-date-fields="${activeReportPeriod}"] .is-selected`)?.focus(), 0);
+    }
+    function closeReportDatePicker() {
+      reportDateLayer.hidden = true;
+      reportDateTrigger?.focus();
+      reportDateTrigger = null;
+    }
+    function confirmReportDate() {
+      if (activeReportPeriod === 'day') {
+        const date = reportDateState.day;
+        reportPeriodData.day.label = formatChineseDate(date);
+        reportPeriodData.day.labels = makeDayLabels(date);
+        reportPeriodData.day.values = makeTrendValues(7, date.getDate());
+      } else if (activeReportPeriod === 'week') {
+        const year = reportDateState.weekYear;
+        const month = reportDateState.weekMonth;
+        const weekOfMonth = reportDateState.weekOfMonth;
+        const weekStart = getMonthWeekStart(year, month, weekOfMonth);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        reportPeriodData.week.label = `${formatChineseDate(weekStart)}－${formatChineseDate(weekEnd).replace(`${weekEnd.getFullYear()}年`, '')}`;
+        reportPeriodData.week.labels = makeWeekLabels(year, month, weekOfMonth);
+        reportPeriodData.week.values = makeTrendValues(8, month * 10 + weekOfMonth);
+      } else {
+        const year = reportDateState.monthYear;
+        const month = reportDateState.month;
+        reportPeriodData.month.label = `${year}年${padDatePart(month)}月`;
+        reportPeriodData.month.labels = makeMonthLabels(year, month - 1);
+        reportPeriodData.month.values = makeTrendValues(12, month);
+      }
+      syncPeriodButtons();
+      renderTrend();
+      closeReportDatePicker();
+    }
+
+    document.querySelectorAll('[data-report-period]').forEach(button => button.addEventListener('click', () => {
+      activeReportPeriod = button.dataset.reportPeriod;
+      syncPeriodButtons();
+      renderTrend();
+    }));
+    document.querySelectorAll('[data-report-date-trigger]').forEach(button => button.addEventListener('click', () => openReportDatePicker(activeReportPeriod, button)));
+    document.querySelector('[data-report-date-cancel]').addEventListener('click', closeReportDatePicker);
+    document.querySelector('[data-report-date-confirm]').addEventListener('click', confirmReportDate);
+    reportDateLayer.addEventListener('click', event => {
+      const wheelOption = event.target.closest('[data-wheel-value]');
+      if (wheelOption) setWheelValue(wheelOption.dataset.wheelKey, wheelOption.dataset.wheelPart, Number(wheelOption.dataset.wheelValue));
+    });
+    reportDateLayer.addEventListener('click', event => { if (event.target === reportDateLayer) closeReportDatePicker(); });
+    window.addEventListener('keydown', event => { if (event.key === 'Escape' && !reportDateLayer.hidden) closeReportDatePicker(); });
+    document.querySelectorAll('.report-kpi').forEach((button, index) => button.addEventListener('click', () => {
+      activeMetricIndex = index;
+      document.querySelectorAll('.report-kpi').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      renderTrend();
+    }));
+
+    const trendChart = document.querySelector('[data-trend-chart]');
+    trendChart.addEventListener('click', event => {
+      const bounds = trendChart.getBoundingClientRect();
+      const chartX = Math.max(0, Math.min(330, (event.clientX - bounds.left) / bounds.width * 330));
+      const nearestIndex = renderedTrendPoints.reduce((bestIndex, point, index) => Math.abs(point[0] - chartX) < Math.abs(renderedTrendPoints[bestIndex][0] - chartX) ? index : bestIndex, 0);
+      renderTrendSelection(nearestIndex);
+    });
+    trendChart.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) || !renderedTrendPoints.length) return;
+      event.preventDefault();
+      let nextIndex = selectedTrendIndex;
+      if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = renderedTrendPoints.length - 1;
+      else if (nextIndex === null) nextIndex = event.key === 'ArrowLeft' ? renderedTrendPoints.length - 1 : 0;
+      else nextIndex = Math.max(0, Math.min(renderedTrendPoints.length - 1, nextIndex + (event.key === 'ArrowLeft' ? -1 : 1)));
+      renderTrendSelection(nextIndex);
+    });
+
+    const transactionData = {
+      'consume-method': { total: '¥2,800', label: '消费合计', items: [['开单实收', '¥1,500', '54%', '#fb2e42'], ['团购记账', '¥500', '18%', '#ff826d'], ['卡付', '¥600', '21%', '#ffb36b'], ['经理签单', '¥200', '7%', '#d997ad']] },
+      'consume-composition': { total: '¥2,800', label: '消费合计', items: [['项目', '¥2,000', '71%', '#fb2e42'], ['产品', '¥700', '25%', '#ff826d'], ['办卡充值', '¥100', '4%', '#ffb36b']] }
+    };
+    function renderTransaction(key) {
+      const data = transactionData[key];
+      let cursor = 0;
+      const stops = data.items.map((item) => {
+        const start = cursor;
+        cursor += Number.parseFloat(item[2]);
+        return `${item[3]} ${start}% ${cursor}%`;
+      });
+      document.querySelector('[data-report-donut]').style.background = `conic-gradient(${stops.join(',')})`;
+      document.querySelector('[data-donut-value]').textContent = data.total;
+      document.querySelector('[data-donut-label]').textContent = data.label;
+      document.querySelector('[data-report-legend]').innerHTML = data.items.map(item => `<div class="report-legend-row"><i style="--legend-color:${item[3]}"></i><span>${item[0]}</span><strong>${item[1]}</strong><b>${item[2]}</b></div>`).join('');
+    }
+    document.querySelectorAll('[data-transaction]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-transaction]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      renderTransaction(button.dataset.transaction);
+    }));
+
+    const rankingData = {
+      service: {
+        amount: [['黄金焕颜护理', '¥1,260', 100], ['头皮舒缓护理', '¥880', 70], ['肩颈深度放松', '¥620', 49], ['面部补水护理', '¥520', 41], ['背部舒压护理', '¥380', 30], ['眼部紧致护理', '¥260', 21], ['手足嫩肤护理', '¥180', 14]],
+        quantity: [['头皮舒缓护理', '18次', 100], ['黄金焕颜护理', '12次', 67], ['肩颈深度放松', '9次', 50], ['面部补水护理', '7次', 39], ['背部舒压护理', '5次', 28], ['眼部紧致护理', '4次', 22], ['手足嫩肤护理', '2次', 11]]
+      },
+      product: {
+        amount: [['修护精华套装', '¥680', 100], ['头皮护理精油', '¥420', 62], ['居家补水面膜', '¥260', 38], ['氨基酸洁面乳', '¥190', 28], ['护发精油', '¥160', 24], ['身体乳', '¥90', 13]],
+        quantity: [['居家补水面膜', '26件', 100], ['头皮护理精油', '14件', 54], ['修护精华套装', '8件', 31], ['氨基酸洁面乳', '6件', 23], ['护发精油', '5件', 19], ['身体乳', '3件', 12]]
+      },
+      card: {
+        amount: [['年度焕肤卡', '¥2,400', 100], ['头疗次卡', '¥1,680', 70], ['基础储值卡', '¥1,000', 42], ['尊享套餐卡', '¥800', 33], ['季度护理卡', '¥560', 23]],
+        quantity: [['基础储值卡', '15张', 100], ['头疗次卡', '8张', 53], ['年度焕肤卡', '5张', 33], ['尊享套餐卡', '2张', 13]]
+      }
+    };
+    const rankingSummary = {
+      service: { amount: '合计 ¥4,100 · 共 61 次', quantity: '合计 57 次 · 共 7 项' },
+      product: { amount: '合计 ¥1,800 · 共 62 件', quantity: '合计 62 件 · 共 6 项' },
+      card: { amount: '合计 ¥6,440 · 共 30 张', quantity: '合计 30 张 · 共 4 项' }
+    };
+    let activeRankingCategory = 'service';
+    let activeRankingMode = 'amount';
+    let rankingExpanded = false;
+    const RANKING_VISIBLE_COUNT = 5;
+    function renderRanking() {
+      const rows = rankingData[activeRankingCategory][activeRankingMode];
+      const visibleRows = rankingExpanded ? rows : rows.slice(0, RANKING_VISIBLE_COUNT);
+      const rowHtml = visibleRows.map((item, index) => `<div class="report-rank-row"><span class="report-rank-no">${index + 1}</span><span class="report-rank-name"><strong>${item[0]}</strong></span><span class="report-rank-value">${item[1]}</span></div>`).join('');
+      const moreHtml = rows.length > RANKING_VISIBLE_COUNT
+        ? `<button class="report-rank-more" type="button" data-ranking-more aria-expanded="${rankingExpanded}">${rankingExpanded ? '收起' : `展开全部 ${rows.length} 项`}</button>`
+        : '';
+      const target = document.querySelector('[data-report-ranking]');
+      target.innerHTML = rowHtml + moreHtml;
+      document.querySelector('[data-ranking-summary]').textContent = rankingSummary[activeRankingCategory][activeRankingMode];
+    }
+    document.querySelectorAll('[data-ranking]').forEach(button => button.addEventListener('click', () => {
+      activeRankingCategory = button.dataset.ranking;
+      rankingExpanded = false;
+      document.querySelectorAll('[data-ranking]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      renderRanking();
+    }));
+    document.querySelectorAll('[data-ranking-mode]').forEach(button => button.addEventListener('click', () => {
+      activeRankingMode = button.dataset.rankingMode;
+      rankingExpanded = false;
+      document.querySelectorAll('[data-ranking-mode]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      renderRanking();
+    }));
+    document.querySelector('[data-report-ranking]').addEventListener('click', event => {
+      if (!event.target.closest('[data-ranking-more]')) return;
+      rankingExpanded = !rankingExpanded;
+      renderRanking();
+    });
+
+    const reportSpecData = {
+      core: {
+        title: '核心数据',
+        intro: '统计口径：开始时间 ≤ 统计时间 < 结束时间；金额按分存储，前端转换为元并保留两位小数。',
+        items: [
+          ['开单实收', '统计周期内通过项目消费、产品购买订单实际收到的资金。', '含现金、微信、支付宝、银行卡和信用卡支付；不含卡付、团购记账、经理签单和办卡/充值。'],
+          ['办卡/充值', '统计周期内顾客买卡、续卡、充值实际收到的本金。', '赠金、赠送次数不计入；同一笔卡业务不重复计入开单实收。'],
+          ['订单退款', '统计周期内实际退回给顾客的资金，页面始终按正数展示。', '按退款成功时间归属，不回写原订单所在周期；不含退回卡余额或恢复次卡次数。'],
+          ['客单价', '平均每位成交客户的消费金额。', '客单价 = 开单实收 ÷ 成交客户；成交客户为 0 时不下发数值，前端展示 “—”。'],
+          ['成交客户', '统计周期内产生有效消费订单的到店客户数。', '同一客户在周期内多次到店按 1 人计；不含仅办卡充值的客户。'],
+          ['新增客户', '统计周期内首次建档并产生有效消费的客户数。', '按客户建档时间与首笔有效消费同时满足统计；老客户回流不计入。']
+        ]
+      },
+      transaction: {
+        title: '交易看板',
+        intro: '两个消费维度共用同一统计周期；圆环中心为当前维度合计，图例同时展示金额与占比。',
+        items: [
+          ['消费方式', '按订单实际结算方式统计当期的消费金额。', '维度：开单实收、团购记账、卡付、经理签单；团购与经理签单为记账金额，不形成当期实收。'],
+          ['消费构成', '按业务类型统计当期的消费金额。', '维度：项目、产品、办卡/充值；含卡付、团购记账和经理签单，因此合计与实收构成不一定相同。']
+        ]
+      },
+      cards: {
+        title: '办卡充值',
+        intro: '统计买卡、续卡、充值、续次和卡升降级在统计周期内的实收金额与办理笔数。',
+        items: [
+          ['合计与笔数', '标题右侧展示当前周期各卡项实收金额之和与办理总笔数。', '金额只统计顾客实际支付的本金，赠金不计入合计。'],
+          ['储值卡 / 套餐卡', '按卡类型分别统计实收本金与办理笔数。', '下方本金为顾客实际支付金额，赠金为门店赠送金额，两者分开展示。'],
+          ['计次卡 / 折扣卡', '按卡类型分别统计实收金额与办理笔数。', '计次卡同时关注办理次数；折扣卡按实际收款金额统计。'],
+          ['占比', '每条卡项右侧展示该卡项金额占合计的比例。', '占比 = 单项实收金额 ÷ 合计金额 × 100%，四舍五入保留一位小数，尾差修正后合计为 100%。']
+        ]
+      },
+      ranking: {
+        title: '销售排行',
+        intro: '统计周期内已完成的销售明细，按所选类型与排序方式降序展示。',
+        items: [
+          ['销售额 / 数量', '销售额按实收金额汇总；数量按成交件数汇总。', '数量单位：服务为“次”、产品为“件”、卡项为“张”。'],
+          ['合计与总笔数', '标题右侧展示当前维度的合计与总笔数，随类型和排序方式同步切换。', '合计只统计当前维度下的有效销售明细。'],
+          ['展示规则', '默认展示前 5 项，超出部分可展开查看全部。', '同一名称不会重复合并展示，按明细名称分别排名。'],
+          ['不计入范围', '已取消、已作废、全额退款的明细不计入排行。', '部分退款的明细按退款后的净额参与排行。']
+        ]
+      },
+      'revenue-core': {
+        title: '营收核心数据',
+        intro: '营业额与收款合计使用当前页面选中的日报、周报或月报周期，并在同一卡片中展示对应趋势。',
+        items: [
+          ['营业额', '统计周期内门店发生的项目消费、产品消费及办卡/充值金额，扣除订单退款后展示。', '包含开单实收、团购记账、卡付和经理签单形成的业务金额。'],
+          ['收款合计', '统计周期内门店实际收到的资金净额。', '展示开单实收、办卡/充值及订单退款影响后的结果。'],
+          ['周期对比', '展示当前周期相较上一对应周期的变化结果。', '日报对比上一日，周报对比上一周，月报对比上一月。'],
+          ['趋势', '两条折线分别展示营业额与收款合计的历史变化。', '日报展示近 7 日，周报展示近 8 周，月报展示近 12 个月。']
+        ]
+      },
+      'revenue-composition': {
+        title: '消费构成',
+        intro: '从消费内容角度展示当前统计周期内的营业额组成。',
+        items: [
+          ['退款前金额', '展示扣除订单退款之前的营业额。', '用于与退款后的营业额进行对照。'],
+          ['项目消费', '展示项目服务产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。'],
+          ['产品消费', '展示门店产品销售产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。'],
+          ['办卡/充值', '展示办卡、续卡及充值产生的业务金额及其占比。', '作为消费内容展示，不作为支付方式重复展示。']
+        ]
+      },
+      'revenue-method': {
+        title: '消费方式',
+        intro: '从订单结算方式角度展示当前统计周期内各类消费金额。',
+        items: [
+          ['开单实收', '展示通过现金类支付完成结算的消费金额和占比。', '下方展开微信、支付宝、银行卡、信用卡和现金的金额明细。'],
+          ['团购记账', '展示通过第三方团购渠道核销记账的消费金额和占比。', '下方展开抖音、美团、大众点评和其他平台的金额明细。'],
+          ['卡付', '展示顾客使用已有储值卡或次卡完成结算的消费金额和占比。', '作为独立结算方式展示。'],
+          ['经理签单', '展示通过经理签单完成记账的消费金额和占比。', '该金额不属于当期实际收款。']
+        ]
+      },
+      'revenue-risk': {
+        title: '退款与异常',
+        intro: '集中展示当前统计周期内需要店主关注的退款及签单信息。',
+        items: [
+          ['订单退款金额', '展示统计周期内已完成退款的金额。', '页面按正数展示。'],
+          ['退款笔数', '展示统计周期内已完成退款的记录数量。', '点击订单退款卡片可进入「订单流水－退款」Tab 查看明细。'],
+          ['退款率', '展示订单退款金额相对于退款前营业额的比例。', '无退款时展示 0%。'],
+          ['经理签单', '展示经理签单的金额、笔数及占比。', '当前仅展示汇总数据，不提供明细跳转。']
+        ]
+      }
+    };
+    const reportSpecLayer = document.querySelector('[data-report-spec-layer]');
+    let reportSpecTrigger = null;
+    function openReportSpec(key, trigger) {
+      const data = reportSpecData[key];
+      if (!data) return;
+      reportSpecTrigger = trigger || null;
+      document.querySelector('[data-report-spec-title]').textContent = data.title + ' · 数据口径说明';
+      document.querySelector('[data-report-spec-intro]').textContent = data.intro;
+      document.querySelector('[data-report-spec-body]').innerHTML = data.items.map(item => '<div class="report-spec-item"><h4>' + item[0] + '</h4><p>' + item[1] + '</p><p><em>' + item[2] + '</em></p></div>').join('');
+      reportSpecLayer.hidden = false;
+      reportSpecLayer.querySelector('.report-spec-body').scrollTop = 0;
+    }
+    function closeReportSpec() {
+      reportSpecLayer.hidden = true;
+      reportSpecTrigger?.focus();
+      reportSpecTrigger = null;
+    }
+    document.querySelectorAll('[data-report-spec]').forEach(button => button.addEventListener('click', () => openReportSpec(button.dataset.reportSpec, button)));
+    document.querySelector('[data-report-spec-close]').addEventListener('click', closeReportSpec);
+    reportSpecLayer.addEventListener('click', event => { if (event.target === reportSpecLayer) closeReportSpec(); });
+    window.addEventListener('keydown', event => { if (event.key === 'Escape' && !reportSpecLayer.hidden) closeReportSpec(); });
+    const reportToast = document.querySelector('[data-report-toast]');
+    let reportToastTimer = null;
+    document.querySelector('[data-refund-flow-link]').addEventListener('click', () => {
+      window.clearTimeout(reportToastTimer);
+      reportToast.hidden = false;
+      reportToastTimer = window.setTimeout(() => { reportToast.hidden = true; }, 2400);
+    });
+    renderTrend();
+    renderTransaction('consume-method');
+    renderRanking();
+
+    function showPrototypePage(pageKey, menuButton) {
+      currentPage = pageKey;
+      document.body.classList.remove('prd-mode');
+      stage.scrollTop = 0;
+      phone.hidden = false;
+      prd.hidden = true;
+      prd.classList.remove('show');
+      pages.forEach(page => {
+        const active = page.id === pageKey;
+        page.classList.toggle('show', active);
+        page.setAttribute('aria-hidden', String(!active));
+      });
+      if (pageKey === 'revenue-analysis') {
+        const activeReportPanel = reportTabs.find(tab => tab.getAttribute('aria-selected') === 'true')?.dataset.reportTab || 'overview';
+        showLogicNote(activeReportPanel === 'receipt' ? 'revenue-receipt' : 'revenue-overview');
+      } else {
+        showLogicNote(pageKey);
+      }
+      stateControls.hidden = pageKey === 'revenue-analysis';
+      if (pageKey !== 'revenue-analysis') {
+        document.querySelectorAll('[data-demo-state]').forEach(button => {
+          button.hidden = false;
+          button.setAttribute('aria-pressed', String(button.dataset.demoState === 'hidden'));
+        });
+        const frame = document.querySelector(`#${pageKey} iframe`);
+        frame?.contentWindow?.postMessage({ type: 'rtb-performance-state', state: 'default' }, '*');
+        frame?.contentWindow?.postMessage({ type: 'rtb-privacy-state', visible: false }, '*');
+        if (pageKey === 'home-employee') setEmployeePrivacyVisible(false);
+      }
+      setActiveMenu(menuButton || pageButtons.find(button => button.dataset.prototypePage === pageKey));
+    }
+
+    pageButtons.forEach(button => button.addEventListener('click', () => {
+      showPrototypePage(button.dataset.prototypePage, button);
+      if (button.dataset.prototypePage === 'revenue-analysis') showReportPanel(button.dataset.reportTarget || 'overview');
+    }));
+
+    prdButtons.forEach(button => button.addEventListener('click', () => {
+      document.body.classList.add('prd-mode');
+      stage.scrollTop = 0;
+      phone.hidden = true;
+      prd.hidden = false;
+      prd.classList.add('show');
+      stateControls.hidden = true;
+      notes.forEach(note => note.hidden = true);
+      setActiveMenu(button);
+    }));
+
+    document.querySelectorAll('[data-demo-state]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-demo-state]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      const frame = document.querySelector(`#${currentPage} iframe`);
+      const state = button.dataset.demoState;
+      const performanceState = state === 'performance-zero' ? 'zero' : state === 'performance-negative' ? 'negative' : 'default';
+      frame?.contentWindow?.postMessage({ type: 'rtb-performance-state', state: performanceState }, '*');
+      frame?.contentWindow?.postMessage({ type: 'rtb-privacy-state', visible: state !== 'hidden' }, '*');
+      if (currentPage === 'home-employee') setEmployeePrivacyVisible(state !== 'hidden');
+    }));
+
+    window.addEventListener('message', event => {
+      if (event.data?.type === 'prototype-navigate' && event.data.page) {
+        showPrototypePage(event.data.page);
+        if (event.data.page === 'revenue-analysis') showReportPanel('receipt');
+      }
+    });
+
+    window.prototypeNavigate = pageKey => showPrototypePage(pageKey);
+  </script>
+</body>
+</html>
