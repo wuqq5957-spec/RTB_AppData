@@ -138,6 +138,8 @@
     .employee-privacy-toggle:focus-visible { outline: 2px solid rgba(251, 46, 66, .35); outline-offset: 2px; }
     .employee-privacy-toggle svg { width: 18px; height: 18px; }
     .employee-privacy-toggle[aria-pressed="true"] .employee-eye-slash { display: none; }
+    #home-employee.employee-explain-open .employee-privacy-toggle,
+    #home-employee.employee-explain-open .employee-privacy-mask { visibility: hidden; }
     .employee-privacy-mask {
       position: absolute;
       top: 169px;
@@ -389,7 +391,7 @@
     .receipt-trend-labels span:first-child { transform: translateX(-18%); }
     .receipt-trend-labels span:last-child { transform: translateX(-82%); }
     .receipt-composition-body { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 16px; }
-    .receipt-composition-donut { position: relative; width: 88px; height: 88px; border-radius: 50%; background: conic-gradient(#fb2e42 0 62.5%, #ff8a70 62.5% 85.4%, #d997ad 85.4% 100%); }
+    .receipt-composition-donut { position: relative; width: 88px; height: 88px; border-radius: 50%; background: conic-gradient(#fb2e42 0 62.5%, #ff8a70 62.5% 100%); }
     .receipt-composition-donut::after { content: ""; position: absolute; inset: 19px; border-radius: 50%; background: #fff; }
     .receipt-composition-center { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; color: #303038; font-size: 10px; font-weight: 700; text-align: center; }
     .receipt-composition-list { display: grid; gap: 9px; }
@@ -484,6 +486,7 @@
     .report-spec-item { padding: 11px 0; border-bottom: 1px solid #f3f4f7; }
     .report-spec-item:last-child { border-bottom: 0; padding-bottom: 2px; }
     .report-spec-item h4 { margin: 0 0 5px; color: #2c2d35; font-size: 12px; }
+    .report-spec-item:only-child h4 { display: none; }
     .report-spec-item p { margin: 0; color: #6f717b; font-size: 10px; line-height: 1.75; }
     .report-spec-item p + p { margin-top: 4px; }
     .report-spec-item em { color: #a0a2ab; font-style: normal; }
@@ -518,6 +521,17 @@
     .page-logic-body p { margin: 0 0 9px; }
     .page-logic-body ul { margin: 5px 0 0; padding-left: 19px; }
     .page-logic-body li + li { margin-top: 5px; }
+    .logic-major-block + .logic-major-block { margin-top: 24px; }
+    .logic-major-title { margin: 0 0 10px; color: var(--text); font-size: 15px; }
+    .logic-note-prd { display: grid; gap: 18px; }
+    .logic-prd-group { display: grid; gap: 9px; }
+    .logic-prd-group-title { margin: 0; color: var(--secondary); font-size: 12px; }
+    .prototype-notes .prd-field-list { gap: 8px; }
+    .prototype-notes .prd-field summary { padding: 10px 12px; font-size: 12px; }
+    .prototype-notes .prd-field-body { padding: 3px 10px 10px; overflow-x: auto; }
+    .prototype-notes .prd-field-table { min-width: 330px; font-size: 11px; }
+    .prototype-notes .prd-field-table th { width: 86px; padding: 8px 6px; }
+    .prototype-notes .prd-field-table td { padding: 8px 6px; overflow-wrap: anywhere; }
     .logic-formula { padding: 9px 11px; border-radius: 9px; color: var(--brand-dark); background: var(--brand-soft); font-weight: 700; }
     .logic-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
     .logic-table th, .logic-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -612,7 +626,8 @@
 
     <section class="prototype-menu-group">
       <h2>概览与公共文档</h2>
-      <button class="prototype-link" type="button" data-prd-document="doc-data-rules"><span>数据口径说明</span><span class="prd-mark">PRD</span></button>
+      <button class="prototype-link" type="button" data-prd-document="doc-update-log"><span>更新日志</span><span class="prd-mark">PRD</span></button>
+      <button class="prototype-link" type="button" data-prd-document="doc-data-rules"><span>概览</span><span class="prd-mark">PRD</span></button>
     </section>
 
     <section class="prototype-menu-group">
@@ -794,8 +809,7 @@
                 <div class="receipt-composition-donut"><div class="receipt-composition-center">¥4,800</div></div>
                 <div class="receipt-composition-list">
                   <div class="receipt-composition-row" style="--composition-color:#fb2e42"><i></i><span>项目消费</span><strong>¥3,000<em>62.5%</em></strong></div>
-                  <div class="receipt-composition-row" style="--composition-color:#ff8a70"><i></i><span>产品消费</span><strong>¥1,100<em>22.9%</em></strong></div>
-                  <div class="receipt-composition-row" style="--composition-color:#d997ad"><i></i><span>办卡/充值</span><strong>¥700<em>14.6%</em></strong></div>
+                  <div class="receipt-composition-row" style="--composition-color:#ff8a70"><i></i><span>产品消费</span><strong>¥1,800<em>37.5%</em></strong></div>
                 </div>
               </div>
             </article>
@@ -860,7 +874,65 @@
       </section>
     </div>
 
+    <article class="prototype-prd" data-prd-document="doc-update-log" hidden>
+      <h1>更新日志</h1>
+      <p class="version">记录文档的重要创建与变更信息</p>
+      <table>
+        <thead><tr><th>更新人</th><th>更新时间</th><th>更新内容</th></tr></thead>
+        <tbody><tr><td>吴琼</td><td>2026-09-17 11:32</td><td>创建文档</td></tr></tbody>
+      </table>
+    </article>
+
     <article class="prototype-prd" data-prd-document="doc-data-rules" hidden>
+      <h1>概览</h1>
+      <p class="version">适用版本：单门店 V1 · 更新日期：2026-09-17 · 来源：飞书数据口径说明与当前交互原型</p>
+
+      <h2>一、需求背景及目标</h2>
+      <h3>需求背景</h3>
+      <p>当前首页经营数据主要存在“口径混用”和“关键指标缺口”两类问题。</p>
+      <p><strong>问题 1：“业绩”的分类口径不平行</strong></p>
+      <ul>
+        <li>员工端若将“今日业绩”拆成现金、卡付、团购和签单，容易混淆“员工完成了多少服务”和“门店今天通过什么方式完成交易”两个不同问题。</li>
+        <li>员工业绩应按照提成逻辑拆分为劳动业绩、售卡业绩和产品业绩；现金、卡付、团购记账和经理签单属于消费方式，更适合店主查看。</li>
+        <li>经理签单需要单独明确回款与提成规则。未回款签单应标记“待回款”，并透明展示是否计入提成及具体计提时间，减少员工提成争议。</li>
+      </ul>
+      <p><strong>问题 2：店主端缺少资金、客户和人效三条经营观察线</strong></p>
+      <ul>
+        <li><strong>资金健康：</strong>业绩不等于实际到账资金。卡业绩属于预收，签单属于应收，卡付是历史预收的消耗；仅看业绩无法判断门店现金是否健康，需要同时关注今日实收、耗卡金额、预收卡负债余额和签单未回款。</li>
+        <li><strong>客户经营：</strong>缺少到店人次、新客数、客单价和退款等指标，仅有项目排行只能说明“卖了什么”，无法判断客流和客户质量。</li>
+        <li><strong>人员效率：</strong>缺少店主视角的员工业绩排行，无法直观看到员工产出和门店人效。</li>
+      </ul>
+      <h3>需求目标</h3>
+      <ul>
+        <li>建立店主首页、店员首页、数据总览和营收分析四个页面之间清晰、连续的经营数据查看路径。</li>
+        <li>统一跨页面重复字段、日期维度和趋势图的展示与交互规则，减少理解与研发实现偏差。</li>
+        <li>帮助店主快速掌握门店收款、营业额、消费结构及异常情况，帮助店员查看个人业绩与预计提成。</li>
+      </ul>
+
+      <h2>二、全局规则</h2>
+      <div class="prd-source-note">
+        <ul class="prd-global-rules">
+          <li>统计区间统一采用“开始时间 ≤ 统计时间 &lt; 结束时间”，日报按自然日、周报按自然周、月报按自然月统计。</li>
+          <li>金额字段按“分”存储与返回，页面统一换算为“元”并保留两位小数；数量字段展示整数，占比保留一位小数。</li>
+          <li>正向业务按完成或支付成功时间计入；退款按退款成功时间计入当前周期，不回写原业务所在周期。</li>
+          <li>取消、失败和已作废的数据不计入有效统计；无有效分母时占比展示“—”，不以 0% 代替。</li>
+          <li>跨页面重复出现的同名字段共用同一套字段定义、计算公式、时间归属和计入范围。</li>
+        </ul>
+      </div>
+
+      <h2>三、本期范围</h2>
+      <table>
+        <thead><tr><th>页面</th><th>本期展示范围</th></tr></thead>
+        <tbody>
+          <tr><td>店主首页</td><td>收款、门店业绩、我的业绩及趋势；收款数字区域与箭头可进入门店经营报表。</td></tr>
+          <tr><td>店员首页</td><td>个人业绩、业绩构成、预计提成及趋势。</td></tr>
+          <tr><td>数据总览</td><td>核心数据与趋势、交易看板、办卡充值、销售排行。</td></tr>
+          <tr><td>营收分析</td><td>营业额与收款趋势、消费构成、消费方式、退款与异常。</td></tr>
+        </tbody>
+      </table>
+      <p>报表日期维度本期支持日报、周报和月报；“员工业绩分析”“卡相关”“客流分析”仅保留栏目入口，暂不开放页面。</p>
+
+      <div hidden aria-hidden="true">
       <h1>首页经营数据口径说明</h1>
       <p class="version">适用版本：单门店 V1 · 更新日期：2026-09-15 · 来源：飞书数据口径说明</p>
       <h2>一、角色与权限</h2>
@@ -978,12 +1050,13 @@
 
       <h2>三、隐私规则</h2>
       <p>店主进入首页时，收款卡片金额默认隐藏，可点击收款卡片的小眼睛显示或隐藏；店员进入首页时，“我的业绩”卡片金额默认隐藏，可点击卡片小眼睛显示或隐藏。店主的业绩卡片数据直接展示。</p>
+      </div>
     </article>
   </main>
 
   <aside class="prototype-notes" aria-label="页面逻辑说明">
     <h1>页面逻辑说明</h1>
-    <p class="prototype-note-context">此处仅描述页面展示与交互逻辑，并随中间页面同步切换；字段定义、计算公式及统计口径统一维护在「数据口径说明」PRD 中。</p>
+    <p class="prototype-note-context">说明内容随中间页面同步切换，包含页面展示与交互逻辑，以及对应字段编码、计算公式、时间归属和关键统计边界。</p>
 
     <section class="prototype-states" data-state-controls>
       <h2>页面状态演示</h2>
@@ -998,43 +1071,155 @@
     <div id="prototypeNotesContent">
       <section class="page-logic" data-prototype-note-for="home-owner" aria-label="店主首页逻辑说明">
         <h2 class="page-logic-title">店主首页逻辑说明</h2>
-        <p class="page-logic-source">面向店主展示首页快捷入口、收款信息和业绩信息；明细分析通过指定入口进入二级页面。</p>
-        <details class="page-logic-section" open><summary>一、收款卡片</summary><div class="page-logic-body"><ul><li>卡片展示收款合计、开单实收、办卡/充值、订单退款及当前周期的对比结果。</li><li>点击“今日 / 本周 / 本月”切换展示周期，金额和对比文案随所选周期刷新。</li><li>进入页面时金额及对比结果默认隐藏；点击标题旁的小眼睛显示，再次点击恢复隐藏。</li><li>仅点击大金额区域或右侧“›”按钮进入「门店经营报表－营收分析」；日期标签、信息图标及卡片空白区域均不触发跳转。</li><li>点击标题旁的信息图标打开收款字段说明弹窗；点击关闭按钮或遮罩关闭弹窗。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、业绩卡片</summary><div class="page-logic-body"><ul><li>点击“门店业绩 / 我的业绩”切换数据范围；点击“今日 / 本周 / 本月”切换展示周期。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成数据。</li><li>正常状态展示业绩构成条及三项构成数据；总业绩为 0 或负数时隐藏构成条，只保留三项金额。</li><li>店主首页的业绩数据直接展示，不提供隐藏按钮。</li><li>点击标题旁的信息图标打开业绩字段说明弹窗；弹窗集中展示该卡片内全部字段说明。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、其他区域</summary><div class="page-logic-body"><ul><li>快捷功能以独立入口展示，点击后进入对应业务功能；本原型仅演示首页布局，不展开快捷功能的后续页面。</li><li>页面状态演示按钮只用于切换原型数据状态，不改变首页导航层级。</li></ul></div></details>
+        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜首页数据》。店主首页同时展示门店资金流入与业绩产出，两类数据保持独立表达。</p>
+        <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
+        <details class="page-logic-section" open><summary>一、收款卡片</summary><div class="page-logic-body"><ul><li>卡片展示收款合计、开单实收、办卡/充值、订单退款及当前周期的对比结果；退款金额按正数展示，收款合计允许出现负数。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内金额和对比文案整体刷新。</li><li>进入首页时金额及对比结果默认隐藏；点击标题旁的小眼睛显示，再次点击恢复隐藏。</li><li>仅点击收款合计的大金额区域或右侧“›”进入「门店经营报表－营收分析」；日期标签、说明图标和卡片空白区域不触发跳转。</li><li>点击标题旁的信息图标打开整张收款卡片的数据口径说明弹窗；点击关闭按钮或遮罩关闭。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、业绩卡片</summary><div class="page-logic-body"><ul><li>点击“门店业绩 / 我的业绩”切换统计对象；点击“今日 / 本周 / 本月”切换展示周期。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；三类业绩按业务类型展示，不按现金、卡付、团购或签单等支付方式拆分。</li><li>正常状态展示三色构成条及三项金额；总业绩为 0、总业绩为负或任一构成项为负时，隐藏构成条，只保留三项金额。</li><li>预计提成作为预估结果与总业绩并列展示；出现退款冲减时允许显示负数。</li><li>店主首页的业绩数据直接展示，不提供隐藏按钮；点击标题旁的信息图标打开业绩字段说明弹窗。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、状态与其他入口</summary><div class="page-logic-body"><ul><li>金额字段无数据时展示 ¥0.00；正常业务金额、退款冲减及负值均保留正负号，不以空白代替。</li><li>快捷功能以独立入口展示，点击后进入对应业务功能；本原型不展开快捷功能的后续页面。</li><li>右侧“页面状态演示”仅用于查看隐藏、正常、业绩为 0 和业绩为负四种状态，不改变实际导航。</li></ul></div></details>
+        </section>
+        <section class="logic-major-block"><h3 class="logic-major-title">二、数据口径说明</h3><div class="logic-note-prd" data-note-prd="owner"></div></section>
       </section>
 
       <section class="page-logic" data-prototype-note-for="home-employee" aria-label="店员首页逻辑说明" hidden>
         <h2 class="page-logic-title">店员首页逻辑说明</h2>
-        <p class="page-logic-source">店员首页只展示“我的业绩”卡片，不展示门店收款，也不提供门店与个人的数据范围切换。</p>
-        <details class="page-logic-section" open><summary>一、页面展示</summary><div class="page-logic-body"><ul><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成数据。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内全部数据同步刷新。</li><li>正常状态展示业绩构成条；总业绩为 0 或负数时隐藏构成条，只保留三项金额。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、隐藏与显示</summary><div class="page-logic-body"><ul><li>进入页面时，总业绩、预计提成、构成金额及构成条默认隐藏。</li><li>点击标题旁的小眼睛显示全部业绩数据，再次点击恢复隐藏；切换周期不会改变当前隐藏状态。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、字段说明</summary><div class="page-logic-body"><p>点击标题旁的信息图标打开业绩字段说明弹窗；弹窗集中展示卡片内全部字段，点击关闭按钮或遮罩关闭。</p></div></details>
+        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜首页数据》。店员首页只展示当前登录员工的“我的业绩”，不展示门店收款和门店整体业绩。</p>
+        <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
+        <details class="page-logic-section" open><summary>一、页面展示</summary><div class="page-logic-body"><ul><li>页面不提供“门店业绩 / 我的业绩”范围切换，统计对象始终为当前登录员工。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；支付方式不作为员工端的业绩分类。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内全部数据同步刷新。</li><li>预计提成为预估结果；正向业绩和退款冲减均可影响页面显示，金额允许为负。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、隐藏与特殊状态</summary><div class="page-logic-body"><ul><li>进入页面时，总业绩、预计提成、三项构成金额及构成条默认隐藏。</li><li>点击标题旁的小眼睛显示全部业绩数据，再次点击恢复隐藏；切换周期不会改变当前隐藏状态。</li><li>仅当总业绩大于 0 且三项构成均不为负时展示构成条；总业绩为 0、为负或任一构成项为负时只展示三项金额。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、字段说明弹窗</summary><div class="page-logic-body"><p>点击标题旁的信息图标打开业绩卡片的数据口径说明弹窗，集中查看总业绩、预计提成和三项业绩构成的解释；点击关闭按钮或遮罩关闭。</p></div></details>
+        </section>
+        <section class="logic-major-block"><h3 class="logic-major-title">二、数据口径说明</h3><div class="logic-note-prd" data-note-prd="employee"></div></section>
       </section>
 
       <section class="page-logic" data-prototype-note-for="revenue-overview" aria-label="数据总览页面逻辑说明" hidden>
         <h2 class="page-logic-title">数据总览页面逻辑说明</h2>
-        <p class="page-logic-source">顶部五个栏目中，本期仅“数据总览”和“营收分析”可进入；其余栏目显示为不可用状态，点击不切换页面。</p>
-        <details class="page-logic-section" open><summary>一、日期筛选</summary><div class="page-logic-body"><ul><li>点击“日报 / 周报 / 月报”只切换报表周期，不直接打开日期面板。</li><li>点击右侧日期区域，从页面底部打开移动端日期选择面板：日报选择年月日，周报选择年份、月份与月内周次，月报选择年月。</li><li>周报选择面板在滚轮下方实时展示当前所选周的周一至周日起止日期。</li><li>点击“确定”应用选择并刷新当前页全部模块；点击“取消”、关闭按钮或遮罩放弃本次修改。</li><li>选择周报后，右侧日期展示所选自然周的具体起止日期。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、核心数据与趋势</summary><div class="page-logic-body"><ul><li>核心数据展示开单实收、办卡/充值、订单退款、客单价、成交客户和新增客户。</li><li>点击任一指标后，该指标进入选中状态，下方标题和趋势数据同步切换。</li><li>日报横轴展示选中日期及此前 6 天，共 7 个日期点；周报横轴展示选中周及此前 7 周，共 8 个周数据点；月报横轴展示选中月份及此前 11 个月，共 12 个月份点。</li><li>纵轴根据当前指标的数据最小值、最大值及数值类型自动调整区间；金额显示货币单位，人数显示人数单位。</li><li>点击趋势图横轴区域会吸附到最近的数据点，并显示日期、指标名称和数值；键盘可用左右方向键切换数据点，Home / End 跳到首尾数据点。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、交易看板与办卡充值</summary><div class="page-logic-body"><ul><li>交易看板暂时只保留“消费方式 / 消费构成”切换；点击标签后，圆环图、中心合计和右侧明细同步刷新。</li><li>每条明细同时展示分类名称、金额和占比，颜色与圆环分段一一对应。</li><li>办卡充值模块展示合计金额、总笔数、卡类型构成条及各类型明细；储值卡和套餐卡在金额下方补充本金与赠金。</li></ul></div></details>
-        <details class="page-logic-section"><summary>四、销售排行</summary><div class="page-logic-body"><ul><li>左侧类型标签可切换服务、产品和卡项排行；右侧排序控件可切换销售额和销售数量。</li><li>切换任一条件后，标题合计、总笔数、名次、数值及单位同步刷新。</li><li>默认展示前 5 项；存在更多数据时显示“查看全部”，点击展开完整列表，再次点击收起。</li></ul></div></details>
-        <details class="page-logic-section"><summary>五、字段说明弹窗</summary><div class="page-logic-body"><p>每个模块标题右侧的信息图标用于打开该模块的字段说明弹窗；点击关闭按钮、遮罩或按 Esc 关闭，关闭后焦点返回原入口。</p></div></details>
+        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜数据总览与营收分析》。本页只展示当前门店；顶部仅“数据总览”和“营收分析”可进入，其余栏目保持不可用。</p>
+        <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
+        <details class="page-logic-section" open><summary>一、日期筛选与全局刷新</summary><div class="page-logic-body"><ul><li>点击“日报 / 周报 / 月报”只切换周期类型，不直接打开日期面板；日报对应自然日，周报对应自然周，月报对应自然月。</li><li>点击右侧日期区域打开底部选择面板：日报选择年月日，周报选择年份、月份和月内周次，月报选择年月；周报面板实时显示具体起止日期。</li><li>点击“确定”后，核心数据、趋势、交易看板、办卡充值和销售排行使用同一周期整体刷新；点击“取消”、遮罩或关闭按钮放弃修改。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与趋势</summary><div class="page-logic-body"><ul><li>核心数据展示开单实收、办卡/充值、订单退款、客单价、成交客户和新增客户；金额和人数无数据时展示 0，客单价无法计算时展示“—”。</li><li>点击任一指标后，该指标进入选中状态，下方趋势标题、折线、坐标轴和悬浮数据同步切换。</li><li>日报横轴展示选中日期及此前 6 天，共 7 个点；周报展示选中周及此前 7 周，共 8 个点；月报展示选中月份及此前 11 个月，共 12 个点。</li><li>纵轴根据当前序列的最小值、最大值及数据类型自适应；出现负值时保留负值区间和零轴。</li><li>点击横轴区域吸附至最近数据点并显示日期、指标名称和数值；键盘支持左右方向键、Home 和 End 切换数据点。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、交易看板</summary><div class="page-logic-body"><ul><li>交易看板暂时只保留“消费方式 / 消费构成”两个观察维度，两者展示同一营业额总额，只是拆分角度不同。</li><li>消费方式展示开单实收、团购记账、卡付、经理签单；消费构成展示项目消费、产品消费。</li><li>点击切换标签后，圆环图、中心合计、分类金额和占比同步刷新；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>四、办卡充值</summary><div class="page-logic-body"><ul><li>模块展示合计金额、办理总笔数、卡类型构成条，以及储值卡、套餐卡、计次卡、折扣卡明细。</li><li>储值卡和套餐卡在主金额下方分别展示本金与赠金；赠金作为补充信息展示，不与本金合并为实收金额。</li><li>每个卡类型同时展示金额、笔数和占比；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>五、销售排行</summary><div class="page-logic-body"><ul><li>类型标签可切换服务、产品和卡项；排序控件可切换销售额和销售数量，数量单位分别为次、件、张。</li><li>销售额包含团购记账、实际支付、销售签单（页面中的经理签单）和卡付金额；销售额与销售数量均不计入已退款、已作废订单。</li><li>切换任一条件后，标题合计、总笔数、名次、数值及单位同步刷新。</li><li>默认展示前 5 项；存在更多数据时显示“查看全部”，点击展开完整列表，再次点击收起。</li></ul></div></details>
+        <details class="page-logic-section"><summary>六、数据口径说明弹窗</summary><div class="page-logic-body"><p>核心数据、交易看板、办卡充值和销售排行标题右侧均提供信息图标；点击打开对应模块的字段说明弹窗，点击关闭按钮、遮罩或按 Esc 关闭，关闭后焦点返回原入口。</p></div></details>
+        </section>
+        <section class="logic-major-block"><h3 class="logic-major-title">二、数据口径说明</h3><div class="logic-note-prd" data-note-prd="overview"></div></section>
       </section>
 
       <section class="page-logic" data-prototype-note-for="revenue-receipt" aria-label="营收分析页面逻辑说明" hidden>
         <h2 class="page-logic-title">营收分析页面逻辑说明</h2>
-        <p class="page-logic-source">页面将营业额、收款结果、消费内容、消费方式及退款异常信息放在同一时间范围内展示。</p>
-        <details class="page-logic-section" open><summary>一、页面导航与日期</summary><div class="page-logic-body"><ul><li>点击顶部“数据总览”返回总览页；“员工业绩分析 / 卡相关 / 客流分析”为不可用状态，点击不切换内容。</li><li>点击左上角返回按钮回到店主首页。</li><li>日报、周报、月报及右侧日期区域的操作方式与数据总览保持一致；确认新日期后，本页全部卡片同步刷新。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、核心数据与双趋势</summary><div class="page-logic-body"><ul><li>首张卡片并列展示营业额、收款合计及各自的周期对比结果，下方用两条不同颜色的折线展示趋势。</li><li>日报横轴展示选中日期及此前 6 天；周报横轴展示选中周及此前 7 周；月报横轴展示选中月份及此前 11 个月。</li><li>纵轴同时读取两条折线的数据范围并自动调整上下限，保证两组数据都完整显示；纵轴金额根据数值大小使用元或万元格式。</li><li>切换周期或日期后，两条折线、横轴标签、纵轴刻度和右上角范围文案同步更新。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、消费构成</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前金额，圆环中心展示当前营业额金额。</li><li>圆环按项目消费、产品消费、办卡/充值分段；右侧明细展示分类名称、金额和占比，颜色与圆环分段对应。</li></ul></div></details>
-        <details class="page-logic-section"><summary>四、消费方式</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前金额，并用一条构成条展示开单实收、团购记账、卡付、经理签单四个大类。</li><li>四个大类按“名称在左，金额和占比在右”的结构展示；金额与占比统一右对齐。</li><li>开单实收下方直接展开微信、支付宝、银行卡、信用卡、现金明细；团购记账下方直接展开各团购平台明细。</li><li>子分类相对大类缩进展示，子分类金额使用常规字重，以区分主次层级。</li></ul></div></details>
-        <details class="page-logic-section"><summary>五、退款与异常</summary><div class="page-logic-body"><ul><li>卡片展示订单退款和经理签单两类信息，每类显示金额、笔数及对应比例。</li><li>点击“订单退款”整行跳转至「订单流水－退款」Tab 页；本原型不绘制目标页面，点击后以轻提示反馈跳转目标。</li><li>经理签单当前仅展示数据，不提供跳转。</li><li>核心数据、消费构成、消费方式、退款与异常的标题右侧均提供信息图标；点击后打开对应模块的数据口径说明弹窗。</li></ul></div></details>
+        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜数据总览与营收分析》。页面在同一统计周期内展示营业额、实际收款、消费内容、结算方式及退款异常。</p>
+        <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
+        <details class="page-logic-section" open><summary>一、导航与日期</summary><div class="page-logic-body"><ul><li>点击顶部“数据总览”切回总览页面；“员工业绩分析 / 卡相关 / 客流分析”保持不可用，点击不切换内容。</li><li>点击左上角返回按钮回到店主首页。</li><li>日报、周报、月报和右侧日期区域的操作方式与数据总览一致；确认新日期后，本页全部模块同步刷新。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与双趋势</summary><div class="page-logic-body"><ul><li>首张卡片并列展示营业额、收款合计及各自的周期对比；两项均允许出现负数，对比期为 0 或无法比较时展示“—”。</li><li>下方两条不同颜色的折线分别对应营业额和收款合计；日报展示近 7 日，周报展示近 8 周，月报展示近 12 个月。</li><li>两条折线共用纵轴，纵轴读取两组序列的联合最小值和最大值后自适应；出现负值时必须显示零轴并保留负值区间。</li><li>切换周期或日期后，两项汇总值、对比文案、折线、横轴标签、纵轴刻度和范围文案同步更新。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、消费构成</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前营业额，圆环中心展示扣除退款后的营业额。</li><li>圆环按项目消费、产品消费分段；右侧分别展示金额和占比，颜色与圆环分段一致。</li><li>两项明细之和与营业额保持一致；营业额为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>四、消费方式</summary><div class="page-logic-body"><ul><li>构成条展示开单实收、团购记账、卡付、经理签单四个大类；四类金额之和与营业额保持一致。</li><li>每个大类名称在左，金额和占比在右；子分类缩进展示且金额使用常规字重。</li><li>开单实收下方直接展开微信、支付宝、银行卡、信用卡、现金；支付方式为动态列表，后续新增方式时同步增加。</li><li>团购记账下方直接展开抖音、美团、大众点评、口碑和其他平台；团购平台为动态列表，页面只展示记账金额，不展示或推断平台结算金额。</li><li>退款影响对应大类及其子分类的展示金额；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>五、退款与异常</summary><div class="page-logic-body"><ul><li>订单退款展示金额、退款笔数和退款率；经理签单展示金额、签单笔数和签单占比。</li><li>点击“订单退款”整行跳转至「订单流水－退款」Tab；本原型不绘制目标页面，点击后以轻提示说明跳转目标。</li><li>经理签单当前仅展示汇总数据，不提供跳转；当比例无有效分母时展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>六、数据口径说明弹窗</summary><div class="page-logic-body"><p>核心数据、消费构成、消费方式、退款与异常标题右侧均提供信息图标；点击打开对应模块的字段说明弹窗，点击关闭按钮、遮罩或按 Esc 关闭。</p></div></details>
+        </section>
+        <section class="logic-major-block"><h3 class="logic-major-title">二、数据口径说明</h3><div class="logic-note-prd" data-note-prd="revenue"></div></section>
       </section>
     </div>
   </aside>
 
   <script>
+    const notePrdData = {
+      overview: [
+        { title: '核心数据', fields: [
+          { name: '开单实收', info: '字段编码：<code>order_actual_receipt_amount</code><br>类型：金额；默认值：0；维度：门店、统计周期', definition: '统计周期内项目消费、产品购买订单实际收到的资金，为退款前金额。', formula: 'Σ 消费订单支付明细中的现金、微信、支付宝、银行卡和信用卡金额。', time: '支付成功时按支付成功时间计入；后续退款在退款成功周期单独计入。', scope: '不含卡付、团购记账、经理签单、办卡充值、失败、取消和作废流水。' },
+          { name: '办卡/充值', info: '字段编码：<code>card_actual_receipt_amount</code><br>类型：金额；默认值：0；维度：门店、统计周期', definition: '顾客买卡、续卡、充值、续次或卡升降级时门店实际收到的资金。', formula: 'Σ 卡业务支付明细中的实际资金支付金额。', time: '支付成功且卡业务生效时，按支付成功时间计入。', scope: '不含赠金、赠送次数、已有卡余额支付、团购记账、经理签单及作废业务。' },
+          { name: '订单退款', info: '字段编码：<code>order_refund_amount</code><br>类型：金额；默认值：0；页面按正数展示', definition: '统计周期内通过退款操作实际退回给顾客的资金金额。', formula: 'Σ 退款成功流水中的实际资金退款金额。', time: '按退款成功时间归属，不回写原订单所在周期。', scope: '不含退回卡余额、恢复次数、取消团购记账、撤销经理签单及失败退款。' },
+          { name: '成交客户', info: '字段编码：<code>transacting_customer_count</code><br>类型：人数；默认值：0', definition: '周期内至少产生一笔有效订单的去重客户数。', formula: '<code>COUNT(DISTINCT customer_id)</code>。', time: '按有效订单完成时间判断是否进入周期。', scope: '办卡、充值、项目和产品订单均可计入；同一客户周期内多单只计 1 人。' },
+          { name: '客单价', info: '字段编码：<code>average_receipt_per_customer</code><br>类型：金额；允许为空', definition: '平均每位成交客户贡献的开单实收金额。', formula: '客单价 = 开单实收 ÷ 成交客户。', time: '分子和分母使用相同统计周期。', scope: '成交客户为 0 时返回 <code>null</code>，前端展示“—”。' },
+          { name: '新增客户', info: '字段编码：<code>new_customer_count</code><br>类型：人数；默认值：0', definition: '统计周期内首次建档的客户数。', formula: '<code>COUNT(DISTINCT 首次建档 customer_id)</code>。', time: '按客户建档时间归属。', scope: '包含 App 创建客户及小程序注册后进入当前门店档案的客户。' }
+        ]},
+        { title: '交易看板', fields: [
+          { name: '消费构成', info: '总额：<code>net_turnover_amount</code><br>构成：<code>net_turnover_by_business_type</code>', definition: '从项目消费、产品消费两个业务内容观察营业额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项净额之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按各自成功时间归属。', scope: '不包含办卡/充值；跨类型订单退款按原交易明细归属拆分；营业额为 0 时占比返回 <code>null</code>。' },
+          { name: '消费方式', info: '字段编码：<code>gross_turnover_by_settlement_method</code><br>开单实收方式：<code>turnover_actual_cash_method_amount</code>', definition: '从开单实收、团购记账、卡付、经理签单四种结算方式观察营业额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项净额之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按各自成功时间归属。', scope: '混合结算订单按支付明细拆分；营业额为 0 时占比返回 <code>null</code>。' }
+        ]},
+        { title: '办卡充值', fields: [
+          { name: '办卡充值汇总', info: '金额：<code>card_business_total_amount</code><br>笔数：<code>card_business_transaction_count</code>', definition: '统计买卡、续卡、充值、续次等有效卡业务的金额、笔数和卡类型构成。', formula: '合计金额 = Σ 各卡类型有效业务金额；总笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 单项金额 ÷ 合计金额。', time: '按卡业务完成时间归属。', scope: '储值卡和套餐卡区分本金与赠金；退卡及作废业务不计入。' },
+          { name: '储值卡', info: '金额：<code>stored_value_card_amount</code><br>笔数：<code>stored_value_card_transaction_count</code><br>本金：<code>stored_value_card_principal_amount</code><br>赠金：<code>stored_value_card_gift_amount</code>', definition: '统计周期内储值卡买卡、续卡及充值业务形成的卡内金额、办理笔数，并拆分顾客实付本金与门店赠金。', formula: '储值卡金额 = 本金 + 赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 储值卡金额 ÷ 办卡充值合计金额。', time: '支付成功且储值卡业务生效时，按业务完成时间计入。', scope: '包含有效买卡、续卡和充值；不包含卡付消费、失败、取消、作废及已退卡业务。' },
+          { name: '套餐卡', info: '金额：<code>package_card_amount</code><br>笔数：<code>package_card_transaction_count</code><br>本金：<code>package_card_principal_amount</code><br>赠金：<code>package_card_gift_amount</code>', definition: '统计周期内套餐卡购买、续卡及套餐充值业务形成的卡内金额、办理笔数，并拆分顾客实付本金与门店赠金。', formula: '套餐卡金额 = 本金 + 赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 套餐卡金额 ÷ 办卡充值合计金额。', time: '支付成功且套餐卡业务生效时，按业务完成时间计入。', scope: '包含有效购卡、续卡和套餐充值；不包含套餐核销、失败、取消、作废及已退卡业务。' },
+          { name: '计次卡', info: '金额：<code>count_card_amount</code><br>笔数：<code>count_card_transaction_count</code>', definition: '统计周期内计次卡购买、续次等有效业务的金额和办理笔数，用于观察计次类卡项的销售规模。', formula: '计次卡金额 = Σ 有效计次卡业务金额；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 计次卡金额 ÷ 办卡充值合计金额。', time: '支付成功且计次权益生效时，按业务完成时间计入。', scope: '包含有效购卡和续次；赠送次数不折算为金额，不包含次数核销、失败、取消、作废及已退卡业务。' },
+          { name: '折扣卡', info: '金额：<code>discount_card_amount</code><br>笔数：<code>discount_card_transaction_count</code>', definition: '统计周期内折扣卡购买、续卡等有效业务的金额和办理笔数，用于观察折扣权益类卡项的销售规模。', formula: '折扣卡金额 = Σ 有效折扣卡业务金额；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 折扣卡金额 ÷ 办卡充值合计金额。', time: '支付成功且折扣卡权益生效时，按业务完成时间计入。', scope: '包含有效购卡和续卡；不包含折扣权益使用、失败、取消、作废及已退卡业务。' }
+        ]},
+        { title: '销售排行', fields: [
+          { name: '销售排行汇总', info: '类型：服务、产品、卡项<br>排序依据：销售额、销售数量', definition: '对统计周期内符合条件的销售明细按所选业务类型聚合，并依据销售额或销售数量降序排列。', formula: '先按服务、产品或卡项聚合，再按当前排序依据降序排列；并列时按最近成交时间倒序、业务 ID 升序。', time: '按订单完成时间归属所选统计周期。', scope: '销售额与销售数量使用相同订单范围；已退款、已作废订单均不计入。' },
+          { name: '销售额排行', info: '建议字段编码：<code>sales_amount_ranking</code><br>类型：金额排行；维度：服务、产品、卡项', definition: '按服务、产品或卡项汇总有效订单的销售金额后进行排行，销售金额包含团购记账、实际支付、销售签单和卡付金额。', formula: '单项销售额 = Σ（团购记账金额 + 实际支付金额 + 销售签单金额 + 卡付金额）；按单项销售额降序排列。', time: '订单完成后按订单完成时间计入；订单发生退款或作废后从排行统计中整体剔除。', scope: '计入已完成且未退款、未作废订单；不计入已退款订单（含部分退款）和已作废订单。页面中的经理签单按销售签单口径计入。' },
+          { name: '销售数量排行', info: '建议字段编码：<code>sales_quantity_ranking</code><br>类型：数量排行；单位：服务“次”、产品“件”、卡项“张”', definition: '按服务、产品或卡项汇总有效订单中的成交数量后进行排行，用于观察各销售项目的成交规模。', formula: '单项销售数量 = Σ 有效订单明细数量；服务按次数、产品按件数、卡项按张数汇总；按数量降序排列。', time: '订单完成后按订单完成时间计入；订单发生退款或作废后从排行统计中整体剔除。', scope: '只统计已完成且未退款、未作废订单的有效销售数量；已退款订单（含部分退款）和已作废订单均不计入。' }
+        ]}
+      ],
+      revenue: [
+        { title: '核心数据与趋势', fields: [
+          { name: '营业额', info: '字段编码：<code>net_turnover_amount</code><br>类型：金额；允许为负数', definition: '统计周期内项目、产品消费扣除当期订单退款后的净额，用于经营规模分析。', formula: '营业额 = 团购记账金额 + 卡付金额 + 经理签单金额 + 开单实收金额。', time: '交易按完成时间计入，退款按退款成功时间扣减。', scope: '包含项目、产品消费中的实际资金、团购记账、卡付、经理签单；不含办卡/充值、赠金、赠送权益、取消和作废交易。' },
+          { name: '收款合计', info: '字段编码：<code>gross_receipt_amount</code><br>类型：金额；默认值：0；允许为负数', definition: '统计周期内门店实际资金流入扣除实际退款后的净额。', formula: '收款合计 = 开单实收 + 办卡/充值 − 订单退款。', time: '收款按支付成功时间计入，退款按退款成功时间扣减。', scope: '不含卡付、团购记账和经理签单。' },
+          { name: '周期对比与趋势', info: '序列字段：<code>net_turnover_amount</code>、<code>gross_receipt_amount</code>', definition: '展示本期相较上一对应周期的变化，并呈现双指标历史趋势。', formula: '变化率 =（本期值 − 对比期值）÷ |对比期值| × 100%。', time: '日报对比上一日，周报对比上一周，月报对比上一月。', scope: '对比期为 0 时返回 <code>null</code>；日报近 7 日、周报近 8 周、月报近 12 月；负值时纵轴保留零轴。' }
+        ]},
+        { title: '消费构成与方式', fields: [
+          { name: '消费构成', info: '总额：<code>net_turnover_amount</code><br>构成：<code>net_turnover_by_business_type</code>', definition: '展示营业额在项目、产品两个业务内容中的净额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按成功时间归属。', scope: '不包含办卡/充值；跨类型退款按原交易明细拆分；营业额为 0 时占比返回 <code>null</code>。' },
+          { name: '消费方式', info: '字段编码：<code>gross_turnover_by_settlement_method</code><br>开单实收：<code>turnover_actual_cash_method_amount</code>', definition: '展示营业额在开单实收、团购记账、卡付、经理签单四种结算方式中的净额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按成功时间归属。', scope: '混合结算按支付明细拆分；支付渠道和团购平台为动态维度，退款在对应明细中倒扣。' }
+        ]},
+        { title: '退款与异常', fields: [
+          { name: '订单退款', info: '字段编码：<code>order_refund_amount</code><br>类型：金额；默认值：0；页面按正数展示', definition: '统计周期内通过退款操作实际退回给顾客的资金金额。', formula: 'Σ 退款成功流水中的实际资金退款金额。', time: '按退款成功时间归属，不回写原订单所在周期。', scope: '不含退回卡余额、恢复次数、取消团购记账、撤销经理签单及失败退款。' },
+          { name: '退款笔数与退款率', info: '笔数：<code>refund_transaction_count</code><br>退款率：<code>refund_rate</code>', definition: '退款笔数反映统计周期内成功退款的业务数量，退款率反映订单退款金额相对退款前营业额的比例。', formula: '退款笔数 = <code>COUNT(DISTINCT refund_business_id)</code>；退款率 = 订单退款金额 ÷ 退款前营业额。', time: '按退款成功时间归属。', scope: '一次退款拆分多个支付渠道仍计 1 笔；多次独立退款分别计笔；退款前营业额为 0 时退款率返回 <code>null</code>。' },
+          { name: '经理签单', info: '金额：<code>manager_sign_amount</code><br>笔数：<code>manager_sign_order_count</code><br>占比：<code>manager_sign_rate</code>', definition: '经理签单属于应收记账，不属于当期现金实收，但计入营业额和消费方式。', formula: '金额 = Σ 有效签单订单金额；笔数 = <code>COUNT(DISTINCT order_id)</code>；占比 = 签单金额 ÷ 退款前营业额。', time: '按经理签单确认成功时间归属。', scope: '订单支付方式包含经理签单时计 1 笔；分母为 0 时占比返回 <code>null</code>。' }
+        ]}
+      ]
+    };
+
+    function createPrdGroup(title, fields) {
+      const group = document.createElement('section');
+      group.className = 'logic-prd-group';
+      group.innerHTML = `<h4 class="logic-prd-group-title">${title}</h4><div class="prd-field-list">${fields.map((field, index) => `<details class="prd-field"${index === 0 ? ' open' : ''}><summary>${field.name}</summary><div class="prd-field-body"><table class="prd-field-table"><tbody><tr><th>字段基本信息</th><td>${field.info}</td></tr><tr><th>业务定义</th><td>${field.definition}</td></tr><tr><th>计算公式</th><td><span class="prd-formula">${field.formula}</span></td></tr><tr><th>时间归属规则</th><td>${field.time}</td></tr><tr><th>计入范围</th><td>${field.scope}</td></tr></tbody></table></div></details>`).join('')}</div>`;
+      return group;
+    }
+
+    const homepagePrdLists = [...document.querySelectorAll('.prototype-prd .prd-field-list')];
+    const notePrdTargets = Object.fromEntries([...document.querySelectorAll('[data-note-prd]')].map(target => [target.dataset.notePrd, target]));
+    const homepageCollectionFields = [...homepagePrdLists[0].querySelectorAll('.prd-field')].map(field => ({
+      name: field.querySelector('summary').textContent,
+      info: field.querySelector('tr:nth-child(1) td').innerHTML,
+      definition: field.querySelector('tr:nth-child(2) td').innerHTML,
+      formula: field.querySelector('tr:nth-child(3) td').innerHTML,
+      time: field.querySelector('tr:nth-child(4) td').innerHTML,
+      scope: field.querySelector('tr:nth-child(5) td')?.innerHTML || field.querySelector('tr:nth-child(4) td').innerHTML
+    }));
+    const overviewCoreFields = notePrdData.overview.find(group => group.title === '核心数据').fields;
+    ['开单实收', '办卡/充值', '订单退款'].forEach(name => {
+      const homepageField = homepageCollectionFields.find(field => field.name === name);
+      const overviewField = overviewCoreFields.find(field => field.name === name);
+      if (homepageField && overviewField) Object.assign(overviewField, homepageField);
+    });
+    const revenueCoreFields = notePrdData.revenue.find(group => group.title === '核心数据与趋势').fields;
+    const revenueRiskFields = notePrdData.revenue.find(group => group.title === '退款与异常').fields;
+    ['收款合计'].forEach(name => {
+      const homepageField = homepageCollectionFields.find(field => field.name === name);
+      const revenueField = revenueCoreFields.find(field => field.name === name);
+      if (homepageField && revenueField) Object.assign(revenueField, homepageField);
+    });
+    ['订单退款'].forEach(name => {
+      const homepageField = homepageCollectionFields.find(field => field.name === name);
+      const revenueField = revenueRiskFields.find(field => field.name === name);
+      if (homepageField && revenueField) Object.assign(revenueField, homepageField);
+    });
+    const overviewTransactionFields = notePrdData.overview.find(group => group.title === '交易看板').fields;
+    const revenueTransactionFields = notePrdData.revenue.find(group => group.title === '消费构成与方式').fields;
+    ['消费构成', '消费方式'].forEach(name => {
+      const overviewField = overviewTransactionFields.find(field => field.name === name);
+      const revenueField = revenueTransactionFields.find(field => field.name === name);
+      if (overviewField && revenueField) Object.assign(revenueField, overviewField);
+    });
+    if (notePrdTargets.owner) {
+      notePrdTargets.owner.append(createPrdGroup('收款卡片', homepageCollectionFields));
+      notePrdTargets.owner.append(createPrdGroup('业绩卡片', [...homepagePrdLists[1].querySelectorAll('.prd-field')].map(field => {
+        const rows = [...field.querySelectorAll('tr')];
+        const valueFor = label => rows.find(row => row.querySelector('th')?.textContent === label)?.querySelector('td')?.innerHTML || '—';
+        return { name: field.querySelector('summary').textContent, info: valueFor('字段基本信息'), definition: valueFor('业务定义'), formula: valueFor('计算公式'), time: valueFor('时间归属规则'), scope: valueFor('计入范围') !== '—' ? valueFor('计入范围') : valueFor('特殊状态') };
+      })));
+    }
+    if (notePrdTargets.employee) notePrdTargets.employee.append(notePrdTargets.owner.querySelectorAll('.logic-prd-group')[1].cloneNode(true));
+    ['overview', 'revenue'].forEach(key => notePrdData[key].forEach(group => notePrdTargets[key]?.append(createPrdGroup(group.title, group.fields))));
+
     const pageButtons = [...document.querySelectorAll('[data-prototype-page]')];
     const prdButtons = [...document.querySelectorAll('.prototype-link[data-prd-document]')];
     const pages = [...document.querySelectorAll('.prototype-page')];
@@ -1042,7 +1227,7 @@
     const notesPanel = document.querySelector('.prototype-notes');
     const stage = document.querySelector('.prototype-stage');
     const phone = document.querySelector('[data-phone-canvas]');
-    const prd = document.querySelector('.prototype-prd');
+    const prds = [...document.querySelectorAll('.prototype-prd')];
     const stateControls = document.querySelector('[data-state-controls]');
     let currentPage = 'home-owner';
 
@@ -1086,9 +1271,9 @@
     document.querySelector('[data-report-back]').addEventListener('click', () => showPrototypePage('home-owner'));
 
     const reportPeriodData = {
-      day: { label: '2026年09月15日', range: '近 7 日', labels: ['09/09', '09/10', '09/11', '09/12', '09/13', '09/14', '今日'], values: [42, 55, 48, 76, 64, 84, 61] },
-      week: { label: '2026年09月14日－09月20日', range: '近 8 周', labels: ['第31周', '第32周', '第33周', '第34周', '第35周', '第36周', '第37周', '第38周'], values: [35, 48, 43, 67, 58, 76, 70, 82] },
-      month: { label: '2026年09月', range: '近 12 个月', labels: ['10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'], values: [38, 46, 44, 57, 53, 66, 61, 73, 69, 82, 77, 88] }
+      day: { label: '2026年09月15日', range: '近 7 日', compareLabel: '较昨日', comparisons: ['+4.8%', '+6.2%'], labels: ['09/09', '09/10', '09/11', '09/12', '09/13', '09/14', '今日'], values: [42, 55, 48, 76, 64, 84, 61] },
+      week: { label: '2026年09月14日－09月20日', range: '近 8 周', compareLabel: '较上周', comparisons: ['+7.6%', '+5.3%'], labels: ['第31周', '第32周', '第33周', '第34周', '第35周', '第36周', '第37周', '第38周'], values: [35, 48, 43, 67, 58, 76, 70, 82] },
+      month: { label: '2026年09月', range: '近 12 个月', compareLabel: '较上月', comparisons: ['+10.2%', '+8.1%'], labels: ['10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'], values: [38, 46, 44, 57, 53, 66, 61, 73, 69, 82, 77, 88] }
     };
     let activeReportPeriod = 'day';
     let activeMetricIndex = 0;
@@ -1132,6 +1317,9 @@
 
     function renderReceiptTrend() {
       const data = reportPeriodData[activeReportPeriod];
+      document.querySelectorAll('.receipt-dual-value em').forEach((item, index) => {
+        item.textContent = `${data.compareLabel} ${data.comparisons[index]}`;
+      });
       const salesBase = data.values[data.values.length - 1] || 1;
       const receiptShape = data.values.map((value, index) => value * .82 + ((index % 3) - 1) * 4);
       const receiptBase = receiptShape[receiptShape.length - 1] || 1;
@@ -1414,7 +1602,7 @@
 
     const transactionData = {
       'consume-method': { total: '¥2,800', label: '消费合计', items: [['开单实收', '¥1,500', '54%', '#fb2e42'], ['团购记账', '¥500', '18%', '#ff826d'], ['卡付', '¥600', '21%', '#ffb36b'], ['经理签单', '¥200', '7%', '#d997ad']] },
-      'consume-composition': { total: '¥2,800', label: '消费合计', items: [['项目', '¥2,000', '71%', '#fb2e42'], ['产品', '¥700', '25%', '#ff826d'], ['办卡充值', '¥100', '4%', '#ffb36b']] }
+      'consume-composition': { total: '¥2,800', label: '消费合计', items: [['项目', '¥2,000', '71%', '#fb2e42'], ['产品', '¥800', '29%', '#ff826d']] }
     };
     function renderTransaction(key) {
       const data = transactionData[key];
@@ -1504,7 +1692,7 @@
         intro: '两个消费维度共用同一统计周期；圆环中心为当前维度合计，图例同时展示金额与占比。',
         items: [
           ['消费方式', '按订单实际结算方式统计当期的消费金额。', '维度：开单实收、团购记账、卡付、经理签单；团购与经理签单为记账金额，不形成当期实收。'],
-          ['消费构成', '按业务类型统计当期的消费金额。', '维度：项目、产品、办卡/充值；含卡付、团购记账和经理签单，因此合计与实收构成不一定相同。']
+          ['消费构成', '按业务类型统计当期的消费金额。', '维度：项目、产品；办卡/充值不计入消费构成。']
         ]
       },
       cards: {
@@ -1521,17 +1709,17 @@
         title: '销售排行',
         intro: '统计周期内已完成的销售明细，按所选类型与排序方式降序展示。',
         items: [
-          ['销售额 / 数量', '销售额按实收金额汇总；数量按成交件数汇总。', '数量单位：服务为“次”、产品为“件”、卡项为“张”。'],
+          ['销售额 / 数量', '销售额包含团购记账、实际支付、销售签单和卡付金额；数量按有效成交数量汇总。', '数量单位：服务为“次”、产品为“件”、卡项为“张”。'],
           ['合计与总笔数', '标题右侧展示当前维度的合计与总笔数，随类型和排序方式同步切换。', '合计只统计当前维度下的有效销售明细。'],
           ['展示规则', '默认展示前 5 项，超出部分可展开查看全部。', '同一名称不会重复合并展示，按明细名称分别排名。'],
-          ['不计入范围', '已取消、已作废、全额退款的明细不计入排行。', '部分退款的明细按退款后的净额参与排行。']
+          ['不计入范围', '已退款和已作废订单不计入销售额及销售数量排行。', '部分退款订单也按已退款订单整体剔除。']
         ]
       },
       'revenue-core': {
         title: '营收核心数据',
         intro: '营业额与收款合计使用当前页面选中的日报、周报或月报周期，并在同一卡片中展示对应趋势。',
         items: [
-          ['营业额', '统计周期内门店发生的项目消费、产品消费及办卡/充值金额，扣除订单退款后展示。', '包含开单实收、团购记账、卡付和经理签单形成的业务金额。'],
+          ['营业额', '统计周期内门店发生的项目消费、产品消费金额，扣除订单退款后展示。', '包含开单实收、团购记账、卡付和经理签单形成的业务金额，不包含办卡/充值。'],
           ['收款合计', '统计周期内门店实际收到的资金净额。', '展示开单实收、办卡/充值及订单退款影响后的结果。'],
           ['周期对比', '展示当前周期相较上一对应周期的变化结果。', '日报对比上一日，周报对比上一周，月报对比上一月。'],
           ['趋势', '两条折线分别展示营业额与收款合计的历史变化。', '日报展示近 7 日，周报展示近 8 周，月报展示近 12 个月。']
@@ -1543,8 +1731,7 @@
         items: [
           ['退款前金额', '展示扣除订单退款之前的营业额。', '用于与退款后的营业额进行对照。'],
           ['项目消费', '展示项目服务产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。'],
-          ['产品消费', '展示门店产品销售产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。'],
-          ['办卡/充值', '展示办卡、续卡及充值产生的业务金额及其占比。', '作为消费内容展示，不作为支付方式重复展示。']
+          ['产品消费', '展示门店产品销售产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。']
         ]
       },
       'revenue-method': {
@@ -1568,6 +1755,24 @@
         ]
       }
     };
+
+    function prdDefinitionItems(pageKey, groupTitle, fieldNames) {
+      const group = notePrdData[pageKey]?.find(item => item.title === groupTitle);
+      if (!group) return [];
+      return fieldNames.map(name => {
+        const field = group.fields.find(item => item.name === name);
+        return field ? [field.name, field.definition] : null;
+      }).filter(Boolean);
+    }
+
+    reportSpecData.core.items = prdDefinitionItems('overview', '核心数据', ['开单实收', '办卡/充值', '订单退款', '客单价', '成交客户', '新增客户']);
+    reportSpecData.transaction.items = prdDefinitionItems('overview', '交易看板', ['消费方式', '消费构成']);
+    reportSpecData.cards.items = prdDefinitionItems('overview', '办卡充值', ['办卡充值汇总', '储值卡', '套餐卡', '计次卡', '折扣卡']);
+    reportSpecData.ranking.items = prdDefinitionItems('overview', '销售排行', ['销售排行汇总', '销售额排行', '销售数量排行']);
+    reportSpecData['revenue-core'].items = prdDefinitionItems('revenue', '核心数据与趋势', ['营业额', '收款合计', '周期对比与趋势']);
+    reportSpecData['revenue-composition'].items = prdDefinitionItems('revenue', '消费构成与方式', ['消费构成']);
+    reportSpecData['revenue-method'].items = prdDefinitionItems('revenue', '消费构成与方式', ['消费方式']);
+    reportSpecData['revenue-risk'].items = prdDefinitionItems('revenue', '退款与异常', ['订单退款', '退款笔数与退款率', '经理签单']);
     const reportSpecLayer = document.querySelector('[data-report-spec-layer]');
     let reportSpecTrigger = null;
     function openReportSpec(key, trigger) {
@@ -1576,7 +1781,7 @@
       reportSpecTrigger = trigger || null;
       document.querySelector('[data-report-spec-title]').textContent = data.title + ' · 数据口径说明';
       document.querySelector('[data-report-spec-intro]').textContent = data.intro;
-      document.querySelector('[data-report-spec-body]').innerHTML = data.items.map(item => '<div class="report-spec-item"><h4>' + item[0] + '</h4><p>' + item[1] + '</p><p><em>' + item[2] + '</em></p></div>').join('');
+      document.querySelector('[data-report-spec-body]').innerHTML = data.items.map(item => '<div class="report-spec-item"><h4>' + item[0] + '</h4><p>' + item[1] + '</p>' + (item[2] ? '<p><em>' + item[2] + '</em></p>' : '') + '</div>').join('');
       reportSpecLayer.hidden = false;
       reportSpecLayer.querySelector('.report-spec-body').scrollTop = 0;
     }
@@ -1605,8 +1810,10 @@
       document.body.classList.remove('prd-mode');
       stage.scrollTop = 0;
       phone.hidden = false;
-      prd.hidden = true;
-      prd.classList.remove('show');
+      prds.forEach(prd => {
+        prd.hidden = true;
+        prd.classList.remove('show');
+      });
       pages.forEach(page => {
         const active = page.id === pageKey;
         page.classList.toggle('show', active);
@@ -1641,8 +1848,12 @@
       document.body.classList.add('prd-mode');
       stage.scrollTop = 0;
       phone.hidden = true;
-      prd.hidden = false;
-      prd.classList.add('show');
+      const selectedPrd = prds.find(prd => prd.dataset.prdDocument === button.dataset.prdDocument);
+      prds.forEach(prd => {
+        const active = prd === selectedPrd;
+        prd.hidden = !active;
+        prd.classList.toggle('show', active);
+      });
       stateControls.hidden = true;
       notes.forEach(note => note.hidden = true);
       setActiveMenu(button);
@@ -1662,6 +1873,9 @@
       if (event.data?.type === 'prototype-navigate' && event.data.page) {
         showPrototypePage(event.data.page);
         if (event.data.page === 'revenue-analysis') showReportPanel('receipt');
+      }
+      if (event.data?.type === 'rtb-explain-state') {
+        document.querySelector('#home-employee')?.classList.toggle('employee-explain-open', Boolean(event.data.open));
       }
     });
 

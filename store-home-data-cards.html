@@ -968,6 +968,8 @@
       font-weight: 700;
     }
 
+    .rtb-explain-body > .rtb-explain-item:first-child:last-child h3 { display: none; }
+
     .rtb-explain-item p {
       margin: 0;
       color: #6f7079;
@@ -1238,13 +1240,11 @@
       if (type === 'collection') {
         return {
           title: '收款数据口径说明',
-          formula: '收款合计 = 开单实收 + 办卡/充值 − 订单退款',
           items: [
-            ['收款合计', '所选周期内实际收到的款项净额，由开单实收与办卡/充值相加，再扣除订单退款；不包含卡付。'],
-            ['开单实收', '消费订单中通过现金、微信、支付宝及银行卡等方式实际收到的金额。'],
-            ['办卡/充值', '顾客办理储值卡或充值产生的实际入账金额，属于预收款，不代表已经完成服务或形成消费业绩。'],
-            ['订单退款', '所选周期内已成功退回给顾客的订单金额。卡片展示退款金额本身，不显示负号；计算收款合计时作为扣减项。'],
-            ['对比数据', '今日与昨日对比，本周与上周同期对比，本月与上月同期对比。']
+            ['收款合计', '统计周期内门店实际收到的资金扣除实际退款后的净额，用于反映门店资金净流入，不等同于销售收入或员工业绩。允许出现负数，例如当期没有新增收款但发生历史订单退款。'],
+            ['开单实收', '统计周期内，门店通过项目消费或产品购买订单实际收到的资金。只统计实际资金支付部分，不统计卡付、团购、经理签单等非当期资金流入，为退款前金额。'],
+            ['办卡/充值', '统计周期内，顾客买卡、续卡、充值、续次或卡升降级时门店实际收到的资金，属于预收款，不代表顾客已经完成消费。赠送储值金额和赠送次数不计入。'],
+            ['订单退款', '统计周期内，门店通过退款操作实际退回给顾客的资金金额。']
           ]
         };
       }
@@ -1256,14 +1256,13 @@
       const title = isStore ? '门店业绩口径说明' : '我的业绩口径说明';
       return {
         title,
-        formula: `统计范围：${scope}在所选周期内归属的有效业绩`,
         items: [
-          ['总业绩', `按照系统业绩归属规则汇总的${scope}有效业绩总额；作废订单及不计业绩的项目不纳入统计。`],
-          ['预计提成', '根据有效业绩和当前生效的提成规则预估计算，最终金额可能因退款、撤单或人工调整发生变化。'],
-          ['劳动业绩', '项目服务产生并归属到统计对象的有效业绩。'],
-          ['售卡业绩', '办理会员卡或为顾客充值产生并归属到统计对象的有效业绩。'],
-          ['产品业绩', '销售实物产品产生并归属到统计对象的有效业绩。'],
-          ['分类说明', '分类数据用于展示主要业绩来源；如存在其他业绩或调整项，以详情页中的总业绩为准。']
+          ['总业绩', '统计对象在统计周期内产生并归属到其名下的有效业绩金额，用于衡量业务产出，不等于收款合计或营业额。'],
+          ['劳动业绩', '员工为客户完成项目服务后产生，并按服务归属或业绩分配规则归属到统计对象名下的有效业绩。衡量服务产出，与支付方式无关。'],
+          ['售卡业绩', '员工通过买卡、续卡或充值业务获得，并按售卡归属规则归属到统计对象名下的有效业绩。属于员工绩效指标，不属于客户消费金额，也不等同于会计收入。'],
+          ['产品业绩', '员工销售门店实物产品后产生，并按销售归属或业绩分配规则归属到统计对象名下的有效业绩。支付方式不影响产品业绩分类。'],
+          ['业绩构成', '用于说明总业绩分别由劳动、售卡和产品三类业务贡献了多少，分类金额必须与总业绩使用完全相同的统计对象和时间范围。'],
+          ['预计提成', '根据统计对象的有效业绩和业务发生时生效的员工提成方案计算出的预估提成，不代表最终已结算或已发放金额。']
         ]
       };
     }
@@ -1276,14 +1275,20 @@
       const content = rtbExplainContent(trigger.dataset.explain, trigger);
       layer.querySelector('[data-explain-title]').textContent = content.title;
       layer.querySelector('[data-explain-period]').textContent = `统计周期：${period}`;
-      layer.querySelector('[data-explain-body]').innerHTML = `<div class="rtb-explain-formula">${content.formula}</div>${rtbExplainItems(content.items)}`;
+      layer.querySelector('[data-explain-body]').innerHTML = `${content.formula ? `<div class="rtb-explain-formula">${content.formula}</div>` : ''}${rtbExplainItems(content.items)}`;
       rtbExplainTrigger = trigger;
       layer.hidden = false;
+      if (rtbEmbedMode === 'employee' && window.parent !== window) {
+        window.parent.postMessage({ type: 'rtb-explain-state', open: true }, '*');
+      }
       layer.querySelector('[data-explain-close]').focus();
     }
 
     function closeRtbExplain(layer) {
       layer.hidden = true;
+      if (rtbEmbedMode === 'employee' && window.parent !== window) {
+        window.parent.postMessage({ type: 'rtb-explain-state', open: false }, '*');
+      }
       if (rtbExplainTrigger) rtbExplainTrigger.focus();
       rtbExplainTrigger = null;
     }
