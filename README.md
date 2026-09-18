@@ -1,6 +1,6 @@
 # RTB 首页经营数据原型
 
-这是一个可直接部署到 GitHub Pages 的静态交互原型。
+这是一个可直接上传 GitHub 并通过 GitHub Pages 部署的静态交互原型，更新于 2026-09-18。
 
 ## 文件说明
 
@@ -8,11 +8,13 @@
 - `store-home-data-cards.html`：店主首页与店员首页
 - `store-revenue-analysis.html`：独立营收分析备用页面
 
+项目不依赖 Node.js、npm 或构建工具。
+
 ## 上传 GitHub
 
 1. 新建一个 GitHub 仓库。
-2. 将本文件夹内的全部文件上传到仓库根目录。
-3. 在仓库 `Settings → Pages` 中选择从默认分支根目录部署。
+2. 将本文件夹内的全部文件上传到仓库根目录，确保 `index.html` 位于仓库根目录。
+3. 在仓库 `Settings → Pages` 中选择 `Deploy from a branch`，并选择默认分支的根目录。
 4. 等待 GitHub Pages 生成访问地址。
 
 本项目无需安装依赖或执行构建命令，直接打开 `index.html` 即可预览。

@@ -441,7 +441,7 @@
     .rtb-private-card.rtb-data-hidden .rtb-composition-bar span { visibility: hidden; }
 
     .rtb-money-main {
-      color: var(--rtb-red);
+      color: var(--rtb-ink);
       font-size: 24px;
       font-weight: 750;
       line-height: 1.1;
@@ -546,6 +546,16 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .rtb-income-value-row[role="button"],
+    .rtb-breakdown-value[role="button"] { cursor: pointer; }
+
+    .rtb-income-value-row[role="button"]:focus-visible,
+    .rtb-breakdown-value[role="button"]:focus-visible {
+      outline: 2px solid rgba(243, 47, 65, .38);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
     .rtb-shortcuts {
       margin-top: 12px;
       padding: 15px 11px 14px;
@@ -574,20 +584,52 @@
 
     .rtb-tool-row {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: minmax(0, 1fr) 66px;
+      gap: 6px;
       margin-top: 13px;
       padding-top: 13px;
       border-top: 1px solid var(--rtb-line);
       text-align: center;
     }
 
-    .rtb-tool-row > div {
+    .rtb-tool-scroll {
       display: flex;
       min-width: 0;
+      gap: 6px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      padding: 0 2px 4px 0;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .rtb-tool-scroll::-webkit-scrollbar { display: none; }
+
+    .rtb-tool-item {
+      display: flex;
+      min-width: 66px;
+      min-height: 46px;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       gap: 6px;
+      padding: 1px 4px 0;
+      border-radius: 7px;
+      scroll-snap-align: start;
+      cursor: pointer;
+    }
+
+    .rtb-tool-item:focus-visible {
+      outline: 2px solid rgba(243, 47, 65, .38);
+      outline-offset: 1px;
+    }
+
+    .rtb-tool-fixed {
+      position: relative;
+      min-width: 0;
+      border-left: 1px solid var(--rtb-line);
+      background: #fff;
     }
 
     .rtb-tool-icon {
@@ -732,8 +774,8 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .rtb-metric-value.red { color: var(--rtb-red-dark); }
-    .rtb-metric-value.warn { color: var(--rtb-warn); }
+    .rtb-metric-value.red,
+    .rtb-metric-value.warn { color: var(--rtb-ink); }
 
     .rtb-metric-value small {
       margin-right: 5px;
@@ -893,11 +935,15 @@
       right: 0;
       bottom: 0;
       left: 0;
-      max-height: 78%;
-      overflow: auto;
+      display: flex;
+      height: 72%;
+      min-height: 0;
+      flex-direction: column;
+      overflow: hidden;
       border-radius: 22px 22px 0 0;
       background: #fff;
       box-shadow: 0 -14px 40px rgba(22, 22, 30, .16);
+      animation: rtb-sheet-rise .22s ease-out;
     }
 
     .rtb-explain-head {
@@ -905,6 +951,7 @@
       top: 0;
       z-index: 1;
       display: flex;
+      flex: 0 0 auto;
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px 12px;
@@ -943,7 +990,9 @@
       cursor: pointer;
     }
 
-    .rtb-explain-body { padding: 5px 20px 24px; }
+    .rtb-explain-body { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 5px 20px 24px; -webkit-overflow-scrolling: touch; }
+
+    @keyframes rtb-sheet-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
     .rtb-explain-formula {
       margin: 12px 0 6px;
@@ -1026,6 +1075,121 @@
       .rtb-module-head .rtb-periods-inline { gap: 6px; }
       .rtb-module-head .rtb-head-controls { gap: 4px; }
     }
+
+    /* 0917 UI 规范视觉对齐：减少装饰，突出数据层级与可读性。 */
+    :root {
+      --rtb-red: #f32f41;
+      --rtb-red-dark: #dc2537;
+      --rtb-pink: #fff1f2;
+      --rtb-page: #f4f6f4;
+      --rtb-panel: #ffffff;
+      --rtb-ink: #222a25;
+      --rtb-muted: #879089;
+      --rtb-line: #e5eae6;
+      --rtb-soft: #f5f7f5;
+      --rtb-good: #168b61;
+    }
+    html,
+    body { background: #eef2ef; }
+    body {
+      color: var(--rtb-ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .rtb-phone {
+      border-color: rgba(34, 46, 38, .10);
+      background: var(--rtb-page);
+      box-shadow: 0 18px 44px rgba(34, 45, 38, .11);
+    }
+    .rtb-header {
+      background: linear-gradient(155deg, #f53648, var(--rtb-red) 72%);
+    }
+    .rtb-header::after {
+      opacity: .55;
+      box-shadow: 0 0 0 28px rgba(255,255,255,.018), 0 0 0 56px rgba(255,255,255,.014);
+    }
+    .rtb-app-content { padding-inline: 12px; }
+    .rtb-top-summary,
+    .rtb-shortcuts {
+      border: 1px solid var(--rtb-line);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(34, 42, 37, .025);
+    }
+    .rtb-top-summary {
+      border-top-color: rgba(255,255,255,.92);
+      background: linear-gradient(180deg, #fff7f7, #fff 47%);
+    }
+    .rtb-summary-head { padding: 16px 17px 12px; }
+    .rtb-summary-title,
+    .rtb-section-title { color: var(--rtb-ink); font-size: 16px; font-weight: 700; }
+    .rtb-periods { border-bottom-color: var(--rtb-line); }
+    .rtb-period { color: #7b847e; }
+    .rtb-period[aria-selected="true"] { color: var(--rtb-ink); }
+    .rtb-period[aria-selected="true"]::after { height: 2px; background: var(--rtb-red); }
+    .rtb-field-label { color: #707a73; }
+    .rtb-field-label.emphasis { color: var(--rtb-ink); }
+    .rtb-money-main,
+    .rtb-money-side,
+    .rtb-breakdown-value,
+    .rtb-metric-value { color: var(--rtb-ink); }
+    .rtb-summary-core > div + div { border-left-color: var(--rtb-line); }
+    .rtb-summary-breakdown {
+      border: 1px solid #edf0ed;
+      border-radius: 8px;
+      background: var(--rtb-soft);
+    }
+    .rtb-breakdown-group + .rtb-breakdown-group { border-left-color: var(--rtb-line); }
+    .rtb-shortcuts { padding: 14px 11px 13px; }
+    .rtb-action {
+      min-height: 70px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+    }
+    .rtb-action.orange { color: #89401f; border-color: #f7ddcf; background: #fff2ea; }
+    .rtb-action.pink { color: #a63c5e; border-color: #f4d9e1; background: #fff1f4; }
+    .rtb-action-icon { font-size: 25px; }
+    .rtb-tool-row { border-top-color: var(--rtb-line); }
+    .rtb-tool-icon { border-color: #4a534d; border-radius: 4px; }
+    .rtb-data-section { margin-top: 11px; }
+    .rtb-data-module {
+      padding: 16px 13px 14px;
+      border-color: var(--rtb-line);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(34, 42, 37, .025);
+    }
+    .rtb-data-module:hover {
+      transform: none;
+      box-shadow: 0 5px 14px rgba(34, 42, 37, .06);
+    }
+    .rtb-view-tabs {
+      border-radius: 7px;
+      background: #f2f5f2;
+    }
+    .rtb-view-tab { border-radius: 5px; color: #7d867f; }
+    .rtb-view-tab[aria-selected="true"] {
+      color: var(--rtb-red-dark);
+      box-shadow: 0 1px 4px rgba(34, 42, 37, .06);
+    }
+    .rtb-metric-box { border: 1px solid #edf0ed; border-radius: 8px; }
+    .rtb-metric-box.primary { background: #fff8f8; }
+    .rtb-performance-parts { border-top-color: var(--rtb-line); }
+    .rtb-growth { border-radius: 5px; background: #edf7f2; }
+    .rtb-bottom-nav {
+      border-top-color: var(--rtb-line);
+      box-shadow: 0 -5px 16px rgba(34, 42, 37, .035);
+    }
+    .rtb-explain-layer { background: rgba(28, 35, 31, .40); }
+    .rtb-explain-sheet {
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -10px 30px rgba(30, 39, 33, .14);
+    }
+    .rtb-explain-head { border-bottom-color: var(--rtb-line); }
+    .rtb-explain-close { color: #58615b; background: #f1f4f1; }
+    .rtb-explain-item { border-bottom-color: var(--rtb-line); }
+    .rtb-explain-item p { color: #626c65; }
+    .rtb-explain-formula { border-radius: 7px; }
+    body.rtb-embed { background: var(--rtb-page); }
+    body.rtb-embed .rtb-phone { box-shadow: none; }
   </style>
 </head>
 <body>
@@ -1047,7 +1211,7 @@
             </header>
 
             <div class="rtb-app-content">
-              <section class="rtb-top-summary rtb-private-card rtb-data-hidden" aria-label="收款概况" data-detail="收款概况" data-href="store-revenue-analysis.html">
+              <section class="rtb-top-summary rtb-private-card rtb-data-hidden" aria-label="收款概况" data-detail="收款概况" data-href="store-revenue-analysis.html" data-report-target="overview">
                 <div class="rtb-income-primary">
                   <div class="rtb-income-title-row">
                     <span class="rtb-field-label emphasis">收款合计<button class="rtb-card-info" type="button" aria-label="查看收款数据口径说明" data-explain="collection">i</button><button class="rtb-privacy-toggle" type="button" aria-label="显示收款数据" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/><path class="rtb-eye-slash" d="M4 4l16 16"/></svg></button></span>
@@ -1055,20 +1219,20 @@
                       <div class="rtb-periods rtb-periods-inline" role="tablist" aria-label="收款概况时间范围">
                         <button class="rtb-period" type="button" role="tab" aria-selected="true">今日</button><button class="rtb-period" type="button" role="tab" aria-selected="false">本周</button><button class="rtb-period" type="button" role="tab" aria-selected="false">本月</button>
                       </div>
-                      <span class="rtb-module-more" role="button" tabindex="0" aria-label="查看营收分析">›</span>
+                      <span class="rtb-module-more" role="button" tabindex="0" aria-label="查看数据总览">›</span>
                     </div>
                   </div>
                   <div>
-                    <div class="rtb-income-value-row" role="button" tabindex="0" aria-label="查看营收分析"><span class="rtb-money-main">¥3,100.00</span><span class="rtb-compare up">↗ <span data-compare-label>较昨日</span> +8.6%</span></div>
+                    <div class="rtb-income-value-row" role="button" tabindex="0" aria-label="查看数据总览"><span class="rtb-money-main">¥3,100.00</span><span class="rtb-compare up">↗ <span data-compare-label>较昨日</span> +8.6%</span></div>
                   </div>
                 </div>
                 <div class="rtb-summary-breakdown is-three">
                   <div class="rtb-breakdown-group primary" role="group" aria-label="收款构成">
-                    <div><span class="rtb-field-label">开单实收<button class="rtb-info" type="button" aria-label="开单实收说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">消费订单中通过现金、微信、支付宝及银行卡等方式实际收到的金额。</span></button></span><strong class="rtb-breakdown-value">¥2,800.00</strong></div>
-                    <div><span class="rtb-field-label">办卡/充值<button class="rtb-info" type="button" aria-label="办卡充值说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">统计周期内顾客办理储值卡及充值产生的实收金额。</span></button></span><strong class="rtb-breakdown-value">¥700.00</strong></div>
+                    <div><span class="rtb-field-label">开单实收<button class="rtb-info" type="button" aria-label="开单实收说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">消费订单中通过现金、微信、支付宝及银行卡等方式实际收到的金额。</span></button></span><strong class="rtb-breakdown-value" role="button" tabindex="0" aria-label="查看数据总览">¥2,800.00</strong></div>
+                    <div><span class="rtb-field-label">办卡/充值<button class="rtb-info" type="button" aria-label="办卡充值说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">统计周期内顾客办理储值卡及充值产生的实收金额。</span></button></span><strong class="rtb-breakdown-value" role="button" tabindex="0" aria-label="查看数据总览">¥700.00</strong></div>
                   </div>
                   <div class="rtb-breakdown-group secondary" role="group" aria-label="收款增减项">
-                    <div><span class="rtb-field-label">订单退款<button class="rtb-info" type="button" aria-label="订单退款说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">统计周期内已成功退回给顾客的订单金额；展示为正数，计算收款合计时予以扣除。</span></button></span><strong class="rtb-breakdown-value">¥400.00</strong></div>
+                    <div><span class="rtb-field-label">订单退款<button class="rtb-info" type="button" aria-label="订单退款说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">统计周期内已成功退回给顾客的订单金额；展示为正数，计算收款合计时予以扣除。</span></button></span><strong class="rtb-breakdown-value" role="button" tabindex="0" aria-label="查看数据总览">¥400.00</strong></div>
                   </div>
                 </div>
               </section>
@@ -1078,22 +1242,24 @@
                   <div class="rtb-action orange"><span class="rtb-action-icon">▣</span><div><strong>开单</strong><small>开单 / 记账</small></div></div>
                   <div class="rtb-action pink"><span class="rtb-action-icon">▤</span><div><strong>开卡</strong><small>办卡 / 充值</small></div></div>
                 </div>
-                <div class="rtb-tool-row">
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工资条</span></div>
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">员工管理</span></div>
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">支出管理</span></div>
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">学习培训</span></div>
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">更多</span></div>
+                <div class="rtb-tool-row" aria-label="快捷工具">
+                  <div class="rtb-tool-scroll" aria-label="可滑动工具入口">
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="工资条"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工资条</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="员工管理"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">员工管理</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="支出管理"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">支出管理</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="学习培训"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">学习培训</span></div>
+                  </div>
+                  <div class="rtb-tool-item rtb-tool-fixed" role="button" tabindex="0" data-detail="工作台"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工作台</span></div>
                 </div>
               </section>
 
               <section class="rtb-data-section" aria-label="经营数据">
-                <article class="rtb-data-module" tabindex="0" data-detail="门店业绩">
+                <article class="rtb-data-module" tabindex="0" data-detail="门店业绩" data-target-page="门店业绩">
                   <div class="rtb-module-head">
                     <div class="rtb-module-context">
                       <div class="rtb-view-tabs rtb-view-tabs-inline" role="tablist" aria-label="业绩查看范围">
-                        <button class="rtb-view-tab" type="button" role="tab" aria-selected="true" data-view="store">门店业绩</button>
-                        <button class="rtb-view-tab" type="button" role="tab" aria-selected="false" data-view="personal">我的业绩</button>
+                        <button class="rtb-view-tab" type="button" role="tab" aria-selected="true" data-view="store" data-target-page="门店业绩">门店业绩</button>
+                        <button class="rtb-view-tab" type="button" role="tab" aria-selected="false" data-view="personal" data-target-page="个人业绩">我的业绩</button>
                       </div>
                       <button class="rtb-card-info" type="button" aria-label="查看业绩统计口径说明" data-explain="owner-performance">i</button>
                     </div>
@@ -1106,7 +1272,7 @@
                   </div>
                   <div class="rtb-view-panel" data-view-panel="store">
                     <div class="rtb-performance-main">
-                      <div class="rtb-metric-box primary"><span class="rtb-field-label">总业绩<button class="rtb-info" type="button" aria-label="总业绩说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">门店员工完成并归属到员工名下的有效订单业绩总额。</span></button></span><strong class="rtb-metric-value red">¥2,800.00</strong></div>
+                      <div class="rtb-metric-box primary"><span class="rtb-field-label">总业绩<button class="rtb-info" type="button" aria-label="总业绩说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">门店项目、产品、售卡/充值三类有效流水订单金额之和，不区分支付方式；未关联服务人员的订单仍计入，优惠券及其他权益折扣订单按折扣前的项目或商品原价计业绩。</span></button></span><strong class="rtb-metric-value red">¥2,800.00</strong></div>
                       <div class="rtb-metric-box"><span class="rtb-field-label">预计提成<button class="rtb-info" type="button" aria-label="预计提成说明"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="7"/><path d="M10 8v5M10 5.6h.01"/></svg><span class="rtb-info-text">按员工个人业绩及各自提成规则计算的预计提成合计。</span></button></span><strong class="rtb-metric-value red">¥280.00</strong></div>
                     </div>
                     <div class="rtb-performance-parts" aria-label="业绩构成：劳动业绩、售卡业绩和产品业绩">
@@ -1163,11 +1329,12 @@
 
             <div class="rtb-app-content">
               <section class="rtb-data-section rtb-data-section-first" aria-label="个人业绩">
-                <article class="rtb-data-module" tabindex="0" data-detail="我的业绩">
+                <article class="rtb-data-module rtb-private-card rtb-data-hidden" tabindex="0" data-detail="我的业绩" data-target-page="个人业绩">
                   <div class="rtb-module-head">
                     <div class="rtb-module-context">
                       <h3 class="rtb-static-module-title">我的业绩</h3>
                       <button class="rtb-card-info" type="button" aria-label="查看业绩统计口径说明" data-explain="employee-performance">i</button>
+                      <button class="rtb-privacy-toggle" type="button" aria-label="显示业绩数据" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.5"></circle><path class="rtb-eye-slash" d="M4 4l16 16"></path></svg></button>
                     </div>
                     <div class="rtb-head-controls">
                       <div class="rtb-periods rtb-periods-inline" role="tablist" aria-label="个人业绩时间范围">
@@ -1195,8 +1362,14 @@
                   <div class="rtb-action orange"><span class="rtb-action-icon">▣</span><div><strong>开单</strong><small>开单 / 记账</small></div></div>
                   <div class="rtb-action pink"><span class="rtb-action-icon">▤</span><div><strong>开卡</strong><small>办卡 / 充值</small></div></div>
                 </div>
-                <div class="rtb-tool-row">
-                  <div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工资条</span></div><div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">客户预约</span></div><div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">我的提成</span></div><div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">学习培训</span></div><div><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">更多</span></div>
+                <div class="rtb-tool-row" aria-label="快捷工具">
+                  <div class="rtb-tool-scroll" aria-label="可滑动工具入口">
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="工资条"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工资条</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="客户预约"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">客户预约</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="我的提成"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">我的提成</span></div>
+                    <div class="rtb-tool-item" role="button" tabindex="0" data-detail="学习培训"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">学习培训</span></div>
+                  </div>
+                  <div class="rtb-tool-item rtb-tool-fixed" role="button" tabindex="0" data-detail="工作台"><span class="rtb-tool-icon" aria-hidden="true"></span><span class="rtb-tool-name">工作台</span></div>
                 </div>
               </section>
 
@@ -1239,7 +1412,7 @@
     function rtbExplainContent(type, trigger) {
       if (type === 'collection') {
         return {
-          title: '收款数据口径说明',
+          title: '数据口径说明',
           items: [
             ['收款合计', '统计周期内门店实际收到的资金扣除实际退款后的净额，用于反映门店资金净流入，不等同于销售收入或员工业绩。允许出现负数，例如当期没有新增收款但发生历史订单退款。'],
             ['开单实收', '统计周期内，门店通过项目消费或产品购买订单实际收到的资金。只统计实际资金支付部分，不统计卡付、团购、经理签单等非当期资金流入，为退款前金额。'],
@@ -1249,15 +1422,24 @@
         };
       }
 
-      const ownerModule = trigger.closest('.rtb-data-module');
-      const selectedView = ownerModule?.querySelector('.rtb-view-tab[aria-selected="true"]')?.dataset.view;
-      const isStore = type === 'owner-performance' && selectedView !== 'personal';
-      const scope = isStore ? '全店员工' : type === 'employee-performance' ? '当前员工个人' : '当前店主个人';
-      const title = isStore ? '门店业绩口径说明' : '我的业绩口径说明';
+      const title = '数据口径说明';
+      if (type === 'owner-performance') {
+        return {
+          title,
+          items: [
+            ['门店业绩', '统计周期内门店项目、产品、售卡/充值三类有效流水订单的金额之和，不区分支付方式，同一订单只按所属业务类型计入一次。未关联服务人员的订单仍计入；优惠券及其他权益折扣订单按折扣前的项目或商品原价计业绩。'],
+            ['门店预计提成', '汇总统计周期内全店员工依据各自有效业绩和业务发生时生效的提成方案计算出的预估提成，不代表最终已结算或已发放金额。'],
+            ['我的业绩', '统计周期内归属到当前店主个人名下的有效业绩金额，用于衡量个人业务产出，不包含仅归属门店或其他员工的业绩。'],
+            ['我的预计提成', '根据当前店主个人名下的有效业绩和业务发生时生效的个人提成方案计算出的预估提成，不代表最终已结算或已发放金额。'],
+            ['业绩构成', '门店业绩与我的业绩均按劳动业绩、售卡业绩和产品业绩三类展示；分类金额必须与当前选中的统计对象和时间范围保持一致。'],
+            ['劳动 / 售卡 / 产品业绩', '劳动业绩反映项目服务产出，售卡业绩反映买卡、续卡及充值业务产出，产品业绩反映实物产品销售产出；三类均按归属规则统计，不按支付方式拆分。']
+          ]
+        };
+      }
       return {
         title,
         items: [
-          ['总业绩', '统计对象在统计周期内产生并归属到其名下的有效业绩金额，用于衡量业务产出，不等于收款合计或营业额。'],
+          ['总业绩', '当前员工在统计周期内产生并归属到其名下的有效业绩金额，用于衡量个人业务产出，不等于收款合计或门店业绩。'],
           ['劳动业绩', '员工为客户完成项目服务后产生，并按服务归属或业绩分配规则归属到统计对象名下的有效业绩。衡量服务产出，与支付方式无关。'],
           ['售卡业绩', '员工通过买卡、续卡或充值业务获得，并按售卡归属规则归属到统计对象名下的有效业绩。属于员工绩效指标，不属于客户消费金额，也不等同于会计收入。'],
           ['产品业绩', '员工销售门店实物产品后产生，并按销售归属或业绩分配规则归属到统计对象名下的有效业绩。支付方式不影响产品业绩分类。'],
@@ -1278,17 +1460,11 @@
       layer.querySelector('[data-explain-body]').innerHTML = `${content.formula ? `<div class="rtb-explain-formula">${content.formula}</div>` : ''}${rtbExplainItems(content.items)}`;
       rtbExplainTrigger = trigger;
       layer.hidden = false;
-      if (rtbEmbedMode === 'employee' && window.parent !== window) {
-        window.parent.postMessage({ type: 'rtb-explain-state', open: true }, '*');
-      }
       layer.querySelector('[data-explain-close]').focus();
     }
 
     function closeRtbExplain(layer) {
       layer.hidden = true;
-      if (rtbEmbedMode === 'employee' && window.parent !== window) {
-        window.parent.postMessage({ type: 'rtb-explain-state', open: false }, '*');
-      }
       if (rtbExplainTrigger) rtbExplainTrigger.focus();
       rtbExplainTrigger = null;
     }
@@ -1385,6 +1561,8 @@
           panel.hidden = panel.dataset.viewPanel !== selected.dataset.view;
         });
         module.dataset.detail = selected.textContent.trim();
+        module.dataset.targetPage = selected.dataset.targetPage;
+        showNavigationHint(selected.dataset.targetPage);
       });
     });
 
@@ -1419,10 +1597,21 @@
       rtbToastTimer = setTimeout(() => rtbToast.classList.remove('show'), 1800);
     }
 
+    function showNavigationHint(pageName) {
+      rtbToast.textContent = `将进入「${pageName}」页面（原型暂不展示目标页面）`;
+      rtbToast.classList.add('show');
+      clearTimeout(rtbToastTimer);
+      rtbToastTimer = setTimeout(() => rtbToast.classList.remove('show'), 2200);
+    }
+
     function openDetail(module) {
+      if (module.dataset.targetPage) {
+        showNavigationHint(module.dataset.targetPage);
+        return;
+      }
       if (module.dataset.href) {
         if (rtbEmbedMode && window.parent !== window) {
-          window.parent.postMessage({ type: 'prototype-navigate', page: 'revenue-analysis' }, '*');
+          window.parent.postMessage({ type: 'prototype-navigate', page: 'revenue-analysis', reportTarget: module.dataset.reportTarget || 'receipt' }, '*');
           return;
         }
         window.location.href = module.dataset.href;
@@ -1432,7 +1621,7 @@
     }
 
     document.querySelectorAll('[data-detail]').forEach((module) => {
-      const isRevenueTrigger = (target) => target.closest('.rtb-income-value-row, .rtb-module-more');
+      const isRevenueTrigger = (target) => target.closest('.rtb-income-value-row, .rtb-breakdown-value, .rtb-module-more');
       module.addEventListener('click', (event) => {
         if (module.getAttribute('aria-label') === '收款概况' && !isRevenueTrigger(event.target)) return;
         openDetail(module);

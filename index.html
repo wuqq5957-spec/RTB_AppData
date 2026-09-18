@@ -23,7 +23,7 @@
     html, body { height: 100%; }
     body {
       display: grid;
-      grid-template-columns: 320px minmax(438px, 1fr) 470px;
+      grid-template-columns: 320px minmax(438px, 1fr) 520px;
       margin: 0;
       overflow: hidden;
       color: var(--text);
@@ -118,54 +118,6 @@
     }
     .prototype-page.show { opacity: 1; visibility: visible; pointer-events: auto; }
     .prototype-page iframe { display: block; width: 100%; height: 100%; border: 0; background: #f5f6fa; }
-    .employee-privacy-toggle {
-      position: absolute;
-      top: 137px;
-      left: 112px;
-      z-index: 12;
-      display: grid;
-      width: 22px;
-      height: 22px;
-      place-items: center;
-      padding: 0;
-      border: 0;
-      border-radius: 50%;
-      color: #696a73;
-      background: transparent;
-      cursor: pointer;
-    }
-    .employee-privacy-toggle:hover { background: rgba(48, 49, 58, .06); }
-    .employee-privacy-toggle:focus-visible { outline: 2px solid rgba(251, 46, 66, .35); outline-offset: 2px; }
-    .employee-privacy-toggle svg { width: 18px; height: 18px; }
-    .employee-privacy-toggle[aria-pressed="true"] .employee-eye-slash { display: none; }
-    #home-employee.employee-explain-open .employee-privacy-toggle,
-    #home-employee.employee-explain-open .employee-privacy-mask { visibility: hidden; }
-    .employee-privacy-mask {
-      position: absolute;
-      top: 169px;
-      right: 12px;
-      left: 12px;
-      z-index: 11;
-      height: 161px;
-      padding: 0 12px 13px;
-      border-radius: 0 0 18px 18px;
-      background: #fff;
-      pointer-events: none;
-    }
-    .employee-mask-main {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 10px;
-    }
-    .employee-mask-metric { padding: 11px 10px; border-radius: 11px; background: #f7f8fb; }
-    .employee-mask-metric:first-child { background: linear-gradient(135deg, #fff1f3, #fff8f9); }
-    .employee-mask-label { display: block; margin-bottom: 7px; color: #777882; font-size: 10px; }
-    .employee-mask-dots { color: #55565f; font-size: 15px; font-weight: 650; letter-spacing: 2px; }
-    .employee-mask-parts { margin-top: 9px; padding-top: 9px; border-top: 1px dashed #ececf1; }
-    .employee-mask-parts-title { margin-bottom: 7px; color: #767882; font-size: 10px; font-weight: 700; }
-    .employee-mask-track { height: 6px; margin-bottom: 10px; border-radius: 999px; background: #f0f1f5; }
-    .employee-mask-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; color: #55565f; font-size: 9px; text-align: center; white-space: nowrap; }
-    .employee-mask-items span::after { content: "••••"; margin-left: 3px; font-size: 9px; letter-spacing: 1px; }
     .report-app {
       height: 100%;
       overflow-y: auto;
@@ -381,15 +333,22 @@
     .receipt-trend-legend span { display: flex; align-items: center; gap: 4px; }
     .receipt-trend-legend i { width: 7px; height: 7px; border-radius: 50%; background: var(--trend-color); }
     .receipt-trend-head > span { color: #9698a2; font-size: 8px; }
-    .receipt-trend-chart { display: block; width: 100%; height: 120px; overflow: visible; }
+    .receipt-trend-plot { position: relative; }
+    .receipt-trend-chart { display: block; width: 100%; height: 120px; overflow: visible; cursor: crosshair; outline: none; touch-action: pan-y; }
+    .receipt-trend-chart:focus-visible { border-radius: 8px; box-shadow: 0 0 0 2px #ffbdc5; }
     .receipt-trend-line-sales { fill: none; stroke: #fb2e42; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     .receipt-trend-line-receipt { fill: none; stroke: #8f7bd8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     .receipt-trend-point-sales { fill: #fff; stroke: #fb2e42; stroke-width: 1.8; }
     .receipt-trend-point-receipt { fill: #fff; stroke: #8f7bd8; stroke-width: 1.8; }
+    .receipt-trend-selected-sales { fill: #fb2e42; stroke: #fff; stroke-width: 2.5; }
+    .receipt-trend-selected-receipt { fill: #8f7bd8; stroke: #fff; stroke-width: 2.5; }
+    .receipt-trend-tooltip { min-width: 126px; }
+    .receipt-trend-tooltip .receipt-dot { background: #8f7bd8; }
     .receipt-trend-labels { position: relative; height: 13px; color: #9b9da6; font-size: 8px; }
     .receipt-trend-labels span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
     .receipt-trend-labels span:first-child { transform: translateX(-18%); }
     .receipt-trend-labels span:last-child { transform: translateX(-82%); }
+    .receipt-trend-labels span.is-selected { color: #303038; font-weight: 700; }
     .receipt-composition-body { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 16px; }
     .receipt-composition-donut { position: relative; width: 88px; height: 88px; border-radius: 50%; background: conic-gradient(#fb2e42 0 62.5%, #ff8a70 62.5% 100%); }
     .receipt-composition-donut::after { content: ""; position: absolute; inset: 19px; border-radius: 50%; background: #fff; }
@@ -448,17 +407,23 @@
     }
     .report-date-layer[hidden] { display: none; }
     .report-date-sheet {
+      display: flex;
       width: 100%;
+      height: 72%;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
       padding: 0 0 18px;
       border-radius: 22px 22px 0 0;
       background: #fff;
       box-shadow: 0 -12px 34px rgba(30, 31, 40, .14);
+      animation: report-sheet-rise .22s ease-out;
     }
-    .report-date-sheet-head { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; min-height: 54px; padding: 0 10px; border-bottom: 1px solid #eff0f3; }
+    .report-date-sheet-head { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; min-height: 54px; flex: 0 0 auto; padding: 0 10px; border-bottom: 1px solid #eff0f3; }
     .report-date-sheet-head h3 { margin: 0; font-size: 15px; text-align: center; }
     .report-date-head-action { min-height: 44px; padding: 0 8px; border: 0; color: #777983; background: transparent; font-size: 12px; cursor: pointer; }
     .report-date-head-action.primary { color: #ed263b; font-weight: 700; }
-    .report-date-fields { display: grid; gap: 10px; padding: 14px 18px 0; }
+    .report-date-fields { display: grid; min-height: 0; flex: 1 1 auto; align-content: start; gap: 10px; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px 0; -webkit-overflow-scrolling: touch; }
     .report-date-fields[hidden] { display: none; }
     .report-date-range-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 3px; border-radius: 10px; background: #f4f5f8; }
     .report-date-range-tab { min-height: 40px; padding: 0 8px; border: 0; border-radius: 8px; color: #777983; background: transparent; font-size: 10px; cursor: pointer; }
@@ -473,16 +438,16 @@
     .report-date-wheel-column { position: relative; z-index: 1; display: grid; grid-template-rows: repeat(5, 36px); }
     .report-date-wheel-option { min-height: 36px; padding: 0; border: 0; color: #a0a2aa; background: transparent; font-size: 12px; cursor: pointer; }
     .report-date-wheel-option.is-selected { color: #272830; font-size: 14px; font-weight: 700; }
-    .report-date-error { min-height: 16px; margin: 2px 18px 0; color: #e82439; font-size: 10px; text-align: center; }
+    .report-date-error { min-height: 16px; flex: 0 0 auto; margin: 2px 18px 0; color: #e82439; font-size: 10px; text-align: center; }
     .report-week-preview { margin: -2px 18px 2px; color: #777983; font-size: 10px; text-align: center; }
-    .report-spec-layer { position: absolute; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 0 14px; background: rgba(24, 25, 31, .42); }
+    .report-spec-layer { position: absolute; inset: 0; z-index: 70; display: flex; align-items: flex-end; justify-content: stretch; background: rgba(24, 25, 31, .42); }
     .report-spec-layer[hidden] { display: none; }
-    .report-spec-panel { display: flex; width: 100%; max-height: 82%; flex-direction: column; overflow: hidden; border-radius: 18px; background: #fff; box-shadow: 0 18px 42px rgba(28, 29, 38, .22); }
-    .report-spec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 15px 12px; border-bottom: 1px solid #eff0f3; }
+    .report-spec-panel { display: flex; width: 100%; height: 72%; min-height: 0; flex-direction: column; overflow: hidden; border-radius: 22px 22px 0 0; background: #fff; box-shadow: 0 -12px 34px rgba(28, 29, 38, .22); animation: report-sheet-rise .22s ease-out; }
+    .report-spec-head { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 15px 12px; border-bottom: 1px solid #eff0f3; }
     .report-spec-head h3 { margin: 0; font-size: 15px; }
     .report-spec-close { display: grid; width: 26px; height: 26px; place-items: center; padding: 0; border: 0; border-radius: 50%; color: #858791; background: #f4f5f8; font-size: 14px; line-height: 1; cursor: pointer; }
-    .report-spec-intro { margin: 0; padding: 11px 15px 0; color: #9698a2; font-size: 10px; line-height: 1.7; }
-    .report-spec-body { overflow-y: auto; padding: 11px 15px 18px; }
+    .report-spec-intro { flex: 0 0 auto; margin: 0; padding: 11px 15px 0; color: #9698a2; font-size: 10px; line-height: 1.7; }
+    .report-spec-body { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 11px 15px 18px; -webkit-overflow-scrolling: touch; }
     .report-spec-item { padding: 11px 0; border-bottom: 1px solid #f3f4f7; }
     .report-spec-item:last-child { border-bottom: 0; padding-bottom: 2px; }
     .report-spec-item h4 { margin: 0 0 5px; color: #2c2d35; font-size: 12px; }
@@ -490,6 +455,7 @@
     .report-spec-item p { margin: 0; color: #6f717b; font-size: 10px; line-height: 1.75; }
     .report-spec-item p + p { margin-top: 4px; }
     .report-spec-item em { color: #a0a2ab; font-style: normal; }
+    @keyframes report-sheet-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .prototype-notes > h1 { margin: 0; font-size: 20px; }
     .prototype-note-context { margin: 7px 0 22px; color: var(--muted); font-size: 12px; line-height: 1.55; }
     .prototype-states { margin-bottom: 20px; padding: 14px; border-radius: 14px; background: var(--surface); }
@@ -607,7 +573,7 @@
       scroll-padding-top: 24px;
     }
     @media (max-width: 1180px) and (min-width: 761px) {
-      body { grid-template-columns: 250px minmax(400px, 1fr) 360px; }
+      body { grid-template-columns: 250px minmax(400px, 1fr) 410px; }
       .prototype-menu { padding-inline: 15px; }
       .prototype-notes { padding-inline: 18px; }
     }
@@ -617,6 +583,139 @@
       .prototype-stage { width: 100%; height: 100dvh; padding: 0; overflow: hidden; }
       .phone { width: 100%; height: 100dvh; min-height: 100dvh; border: 0; border-radius: 0; box-shadow: none; }
       .prototype-prd { display: none !important; }
+    }
+
+    /* 0917 UI 规范视觉对齐：保留 RTB 红色品牌，统一层级、留白与表面质感。 */
+    :root {
+      --brand: #f32f41;
+      --brand-dark: #dc2537;
+      --brand-soft: #fff1f2;
+      --page: #f3f5f3;
+      --panel: #ffffff;
+      --surface: #f6f8f6;
+      --text: #222a25;
+      --secondary: #606a63;
+      --muted: #8b948e;
+      --line: #e5eae6;
+      --shadow: 0 18px 44px rgba(32, 45, 37, .11);
+    }
+    body {
+      color: var(--text);
+      background: var(--page);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .prototype-menu,
+    .prototype-notes { background: rgba(255, 255, 255, .98); }
+    .prototype-menu { padding: 28px 20px 40px; }
+    .prototype-notes { padding: 30px 28px 48px; }
+    .prototype-logo {
+      border-radius: 8px;
+      background: var(--brand);
+      box-shadow: 0 7px 16px rgba(243, 47, 65, .18);
+    }
+    .prototype-brand { margin-bottom: 30px; }
+    .prototype-brand strong { color: var(--text); font-size: 16px; }
+    .prototype-menu-group { margin-top: 27px; }
+    .prototype-menu-group h2 { color: #949c97; font-weight: 600; letter-spacing: .05em; }
+    .prototype-link {
+      min-height: 44px;
+      margin: 2px 0;
+      padding: 10px 12px;
+      border-radius: 7px;
+      color: #59635c;
+    }
+    .prototype-link:hover { background: #f7f9f7; }
+    .prototype-link.active {
+      box-shadow: inset 3px 0 0 var(--brand);
+      color: var(--brand-dark);
+      background: var(--brand-soft);
+    }
+    .prd-mark { color: #8b6770; background: #f6f2f3; }
+    .prototype-stage {
+      background: radial-gradient(circle at 50% 10%, rgba(243, 47, 65, .04), transparent 32%), var(--page);
+    }
+    .phone {
+      border-color: rgba(35, 48, 40, .10);
+      background: #f5f7f5;
+      box-shadow: var(--shadow);
+    }
+    .prototype-page iframe { background: #f5f7f5; }
+    .report-app { color: var(--text); background: #f5f7f5; }
+    .report-header { background: var(--brand); }
+    .report-tabs { border-bottom-color: var(--line); }
+    .report-tab { color: #7d857f; }
+    .report-tab[aria-selected="true"] { color: var(--text); }
+    .report-tab[aria-selected="true"]::after { height: 2px; background: var(--brand); }
+    .report-panel { padding: 14px 12px 34px; }
+    .report-period {
+      border-radius: 7px;
+      color: #707972;
+      background: #fff;
+    }
+    .report-period[aria-pressed="true"] {
+      color: var(--brand-dark);
+      border-color: #ffd9dd;
+      background: var(--brand-soft);
+    }
+    .report-card {
+      margin-bottom: 11px;
+      padding: 16px 15px;
+      border-color: var(--line);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(34, 42, 37, .025);
+    }
+    .report-section-head { margin-bottom: 14px; }
+    .report-section-head h3 { color: var(--text); font-size: 15px; font-weight: 700; }
+    .report-section-head span { color: var(--muted); }
+    .report-trend-block {
+      border: 1px solid #edf0ed;
+      border-radius: 9px;
+      background: #fafbfa;
+    }
+    .report-kpi-grid { border-color: var(--line); border-radius: 8px; }
+    .report-kpi { border-color: var(--line); color: #727b75; }
+    .report-kpi strong,
+    .receipt-dual-value strong,
+    .report-card-sales-main strong,
+    .receipt-risk-main strong { color: #29312c; }
+    .report-kpi[aria-pressed="true"] { color: var(--brand-dark); background: #fff7f7; }
+    .report-kpi[aria-pressed="true"] strong { color: #29312c; }
+    .report-switches,
+    .report-date-range-tabs { border-radius: 7px; background: #f3f5f3; }
+    .report-switch,
+    .report-date-range-tab { border-radius: 5px; }
+    .receipt-hero { background: linear-gradient(160deg, #fff, #fff8f8); }
+    .receipt-equation,
+    .receipt-expand-detail,
+    .receipt-risk-item,
+    .report-rank-more { background: #f6f8f6; }
+    .report-rank-no { border-radius: 5px; background: #f0f3f0; }
+    .report-rank-row:first-child .report-rank-no { background: var(--brand); }
+    .report-date-layer,
+    .report-spec-layer { background: rgba(28, 35, 31, .40); }
+    .report-date-sheet,
+    .report-spec-panel { border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(30, 39, 33, .14); }
+    .report-date-sheet-head,
+    .report-spec-head { border-bottom-color: var(--line); }
+    .report-date-wheel-selection,
+    .report-spec-close { background: #f2f5f2; }
+    .prototype-states { border: 1px solid var(--line); border-radius: 9px; background: var(--surface); }
+    .prototype-state-button { border-radius: 7px; }
+    .page-logic-title { color: var(--text); font-size: 18px; }
+    .page-logic-section summary { padding: 14px 2px; color: var(--text); }
+    .logic-major-title { font-size: 16px; }
+    .prototype-prd {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(34, 45, 38, .06);
+    }
+    .prototype-prd th { background: var(--surface); }
+    .prd-source-note { border-radius: 8px; }
+    .prd-field { border-radius: 8px; }
+    .prd-field[open] summary { background: #fffafa; }
+    @media (max-width: 760px) {
+      .phone { border-radius: 0; box-shadow: none; }
     }
   </style>
 </head>
@@ -650,20 +749,6 @@
       </section>
       <section class="prototype-page" id="home-employee" aria-label="店员首页" aria-hidden="true">
         <iframe src="store-home-data-cards.html?embed=employee" title="店员首页原型"></iframe>
-        <button class="employee-privacy-toggle" type="button" aria-label="显示业绩数据" aria-pressed="false" data-employee-privacy-toggle>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/><path class="employee-eye-slash" d="M4 4l16 16"/></svg>
-        </button>
-        <div class="employee-privacy-mask" data-employee-privacy-mask>
-          <div class="employee-mask-main">
-            <div class="employee-mask-metric"><span class="employee-mask-label">总业绩</span><span class="employee-mask-dots">••••</span></div>
-            <div class="employee-mask-metric"><span class="employee-mask-label">预计提成</span><span class="employee-mask-dots">••••</span></div>
-          </div>
-          <div class="employee-mask-parts">
-            <div class="employee-mask-parts-title">业绩构成</div>
-            <div class="employee-mask-track"></div>
-            <div class="employee-mask-items"><span>劳动业绩</span><span>售卡业绩</span><span>产品业绩</span></div>
-          </div>
-        </div>
       </section>
       <section class="prototype-page" id="revenue-analysis" aria-label="经营分析收款页面" aria-hidden="true">
         <div class="report-app" data-screen-label="门店经营报表">
@@ -700,8 +785,8 @@
                   <button class="report-kpi" type="button" aria-pressed="false" data-metric="办卡/充值" data-value="¥700.00"><span>办卡/充值</span><strong>¥700.00</strong></button>
                   <button class="report-kpi" type="button" aria-pressed="false" data-metric="订单退款" data-value="¥400.00"><span>订单退款</span><strong>¥400.00</strong></button>
                   <button class="report-kpi" type="button" aria-pressed="false" data-metric="客单价" data-value="¥350.00"><span>客单价</span><strong>¥350.00</strong></button>
-                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="成交客户" data-value="8人"><span>成交客户</span><strong>8人</strong></button>
-                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="新增客户" data-value="2人"><span>新增客户</span><strong>2人</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="开单客户" data-value="8人"><span>开单客户</span><strong>8人</strong></button>
+                  <button class="report-kpi" type="button" aria-pressed="false" data-metric="新增会员" data-value="2人"><span>新增会员</span><strong>2人</strong></button>
                 </div>
               </div>
               <div class="report-trend-block">
@@ -737,24 +822,24 @@
             </article>
 
             <article class="report-card">
-              <div class="report-section-head"><h3>办卡充值<button class="report-spec-button" type="button" aria-label="查看办卡充值口径" data-report-spec="cards">i</button></h3><span>合计 ¥41,000 · 共 36 笔</span></div>
+              <div class="report-section-head"><h3>办卡充值<button class="report-spec-button" type="button" aria-label="查看办卡充值口径" data-report-spec="cards">i</button></h3><span>合计 ¥31,000 · 共 36 笔</span></div>
               <div class="report-card-sales-list">
-                <div class="report-card-sales-bar" role="img" aria-label="办卡充值金额构成：储值卡17000元，套餐卡15000元，计次卡4000元，折扣卡5000元">
-                  <i style="--card-color:#fb2e42;--card-share:41.5%"></i><i style="--card-color:#ff826d;--card-share:36.6%"></i><i style="--card-color:#ffb36b;--card-share:9.8%"></i><i style="--card-color:#d997ad;--card-share:12.2%"></i>
+                <div class="report-card-sales-bar" role="img" aria-label="办卡充值实收本金构成：储值卡12000元，套餐卡10000元，计次卡4000元，折扣卡5000元">
+                  <i style="--card-color:#fb2e42;--card-share:38.7%"></i><i style="--card-color:#ff826d;--card-share:32.3%"></i><i style="--card-color:#ffb36b;--card-share:12.9%"></i><i style="--card-color:#d997ad;--card-share:16.1%"></i>
                 </div>
                 <div class="report-card-sales-item">
-                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#fb2e42"></i>储值卡<b>12 笔</b></span><strong>¥17,000<em>41.5%</em></strong></div>
-                  <div class="report-card-sales-detail"><span>本金 ¥12,000</span><span>赠金 ¥5,000</span></div>
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#fb2e42"></i>储值卡<b>12 笔</b></span><strong>¥12,000<em>38.7%</em></strong></div>
+                  <div class="report-card-sales-detail"><span>赠金 ¥5,000</span></div>
                 </div>
                 <div class="report-card-sales-item">
-                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ff826d"></i>套餐卡<b>10 笔</b></span><strong>¥15,000<em>36.6%</em></strong></div>
-                  <div class="report-card-sales-detail"><span>本金 ¥10,000</span><span>赠金 ¥5,000</span></div>
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ff826d"></i>套餐卡<b>10 笔</b></span><strong>¥10,000<em>32.3%</em></strong></div>
+                  <div class="report-card-sales-detail"><span>赠金 ¥5,000</span></div>
                 </div>
                 <div class="report-card-sales-item">
-                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ffb36b"></i>计次卡<b>12 笔</b></span><strong>¥4,000<em>9.8%</em></strong></div>
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#ffb36b"></i>计次卡<b>12 笔</b></span><strong>¥4,000<em>12.9%</em></strong></div>
                 </div>
                 <div class="report-card-sales-item">
-                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#d997ad"></i>折扣卡<b>2 笔</b></span><strong>¥5,000<em>12.2%</em></strong></div>
+                  <div class="report-card-sales-main"><span class="report-card-sales-name"><i style="--card-color:#d997ad"></i>折扣卡<b>2 笔</b></span><strong>¥5,000<em>16.1%</em></strong></div>
                 </div>
               </div>
             </article>
@@ -787,19 +872,24 @@
             <article class="report-card receipt-hero">
               <div class="report-section-head"><h3>核心数据<button class="report-spec-button" type="button" aria-label="查看营收核心数据口径" data-report-spec="revenue-core">i</button></h3></div>
               <div class="receipt-dual">
-                <div class="receipt-dual-metric"><span>营业额</span><div class="receipt-dual-value"><strong>¥4,800.00</strong><em>较昨日 +4.8%</em></div></div>
+                <div class="receipt-dual-metric"><span>门店业绩</span><div class="receipt-dual-value"><strong>¥4,800.00</strong><em>较昨日 +4.8%</em></div></div>
                 <div class="receipt-dual-metric"><span>收款合计</span><div class="receipt-dual-value"><strong>¥3,100.00</strong><em>较昨日 +6.2%</em></div></div>
               </div>
               <div class="receipt-trend">
-                <div class="receipt-trend-head"><div class="receipt-trend-legend"><span><i style="--trend-color:#fb2e42"></i>营业额</span><span><i style="--trend-color:#8f7bd8"></i>收款合计</span></div><span data-receipt-trend-range>近 7 日</span></div>
-                <svg class="receipt-trend-chart" viewBox="0 0 330 120" role="img" aria-label="营业额与收款合计趋势">
-                  <g><line class="report-trend-grid" x1="42" y1="17" x2="322" y2="17"></line><line class="report-trend-grid" x1="42" y1="60" x2="322" y2="60"></line><line class="report-trend-grid" x1="42" y1="103" x2="322" y2="103"></line></g>
-                  <g data-receipt-trend-axis></g>
-                  <polyline class="receipt-trend-line-sales" data-receipt-trend-sales></polyline>
-                  <polyline class="receipt-trend-line-receipt" data-receipt-trend-receipt></polyline>
-                  <g data-receipt-trend-sales-points></g>
-                  <g data-receipt-trend-receipt-points></g>
-                </svg>
+                <div class="receipt-trend-head"><div class="receipt-trend-legend"><span><i style="--trend-color:#fb2e42"></i>门店业绩</span><span><i style="--trend-color:#8f7bd8"></i>收款合计</span></div><span data-receipt-trend-range>近 7 日</span></div>
+                <div class="receipt-trend-plot">
+                  <svg class="receipt-trend-chart" viewBox="0 0 330 120" role="img" tabindex="0" data-receipt-trend-chart aria-label="门店业绩与收款合计趋势，点击或使用左右方向键查看各时间点数据">
+                    <g><line class="report-trend-grid" x1="42" y1="17" x2="322" y2="17"></line><line class="report-trend-grid" x1="42" y1="60" x2="322" y2="60"></line><line class="report-trend-grid" x1="42" y1="103" x2="322" y2="103"></line></g>
+                    <g data-receipt-trend-axis></g>
+                    <polyline class="receipt-trend-line-sales" data-receipt-trend-sales></polyline>
+                    <polyline class="receipt-trend-line-receipt" data-receipt-trend-receipt></polyline>
+                    <g data-receipt-trend-sales-points></g>
+                    <g data-receipt-trend-receipt-points></g>
+                    <g data-receipt-trend-selection hidden><line class="report-trend-guide" y1="12" y2="108"></line><circle class="receipt-trend-selected-sales" r="4.2"></circle><circle class="receipt-trend-selected-receipt" r="4.2"></circle></g>
+                    <rect class="report-trend-interaction" x="36" y="8" width="292" height="102"></rect>
+                  </svg>
+                  <div class="report-trend-tooltip receipt-trend-tooltip" data-receipt-trend-tooltip hidden><strong data-receipt-trend-tooltip-date></strong><span><i></i><b data-receipt-trend-tooltip-sales></b></span><span><i class="receipt-dot"></i><b data-receipt-trend-tooltip-receipt></b></span></div>
+                </div>
                 <div class="receipt-trend-labels" data-receipt-trend-labels></div>
               </div>
             </article>
@@ -848,7 +938,7 @@
                   <div class="receipt-risk-meta"><span>共 <b>3 笔</b></span><span>签单占比 <b>5.8%</b></span></div>
                 </div>
               </div>
-              <div class="receipt-equation" style="margin-top:11px">退款率、签单占比均按退款前营业额 ¥5,200 计算。</div>
+              <div class="receipt-equation" style="margin-top:11px">退款率、签单占比均按退款前门店业绩 ¥5,200 计算。</div>
             </article>
           </section>
 
@@ -879,7 +969,21 @@
       <p class="version">记录文档的重要创建与变更信息</p>
       <table>
         <thead><tr><th>更新人</th><th>更新时间</th><th>更新内容</th></tr></thead>
-        <tbody><tr><td>吴琼</td><td>2026-09-17 11:32</td><td>创建文档</td></tr></tbody>
+        <tbody>
+          <tr>
+            <td>吴琼</td>
+            <td>2026-09-17 17:22</td>
+            <td>
+              <ul style="margin:0;padding-left:18px">
+                <li><strong>报表交互：</strong>完善日／周／月筛选、跳转及数据提示；周报趋势统一为最近 7 周，趋势图支持选点查看。</li>
+                <li><strong>展示优化：</strong>统一金额与占比排版、首页数字颜色，精简不适用的消费方式分类。</li>
+                <li><strong>指标统一：</strong>“营业额”更名为“门店业绩”，“成交客户”更名为“开单客户”，“新增客户”更名为“新增会员”。</li>
+                <li><strong>口径补全：</strong>完善客户、办卡充值、销售排行及门店业绩规则；未关联服务人员订单计入门店业绩，权益折扣按折扣前原价计算。</li>
+              </ul>
+            </td>
+          </tr>
+          <tr><td>吴琼</td><td>2026-09-17 11:32</td><td>创建文档</td></tr>
+        </tbody>
       </table>
     </article>
 
@@ -906,14 +1010,14 @@
       <ul>
         <li>建立店主首页、店员首页、数据总览和营收分析四个页面之间清晰、连续的经营数据查看路径。</li>
         <li>统一跨页面重复字段、日期维度和趋势图的展示与交互规则，减少理解与研发实现偏差。</li>
-        <li>帮助店主快速掌握门店收款、营业额、消费结构及异常情况，帮助店员查看个人业绩与预计提成。</li>
+        <li>帮助店主快速掌握门店收款、门店业绩、消费结构及异常情况，帮助店员查看个人业绩与预计提成。</li>
       </ul>
 
       <h2>二、全局规则</h2>
       <div class="prd-source-note">
         <ul class="prd-global-rules">
           <li>统计区间统一采用“开始时间 ≤ 统计时间 &lt; 结束时间”，日报按自然日、周报按自然周、月报按自然月统计。</li>
-          <li>金额字段按“分”存储与返回，页面统一换算为“元”并保留两位小数；数量字段展示整数，占比保留一位小数。</li>
+          <li>金额字段按“分”存储与返回，页面统一换算为“元”并保留两位小数；数量字段展示整数，占比保留一位小数。所有占比均在展示层进行尾差调整，确保同一组占比相加之和为 100.0%。</li>
           <li>正向业务按完成或支付成功时间计入；退款按退款成功时间计入当前周期，不回写原业务所在周期。</li>
           <li>取消、失败和已作废的数据不计入有效统计；无有效分母时占比展示“—”，不以 0% 代替。</li>
           <li>跨页面重复出现的同名字段共用同一套字段定义、计算公式、时间归属和计入范围。</li>
@@ -927,7 +1031,7 @@
           <tr><td>店主首页</td><td>收款、门店业绩、我的业绩及趋势；收款数字区域与箭头可进入门店经营报表。</td></tr>
           <tr><td>店员首页</td><td>个人业绩、业绩构成、预计提成及趋势。</td></tr>
           <tr><td>数据总览</td><td>核心数据与趋势、交易看板、办卡充值、销售排行。</td></tr>
-          <tr><td>营收分析</td><td>营业额与收款趋势、消费构成、消费方式、退款与异常。</td></tr>
+          <tr><td>营收分析</td><td>门店业绩与收款趋势、消费构成、消费方式、退款与异常。</td></tr>
         </tbody>
       </table>
       <p>报表日期维度本期支持日报、周报和月报；“员工业绩分析”“卡相关”“客流分析”仅保留栏目入口，暂不开放页面。</p>
@@ -991,10 +1095,10 @@
           <summary>总业绩</summary>
           <div class="prd-field-body"><table class="prd-field-table"><tbody>
             <tr><th>字段基本信息</th><td>字段编码：<code>total_performance_amount</code><br>数据类型：金额；默认值：0；允许为负数；统计维度：门店、员工个人、统计周期</td></tr>
-            <tr><th>业务定义</th><td>统计对象在统计周期内产生并归属到其名下的有效业绩金额，用于衡量业务产出，不等于收款合计或营业额。</td></tr>
-            <tr><th>计算公式</th><td><span class="prd-formula">总业绩 = 劳动业绩 + 售卡业绩 + 产品业绩</span><br>员工总业绩汇总当前员工三类业绩流水；门店总业绩汇总当前门店全部有效业绩流水。</td></tr>
+            <tr><th>业务定义</th><td>统计对象在统计周期内产生的有效业绩金额，用于衡量业务产出，不等于收款合计。门店视角统计项目、产品、售卡/充值三类有效流水订单，不区分支付方式，并包含未关联服务人员的订单；员工个人视角仅统计已归属到该员工名下的业绩。</td></tr>
+            <tr><th>计算公式</th><td><span class="prd-formula">门店总业绩 = 项目订单金额合计 + 产品订单金额合计 + 售卡/充值订单金额合计；员工总业绩 = 劳动业绩 + 售卡业绩 + 产品业绩。</span><br>门店内同一笔有效流水订单只按所属业务类型计入一次，不按支付方式重复累计。订单使用优惠券或其他权益折扣时，以折扣前的项目或商品原价作为业绩基数，不以订单实付金额作为业绩基数。</td></tr>
             <tr><th>时间归属规则</th><td>各分类业绩分别按照其正向业务生效时间和退款冲减时间归属，总业绩不另设独立时间字段。</td></tr>
-            <tr><th>计入范围</th><td>只汇总三类有效业绩流水。同一业务明细多人协作时，全部员工分配金额之和必须等于该明细可计业绩金额，禁止重复累计整笔订单。</td></tr>
+            <tr><th>计入范围</th><td>门店总业绩汇总项目、产品、售卡/充值三类有效流水订单，现金、扫码、卡付、团购记账、经理签单等支付方式均可计入，但支付方式不作为重复累加项。同一业务明细多人协作时，全部员工分配金额之和必须等于该明细可计业绩金额。未关联服务人员的有效订单计入门店总业绩，但不分配至任何员工个人业绩。</td></tr>
           </tbody></table></div>
         </details>
         <details class="prd-field">
@@ -1056,7 +1160,7 @@
 
   <aside class="prototype-notes" aria-label="页面逻辑说明">
     <h1>页面逻辑说明</h1>
-    <p class="prototype-note-context">说明内容随中间页面同步切换，包含页面展示与交互逻辑，以及对应字段编码、计算公式、时间归属和关键统计边界。</p>
+    <p class="prototype-note-context">说明内容随中间页面同步切换，包含页面展示与交互逻辑，以及对应字段编码、计算公式、时间归属和关键统计边界。所有弹窗统一从页面底部拉起并保持等高，内容超出时在弹窗内上下滑动。</p>
 
     <section class="prototype-states" data-state-controls>
       <h2>页面状态演示</h2>
@@ -1073,9 +1177,9 @@
         <h2 class="page-logic-title">店主首页逻辑说明</h2>
         <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜首页数据》。店主首页同时展示门店资金流入与业绩产出，两类数据保持独立表达。</p>
         <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
-        <details class="page-logic-section" open><summary>一、收款卡片</summary><div class="page-logic-body"><ul><li>卡片展示收款合计、开单实收、办卡/充值、订单退款及当前周期的对比结果；退款金额按正数展示，收款合计允许出现负数。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内金额和对比文案整体刷新。</li><li>进入首页时金额及对比结果默认隐藏；点击标题旁的小眼睛显示，再次点击恢复隐藏。</li><li>仅点击收款合计的大金额区域或右侧“›”进入「门店经营报表－营收分析」；日期标签、说明图标和卡片空白区域不触发跳转。</li><li>点击标题旁的信息图标打开整张收款卡片的数据口径说明弹窗；点击关闭按钮或遮罩关闭。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、业绩卡片</summary><div class="page-logic-body"><ul><li>点击“门店业绩 / 我的业绩”切换统计对象；点击“今日 / 本周 / 本月”切换展示周期。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；三类业绩按业务类型展示，不按现金、卡付、团购或签单等支付方式拆分。</li><li>正常状态展示三色构成条及三项金额；总业绩为 0、总业绩为负或任一构成项为负时，隐藏构成条，只保留三项金额。</li><li>预计提成作为预估结果与总业绩并列展示；出现退款冲减时允许显示负数。</li><li>店主首页的业绩数据直接展示，不提供隐藏按钮；点击标题旁的信息图标打开业绩字段说明弹窗。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、状态与其他入口</summary><div class="page-logic-body"><ul><li>金额字段无数据时展示 ¥0.00；正常业务金额、退款冲减及负值均保留正负号，不以空白代替。</li><li>快捷功能以独立入口展示，点击后进入对应业务功能；本原型不展开快捷功能的后续页面。</li><li>右侧“页面状态演示”仅用于查看隐藏、正常、业绩为 0 和业绩为负四种状态，不改变实际导航。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>一、收款卡片</summary><div class="page-logic-body"><ul><li>卡片展示收款合计、开单实收、办卡/充值、订单退款及当前周期的对比结果；退款金额按正数展示，收款合计允许出现负数。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内金额和对比文案整体刷新。</li><li>进入首页时金额及对比结果默认隐藏；点击标题旁的小眼睛显示，再次点击恢复隐藏。</li><li>点击收款合计、开单实收、办卡/充值或订单退款的数字热区，统一进入「门店经营报表－数据总览」；右侧“›”执行相同跳转，日期标签、说明图标和卡片空白区域不触发跳转。</li><li>点击标题旁的信息图标打开整张收款卡片的数据口径说明弹窗；点击关闭按钮或遮罩关闭。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、业绩卡片</summary><div class="page-logic-body"><ul><li>点击“门店业绩”进入门店业绩页；点击“我的业绩”进入个人业绩页。目标页面无需在本原型中绘制，当前通过切换卡片数据并弹出跳转提示模拟。</li><li>点击“今日 / 本周 / 本月”切换展示周期。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；三类业绩按业务类型展示，不按现金、卡付、团购或签单等支付方式拆分。</li><li>正常状态展示三色构成条及三项金额；总业绩为 0、总业绩为负或任一构成项为负时，隐藏构成条，只保留三项金额。</li><li>预计提成作为预估结果与总业绩并列展示；出现退款冲减时允许显示负数。</li><li>店主首页的业绩数据直接展示，不提供隐藏按钮；点击标题旁的信息图标打开同一个数据口径说明弹窗，弹窗同时展示“门店业绩”和“我的业绩”两套口径，不随当前选中的标签切换。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、状态与其他入口</summary><div class="page-logic-body"><ul><li>金额字段无数据时展示 ¥0.00；正常业务金额、退款冲减及负值均保留正负号，不以空白代替。</li><li>快捷工具区左侧展示可横向滑动的工具入口；“工作台”固定在最右侧，不随左侧列表滚动。点击工具后进入对应业务功能，本原型不展开后续页面。</li><li>右侧“页面状态演示”仅用于查看隐藏、正常、业绩为 0 和业绩为负四种状态，不改变实际导航。</li></ul></div></details>
         </section>
         <section class="logic-major-block"><h3 class="logic-major-title">二、数据口径说明</h3><div class="logic-note-prd" data-note-prd="owner"></div></section>
       </section>
@@ -1084,7 +1188,7 @@
         <h2 class="page-logic-title">店员首页逻辑说明</h2>
         <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜首页数据》。店员首页只展示当前登录员工的“我的业绩”，不展示门店收款和门店整体业绩。</p>
         <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
-        <details class="page-logic-section" open><summary>一、页面展示</summary><div class="page-logic-body"><ul><li>页面不提供“门店业绩 / 我的业绩”范围切换，统计对象始终为当前登录员工。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；支付方式不作为员工端的业绩分类。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内全部数据同步刷新。</li><li>预计提成为预估结果；正向业绩和退款冲减均可影响页面显示，金额允许为负。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>一、页面展示</summary><div class="page-logic-body"><ul><li>页面不提供“门店业绩 / 我的业绩”范围切换，统计对象始终为当前登录员工。</li><li>点击“我的业绩”卡片或右侧“›”提示进入个人业绩页面；目标页面无需在本原型中绘制。</li><li>卡片展示总业绩、预计提成，以及劳动业绩、售卡业绩、产品业绩三项构成；支付方式不作为员工端的业绩分类。</li><li>点击“今日 / 本周 / 本月”切换展示周期，卡片内全部数据同步刷新。</li><li>快捷工具区左侧入口支持横向滑动，“工作台”固定在最右侧；点击入口提示进入对应功能。</li><li>预计提成为预估结果；正向业绩和退款冲减均可影响页面显示，金额允许为负。</li></ul></div></details>
         <details class="page-logic-section" open><summary>二、隐藏与特殊状态</summary><div class="page-logic-body"><ul><li>进入页面时，总业绩、预计提成、三项构成金额及构成条默认隐藏。</li><li>点击标题旁的小眼睛显示全部业绩数据，再次点击恢复隐藏；切换周期不会改变当前隐藏状态。</li><li>仅当总业绩大于 0 且三项构成均不为负时展示构成条；总业绩为 0、为负或任一构成项为负时只展示三项金额。</li></ul></div></details>
         <details class="page-logic-section"><summary>三、字段说明弹窗</summary><div class="page-logic-body"><p>点击标题旁的信息图标打开业绩卡片的数据口径说明弹窗，集中查看总业绩、预计提成和三项业绩构成的解释；点击关闭按钮或遮罩关闭。</p></div></details>
         </section>
@@ -1096,8 +1200,8 @@
         <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜数据总览与营收分析》。本页只展示当前门店；顶部仅“数据总览”和“营收分析”可进入，其余栏目保持不可用。</p>
         <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
         <details class="page-logic-section" open><summary>一、日期筛选与全局刷新</summary><div class="page-logic-body"><ul><li>点击“日报 / 周报 / 月报”只切换周期类型，不直接打开日期面板；日报对应自然日，周报对应自然周，月报对应自然月。</li><li>点击右侧日期区域打开底部选择面板：日报选择年月日，周报选择年份、月份和月内周次，月报选择年月；周报面板实时显示具体起止日期。</li><li>点击“确定”后，核心数据、趋势、交易看板、办卡充值和销售排行使用同一周期整体刷新；点击“取消”、遮罩或关闭按钮放弃修改。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、核心数据与趋势</summary><div class="page-logic-body"><ul><li>核心数据展示开单实收、办卡/充值、订单退款、客单价、成交客户和新增客户；金额和人数无数据时展示 0，客单价无法计算时展示“—”。</li><li>点击任一指标后，该指标进入选中状态，下方趋势标题、折线、坐标轴和悬浮数据同步切换。</li><li>日报横轴展示选中日期及此前 6 天，共 7 个点；周报展示选中周及此前 7 周，共 8 个点；月报展示选中月份及此前 11 个月，共 12 个点。</li><li>纵轴根据当前序列的最小值、最大值及数据类型自适应；出现负值时保留负值区间和零轴。</li><li>点击横轴区域吸附至最近数据点并显示日期、指标名称和数值；键盘支持左右方向键、Home 和 End 切换数据点。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、交易看板</summary><div class="page-logic-body"><ul><li>交易看板暂时只保留“消费方式 / 消费构成”两个观察维度，两者展示同一营业额总额，只是拆分角度不同。</li><li>消费方式展示开单实收、团购记账、卡付、经理签单；消费构成展示项目消费、产品消费。</li><li>点击切换标签后，圆环图、中心合计、分类金额和占比同步刷新；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与趋势</summary><div class="page-logic-body"><ul><li>核心数据展示开单实收、办卡/充值、订单退款、客单价、开单客户和新增会员；金额和人数无数据时展示 0，客单价无法计算时展示“—”。</li><li>点击任一指标后，该指标进入选中状态，下方趋势标题、折线、坐标轴和悬浮数据同步切换。</li><li>趋势图默认选中当前统计周期：日报选中“今日”，周报选中当前周，月报选中当前月；切换周期、日期或指标后，均自动选中对应序列的最后一个数据点并显示提示框。</li><li>日报横轴展示选中日期及此前 6 天，共 7 个点；周报展示选中周及此前 6 周，共 7 个点；月报展示选中月份及此前 11 个月，共 12 个点。</li><li>纵轴根据当前序列的最小值、最大值及数据类型自适应；出现负值时保留负值区间和零轴。</li><li>点击横轴区域吸附至最近数据点并显示日期、指标名称和数值；键盘支持左右方向键、Home 和 End 切换数据点。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、交易看板</summary><div class="page-logic-body"><ul><li>交易看板暂时只保留“消费方式 / 消费构成”两个观察维度，两者展示同一消费订单业绩总额，只是拆分角度不同；该合计不包含售卡/充值，因此不等同于门店业绩。</li><li>消费方式展示开单实收、团购记账、卡付、经理签单；消费构成展示项目消费、产品消费。</li><li>点击切换标签后，圆环图、中心合计、分类金额和占比同步刷新；合计为 0 时占比展示“—”。</li></ul></div></details>
         <details class="page-logic-section"><summary>四、办卡充值</summary><div class="page-logic-body"><ul><li>模块展示合计金额、办理总笔数、卡类型构成条，以及储值卡、套餐卡、计次卡、折扣卡明细。</li><li>储值卡和套餐卡在主金额下方分别展示本金与赠金；赠金作为补充信息展示，不与本金合并为实收金额。</li><li>每个卡类型同时展示金额、笔数和占比；合计为 0 时占比展示“—”。</li></ul></div></details>
         <details class="page-logic-section"><summary>五、销售排行</summary><div class="page-logic-body"><ul><li>类型标签可切换服务、产品和卡项；排序控件可切换销售额和销售数量，数量单位分别为次、件、张。</li><li>销售额包含团购记账、实际支付、销售签单（页面中的经理签单）和卡付金额；销售额与销售数量均不计入已退款、已作废订单。</li><li>切换任一条件后，标题合计、总笔数、名次、数值及单位同步刷新。</li><li>默认展示前 5 项；存在更多数据时显示“查看全部”，点击展开完整列表，再次点击收起。</li></ul></div></details>
         <details class="page-logic-section"><summary>六、数据口径说明弹窗</summary><div class="page-logic-body"><p>核心数据、交易看板、办卡充值和销售排行标题右侧均提供信息图标；点击打开对应模块的字段说明弹窗，点击关闭按钮、遮罩或按 Esc 关闭，关闭后焦点返回原入口。</p></div></details>
@@ -1107,12 +1211,12 @@
 
       <section class="page-logic" data-prototype-note-for="revenue-receipt" aria-label="营收分析页面逻辑说明" hidden>
         <h2 class="page-logic-title">营收分析页面逻辑说明</h2>
-        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜数据总览与营收分析》。页面在同一统计周期内展示营业额、实际收款、消费内容、结算方式及退款异常。</p>
+        <p class="page-logic-source">内容来源：《门店经营报表数据口径说明｜数据总览与营收分析》。页面在同一统计周期内展示门店业绩、实际收款、消费内容、结算方式及退款异常。</p>
         <section class="logic-major-block"><h3 class="logic-major-title">一、交互</h3>
         <details class="page-logic-section" open><summary>一、导航与日期</summary><div class="page-logic-body"><ul><li>点击顶部“数据总览”切回总览页面；“员工业绩分析 / 卡相关 / 客流分析”保持不可用，点击不切换内容。</li><li>点击左上角返回按钮回到店主首页。</li><li>日报、周报、月报和右侧日期区域的操作方式与数据总览一致；确认新日期后，本页全部模块同步刷新。</li></ul></div></details>
-        <details class="page-logic-section" open><summary>二、核心数据与双趋势</summary><div class="page-logic-body"><ul><li>首张卡片并列展示营业额、收款合计及各自的周期对比；两项均允许出现负数，对比期为 0 或无法比较时展示“—”。</li><li>下方两条不同颜色的折线分别对应营业额和收款合计；日报展示近 7 日，周报展示近 8 周，月报展示近 12 个月。</li><li>两条折线共用纵轴，纵轴读取两组序列的联合最小值和最大值后自适应；出现负值时必须显示零轴并保留负值区间。</li><li>切换周期或日期后，两项汇总值、对比文案、折线、横轴标签、纵轴刻度和范围文案同步更新。</li></ul></div></details>
-        <details class="page-logic-section"><summary>三、消费构成</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前营业额，圆环中心展示扣除退款后的营业额。</li><li>圆环按项目消费、产品消费分段；右侧分别展示金额和占比，颜色与圆环分段一致。</li><li>两项明细之和与营业额保持一致；营业额为 0 时占比展示“—”。</li></ul></div></details>
-        <details class="page-logic-section"><summary>四、消费方式</summary><div class="page-logic-body"><ul><li>构成条展示开单实收、团购记账、卡付、经理签单四个大类；四类金额之和与营业额保持一致。</li><li>每个大类名称在左，金额和占比在右；子分类缩进展示且金额使用常规字重。</li><li>开单实收下方直接展开微信、支付宝、银行卡、信用卡、现金；支付方式为动态列表，后续新增方式时同步增加。</li><li>团购记账下方直接展开抖音、美团、大众点评、口碑和其他平台；团购平台为动态列表，页面只展示记账金额，不展示或推断平台结算金额。</li><li>退款影响对应大类及其子分类的展示金额；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section" open><summary>二、核心数据与双趋势</summary><div class="page-logic-body"><ul><li>首张卡片并列展示门店业绩、收款合计及各自的周期对比；两项均允许出现负数，对比期为 0 或无法比较时展示“—”。</li><li>下方两条不同颜色的折线分别对应门店业绩和收款合计；日报展示近 7 日，周报展示近 7 周，月报展示近 12 个月。</li><li>趋势图默认选中当前统计周期；点击横轴区域会吸附至最近数据点，同时显示该周期的门店业绩和收款合计。键盘支持左右方向键、Home 和 End 切换数据点。</li><li>两条折线共用纵轴，纵轴读取两组序列的联合最小值和最大值后自适应；出现负值时必须显示零轴并保留负值区间。</li><li>切换周期或日期后，两项汇总值、对比文案、折线、横轴标签、纵轴刻度、范围文案及默认选中点同步更新。</li></ul></div></details>
+        <details class="page-logic-section"><summary>三、消费构成</summary><div class="page-logic-body"><ul><li>卡片顶部展示退款前消费订单业绩，圆环中心展示扣除退款后的消费订单业绩；不包含售卡/充值。</li><li>圆环按项目消费、产品消费分段；右侧分别展示金额和占比，颜色与圆环分段一致。</li><li>两项明细之和与消费订单业绩保持一致；合计为 0 时占比展示“—”。</li></ul></div></details>
+        <details class="page-logic-section"><summary>四、消费方式</summary><div class="page-logic-body"><ul><li>构成条展示消费订单的开单实收、团购记账、卡付、经理签单四个结算大类；四类金额之和与消费订单业绩保持一致，不包含售卡/充值。</li><li>每个大类名称在左，金额和占比在右；子分类缩进展示且金额使用常规字重。</li><li>开单实收下方直接展开微信、支付宝、银行卡、信用卡、现金；支付方式为动态列表，后续新增方式时同步增加。</li><li>团购记账下方直接展开抖音、美团、大众点评、口碑和其他平台；团购平台为动态列表，页面只展示记账金额，不展示或推断平台结算金额。</li><li>退款影响对应大类及其子分类的展示金额；合计为 0 时占比展示“—”。</li></ul></div></details>
         <details class="page-logic-section"><summary>五、退款与异常</summary><div class="page-logic-body"><ul><li>订单退款展示金额、退款笔数和退款率；经理签单展示金额、签单笔数和签单占比。</li><li>点击“订单退款”整行跳转至「订单流水－退款」Tab；本原型不绘制目标页面，点击后以轻提示说明跳转目标。</li><li>经理签单当前仅展示汇总数据，不提供跳转；当比例无有效分母时展示“—”。</li></ul></div></details>
         <details class="page-logic-section"><summary>六、数据口径说明弹窗</summary><div class="page-logic-body"><p>核心数据、消费构成、消费方式、退款与异常标题右侧均提供信息图标；点击打开对应模块的字段说明弹窗，点击关闭按钮、遮罩或按 Esc 关闭。</p></div></details>
         </section>
@@ -1122,24 +1226,33 @@
   </aside>
 
   <script>
+    document.querySelectorAll('.page-logic').forEach(page => {
+      const interactionBlock = page.querySelector('.logic-major-block');
+      interactionBlock?.querySelectorAll('.page-logic-section > summary').forEach((summary, index) => {
+        const title = summary.textContent.replace(/^[一二三四五六七八九十]+、/, '');
+        summary.textContent = `${index + 1}、${title}`;
+        summary.closest('details').open = false;
+      });
+    });
+
     const notePrdData = {
       overview: [
         { title: '核心数据', fields: [
           { name: '开单实收', info: '字段编码：<code>order_actual_receipt_amount</code><br>类型：金额；默认值：0；维度：门店、统计周期', definition: '统计周期内项目消费、产品购买订单实际收到的资金，为退款前金额。', formula: 'Σ 消费订单支付明细中的现金、微信、支付宝、银行卡和信用卡金额。', time: '支付成功时按支付成功时间计入；后续退款在退款成功周期单独计入。', scope: '不含卡付、团购记账、经理签单、办卡充值、失败、取消和作废流水。' },
           { name: '办卡/充值', info: '字段编码：<code>card_actual_receipt_amount</code><br>类型：金额；默认值：0；维度：门店、统计周期', definition: '顾客买卡、续卡、充值、续次或卡升降级时门店实际收到的资金。', formula: 'Σ 卡业务支付明细中的实际资金支付金额。', time: '支付成功且卡业务生效时，按支付成功时间计入。', scope: '不含赠金、赠送次数、已有卡余额支付、团购记账、经理签单及作废业务。' },
           { name: '订单退款', info: '字段编码：<code>order_refund_amount</code><br>类型：金额；默认值：0；页面按正数展示', definition: '统计周期内通过退款操作实际退回给顾客的资金金额。', formula: 'Σ 退款成功流水中的实际资金退款金额。', time: '按退款成功时间归属，不回写原订单所在周期。', scope: '不含退回卡余额、恢复次数、取消团购记账、撤销经理签单及失败退款。' },
-          { name: '成交客户', info: '字段编码：<code>transacting_customer_count</code><br>类型：人数；默认值：0', definition: '周期内至少产生一笔有效订单的去重客户数。', formula: '<code>COUNT(DISTINCT customer_id)</code>。', time: '按有效订单完成时间判断是否进入周期。', scope: '办卡、充值、项目和产品订单均可计入；同一客户周期内多单只计 1 人。' },
-          { name: '客单价', info: '字段编码：<code>average_receipt_per_customer</code><br>类型：金额；允许为空', definition: '平均每位成交客户贡献的开单实收金额。', formula: '客单价 = 开单实收 ÷ 成交客户。', time: '分子和分母使用相同统计周期。', scope: '成交客户为 0 时返回 <code>null</code>，前端展示“—”。' },
-          { name: '新增客户', info: '字段编码：<code>new_customer_count</code><br>类型：人数；默认值：0', definition: '统计周期内首次建档的客户数。', formula: '<code>COUNT(DISTINCT 首次建档 customer_id)</code>。', time: '按客户建档时间归属。', scope: '包含 App 创建客户及小程序注册后进入当前门店档案的客户。' }
+          { name: '开单客户', info: '字段编码：<code>order_customer_count</code><br>类型：人数；默认值：0', definition: '周期内至少产生一笔有效消费订单的客户统计人数。会员客户按客户 ID 去重；男女散客计入，但因没有唯一会员身份，无法跨单去重。客户开单后又发生退款，不扣减开单客户数。', formula: '开单客户 = <code>COUNT(DISTINCT 会员 customer_id) + COUNT(男女散客有效消费订单)</code>。', time: '按有效订单完成时间判断是否进入周期；客户后续产生退款时，不回溯冲减原周期的开单客户数。', scope: '项目和产品消费订单可计入，办卡、充值不计入；同一会员客户周期内多单只计 1 人，男女散客按有效消费订单分别计数。' },
+          { name: '客单价', info: '字段编码：<code>average_receipt_per_customer</code><br>类型：金额；允许为空', definition: '平均每位开单客户贡献的开单实收金额。', formula: '客单价 = 开单实收 ÷ 开单客户。', time: '分子和分母使用相同统计周期。', scope: '开单客户为 0 时返回 <code>null</code>，前端展示“—”。' },
+          { name: '新增会员', info: '字段编码：<code>new_member_count</code><br>类型：人数；默认值：0', definition: '统计周期内首次在当前门店建档并成为会员的去重人数。散客不是会员，因此不计入新增会员。', formula: '<code>COUNT(DISTINCT 首次建档 member_id)</code>。', time: '按会员首次建档时间归属。', scope: '包含 App 创建会员及小程序注册后进入当前门店会员档案的用户；不计入男女散客。' }
         ]},
         { title: '交易看板', fields: [
-          { name: '消费构成', info: '总额：<code>net_turnover_amount</code><br>构成：<code>net_turnover_by_business_type</code>', definition: '从项目消费、产品消费两个业务内容观察营业额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项净额之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按各自成功时间归属。', scope: '不包含办卡/充值；跨类型订单退款按原交易明细归属拆分；营业额为 0 时占比返回 <code>null</code>。' },
-          { name: '消费方式', info: '字段编码：<code>gross_turnover_by_settlement_method</code><br>开单实收方式：<code>turnover_actual_cash_method_amount</code>', definition: '从开单实收、团购记账、卡付、经理签单四种结算方式观察营业额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项净额之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按各自成功时间归属。', scope: '混合结算订单按支付明细拆分；营业额为 0 时占比返回 <code>null</code>。' }
+          { name: '消费构成', info: '总额：<code>consumption_turnover_amount</code><br>构成：<code>consumption_turnover_by_business_type</code>', definition: '从项目消费、产品消费两个业务内容观察消费订单业绩构成，不包含售卡/充值。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项净额之和 = 消费订单业绩；占比 = 单项净额 ÷ 消费订单业绩。', time: '交易与退款分别按各自成功时间归属。', scope: '不包含办卡/充值；跨类型订单退款按原交易明细归属拆分；消费订单业绩为 0 时占比返回 <code>null</code>。' },
+          { name: '消费方式', info: '字段编码：<code>consumption_turnover_by_settlement_method</code><br>开单实收方式：<code>turnover_actual_cash_method_amount</code>', definition: '从开单实收、团购记账、卡付、经理签单四种结算方式观察消费订单业绩构成，不包含售卡/充值。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项净额之和 = 消费订单业绩；占比 = 单项净额 ÷ 消费订单业绩。', time: '交易与退款分别按各自成功时间归属。', scope: '混合结算订单按支付明细拆分；消费订单业绩为 0 时占比返回 <code>null</code>。' }
         ]},
         { title: '办卡充值', fields: [
-          { name: '办卡充值汇总', info: '金额：<code>card_business_total_amount</code><br>笔数：<code>card_business_transaction_count</code>', definition: '统计买卡、续卡、充值、续次等有效卡业务的金额、笔数和卡类型构成。', formula: '合计金额 = Σ 各卡类型有效业务金额；总笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 单项金额 ÷ 合计金额。', time: '按卡业务完成时间归属。', scope: '储值卡和套餐卡区分本金与赠金；退卡及作废业务不计入。' },
-          { name: '储值卡', info: '金额：<code>stored_value_card_amount</code><br>笔数：<code>stored_value_card_transaction_count</code><br>本金：<code>stored_value_card_principal_amount</code><br>赠金：<code>stored_value_card_gift_amount</code>', definition: '统计周期内储值卡买卡、续卡及充值业务形成的卡内金额、办理笔数，并拆分顾客实付本金与门店赠金。', formula: '储值卡金额 = 本金 + 赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 储值卡金额 ÷ 办卡充值合计金额。', time: '支付成功且储值卡业务生效时，按业务完成时间计入。', scope: '包含有效买卡、续卡和充值；不包含卡付消费、失败、取消、作废及已退卡业务。' },
-          { name: '套餐卡', info: '金额：<code>package_card_amount</code><br>笔数：<code>package_card_transaction_count</code><br>本金：<code>package_card_principal_amount</code><br>赠金：<code>package_card_gift_amount</code>', definition: '统计周期内套餐卡购买、续卡及套餐充值业务形成的卡内金额、办理笔数，并拆分顾客实付本金与门店赠金。', formula: '套餐卡金额 = 本金 + 赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 套餐卡金额 ÷ 办卡充值合计金额。', time: '支付成功且套餐卡业务生效时，按业务完成时间计入。', scope: '包含有效购卡、续卡和套餐充值；不包含套餐核销、失败、取消、作废及已退卡业务。' },
+          { name: '办卡充值汇总', info: '金额：<code>card_business_total_principal_amount</code><br>笔数：<code>card_business_transaction_count</code>', definition: '统计买卡、续卡、充值、续次等有效卡业务实际收取的本金、办理笔数和卡类型构成。', formula: '合计金额 = Σ 各卡类型实收本金；总笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 单项实收本金 ÷ 合计金额。', time: '按卡业务完成时间归属。', scope: '合计金额不计入赠金；赠金仅作为辅助信息展示。退卡及作废业务不计入。' },
+          { name: '储值卡', info: '实收本金：<code>stored_value_card_principal_amount</code><br>笔数：<code>stored_value_card_transaction_count</code><br>赠金：<code>stored_value_card_gift_amount</code>', definition: '统计周期内储值卡买卡、续卡及充值业务的实收本金和办理笔数，并单独展示门店赠金。', formula: '储值卡金额 = 实收本金，不含赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 储值卡实收本金 ÷ 办卡充值合计金额。', time: '支付成功且储值卡业务生效时，按业务完成时间计入。', scope: '包含有效买卡、续卡和充值；赠金不计入金额合计；不包含卡付消费、失败、取消、作废及已退卡业务。' },
+          { name: '套餐卡', info: '实收本金：<code>package_card_principal_amount</code><br>笔数：<code>package_card_transaction_count</code><br>赠金：<code>package_card_gift_amount</code>', definition: '统计周期内套餐卡购买、续卡及套餐充值业务的实收本金和办理笔数，并单独展示门店赠金。', formula: '套餐卡金额 = 实收本金，不含赠金；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 套餐卡实收本金 ÷ 办卡充值合计金额。', time: '支付成功且套餐卡业务生效时，按业务完成时间计入。', scope: '包含有效购卡、续卡和套餐充值；赠金不计入金额合计；不包含套餐核销、失败、取消、作废及已退卡业务。' },
           { name: '计次卡', info: '金额：<code>count_card_amount</code><br>笔数：<code>count_card_transaction_count</code>', definition: '统计周期内计次卡购买、续次等有效业务的金额和办理笔数，用于观察计次类卡项的销售规模。', formula: '计次卡金额 = Σ 有效计次卡业务金额；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 计次卡金额 ÷ 办卡充值合计金额。', time: '支付成功且计次权益生效时，按业务完成时间计入。', scope: '包含有效购卡和续次；赠送次数不折算为金额，不包含次数核销、失败、取消、作废及已退卡业务。' },
           { name: '折扣卡', info: '金额：<code>discount_card_amount</code><br>笔数：<code>discount_card_transaction_count</code>', definition: '统计周期内折扣卡购买、续卡等有效业务的金额和办理笔数，用于观察折扣权益类卡项的销售规模。', formula: '折扣卡金额 = Σ 有效折扣卡业务金额；笔数 = <code>COUNT(DISTINCT card_business_id)</code>；占比 = 折扣卡金额 ÷ 办卡充值合计金额。', time: '支付成功且折扣卡权益生效时，按业务完成时间计入。', scope: '包含有效购卡和续卡；不包含折扣权益使用、失败、取消、作废及已退卡业务。' }
         ]},
@@ -1151,18 +1264,18 @@
       ],
       revenue: [
         { title: '核心数据与趋势', fields: [
-          { name: '营业额', info: '字段编码：<code>net_turnover_amount</code><br>类型：金额；允许为负数', definition: '统计周期内项目、产品消费扣除当期订单退款后的净额，用于经营规模分析。', formula: '营业额 = 团购记账金额 + 卡付金额 + 经理签单金额 + 开单实收金额。', time: '交易按完成时间计入，退款按退款成功时间扣减。', scope: '包含项目、产品消费中的实际资金、团购记账、卡付、经理签单；不含办卡/充值、赠金、赠送权益、取消和作废交易。' },
+          { name: '门店业绩', info: '字段编码：<code>net_turnover_amount</code><br>类型：金额；允许为负数', definition: '统计周期内门店项目、产品、售卡/充值三类有效流水订单的金额之和，不区分支付方式，同一订单只按所属业务类型计入一次。未关联服务人员的订单仍计入；优惠券及其他权益折扣订单按折扣前的项目或商品原价计业绩。', formula: '门店业绩 = 项目订单金额合计 + 产品订单金额合计 + 售卡/充值订单金额合计；其中优惠券及其他权益折扣订单均按折扣前的项目或商品原价计入。', time: '交易按完成时间计入，退款按退款成功时间扣减。', scope: '包含有服务人员和未关联服务人员的项目、产品、售卡/充值有效流水订单；现金、扫码、卡付、团购记账、经理签单等支付方式均可计入，但同一订单不因支付方式重复累计。不含赠金、赠送权益、取消和作废交易。' },
           { name: '收款合计', info: '字段编码：<code>gross_receipt_amount</code><br>类型：金额；默认值：0；允许为负数', definition: '统计周期内门店实际资金流入扣除实际退款后的净额。', formula: '收款合计 = 开单实收 + 办卡/充值 − 订单退款。', time: '收款按支付成功时间计入，退款按退款成功时间扣减。', scope: '不含卡付、团购记账和经理签单。' },
-          { name: '周期对比与趋势', info: '序列字段：<code>net_turnover_amount</code>、<code>gross_receipt_amount</code>', definition: '展示本期相较上一对应周期的变化，并呈现双指标历史趋势。', formula: '变化率 =（本期值 − 对比期值）÷ |对比期值| × 100%。', time: '日报对比上一日，周报对比上一周，月报对比上一月。', scope: '对比期为 0 时返回 <code>null</code>；日报近 7 日、周报近 8 周、月报近 12 月；负值时纵轴保留零轴。' }
+          { name: '周期对比与趋势', info: '序列字段：<code>net_turnover_amount</code>、<code>gross_receipt_amount</code>', definition: '展示本期相较上一对应周期的变化，并呈现双指标历史趋势。', formula: '变化率 =（本期值 − 对比期值）÷ |对比期值| × 100%。', time: '日报对比上一日，周报对比上一周，月报对比上一月。', scope: '对比期为 0 时返回 <code>null</code>；日报近 7 日、周报近 7 周、月报近 12 月；负值时纵轴保留零轴。' }
         ]},
         { title: '消费构成与方式', fields: [
-          { name: '消费构成', info: '总额：<code>net_turnover_amount</code><br>构成：<code>net_turnover_by_business_type</code>', definition: '展示营业额在项目、产品两个业务内容中的净额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按成功时间归属。', scope: '不包含办卡/充值；跨类型退款按原交易明细拆分；营业额为 0 时占比返回 <code>null</code>。' },
-          { name: '消费方式', info: '字段编码：<code>gross_turnover_by_settlement_method</code><br>开单实收：<code>turnover_actual_cash_method_amount</code>', definition: '展示营业额在开单实收、团购记账、卡付、经理签单四种结算方式中的净额构成。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项之和 = 营业额；占比 = 单项净额 ÷ 营业额。', time: '交易与退款分别按成功时间归属。', scope: '混合结算按支付明细拆分；支付渠道和团购平台为动态维度，退款在对应明细中倒扣。' }
+          { name: '消费构成', info: '总额：<code>consumption_turnover_amount</code><br>构成：<code>consumption_turnover_by_business_type</code>', definition: '展示消费订单业绩在项目、产品两个业务内容中的净额构成，不包含售卡/充值。', formula: '单项净额 = 单项退款前金额 − 对应退款；两项之和 = 消费订单业绩；占比 = 单项净额 ÷ 消费订单业绩。', time: '交易与退款分别按成功时间归属。', scope: '不包含办卡/充值；跨类型退款按原交易明细拆分；消费订单业绩为 0 时占比返回 <code>null</code>。' },
+          { name: '消费方式', info: '字段编码：<code>consumption_turnover_by_settlement_method</code><br>开单实收：<code>turnover_actual_cash_method_amount</code>', definition: '展示消费订单业绩在开单实收、团购记账、卡付、经理签单四种结算方式中的净额构成，不包含售卡/充值。', formula: '单项净额 = 单项退款前金额 − 对应退款；四项之和 = 消费订单业绩；占比 = 单项净额 ÷ 消费订单业绩。', time: '交易与退款分别按成功时间归属。', scope: '混合结算按支付明细拆分；支付渠道和团购平台为动态维度，退款在对应明细中倒扣。' }
         ]},
         { title: '退款与异常', fields: [
           { name: '订单退款', info: '字段编码：<code>order_refund_amount</code><br>类型：金额；默认值：0；页面按正数展示', definition: '统计周期内通过退款操作实际退回给顾客的资金金额。', formula: 'Σ 退款成功流水中的实际资金退款金额。', time: '按退款成功时间归属，不回写原订单所在周期。', scope: '不含退回卡余额、恢复次数、取消团购记账、撤销经理签单及失败退款。' },
-          { name: '退款笔数与退款率', info: '笔数：<code>refund_transaction_count</code><br>退款率：<code>refund_rate</code>', definition: '退款笔数反映统计周期内成功退款的业务数量，退款率反映订单退款金额相对退款前营业额的比例。', formula: '退款笔数 = <code>COUNT(DISTINCT refund_business_id)</code>；退款率 = 订单退款金额 ÷ 退款前营业额。', time: '按退款成功时间归属。', scope: '一次退款拆分多个支付渠道仍计 1 笔；多次独立退款分别计笔；退款前营业额为 0 时退款率返回 <code>null</code>。' },
-          { name: '经理签单', info: '金额：<code>manager_sign_amount</code><br>笔数：<code>manager_sign_order_count</code><br>占比：<code>manager_sign_rate</code>', definition: '经理签单属于应收记账，不属于当期现金实收，但计入营业额和消费方式。', formula: '金额 = Σ 有效签单订单金额；笔数 = <code>COUNT(DISTINCT order_id)</code>；占比 = 签单金额 ÷ 退款前营业额。', time: '按经理签单确认成功时间归属。', scope: '订单支付方式包含经理签单时计 1 笔；分母为 0 时占比返回 <code>null</code>。' }
+          { name: '退款笔数与退款率', info: '笔数：<code>refund_transaction_count</code><br>退款率：<code>refund_rate</code>', definition: '退款笔数反映统计周期内成功退款的业务数量，退款率反映订单退款金额相对退款前门店业绩的比例。', formula: '退款笔数 = <code>COUNT(DISTINCT refund_business_id)</code>；退款率 = 订单退款金额 ÷ 退款前门店业绩。', time: '按退款成功时间归属。', scope: '一次退款拆分多个支付渠道仍计 1 笔；多次独立退款分别计笔；退款前门店业绩为 0 时退款率返回 <code>null</code>。' },
+          { name: '经理签单', info: '金额：<code>manager_sign_amount</code><br>笔数：<code>manager_sign_order_count</code><br>占比：<code>manager_sign_rate</code>', definition: '经理签单属于应收记账，不属于当期现金实收，但计入门店业绩和消费方式。', formula: '金额 = Σ 有效签单订单金额；笔数 = <code>COUNT(DISTINCT order_id)</code>；占比 = 签单金额 ÷ 退款前门店业绩。', time: '按经理签单确认成功时间归属。', scope: '订单支付方式包含经理签单时计 1 笔；分母为 0 时占比返回 <code>null</code>。' }
         ]}
       ]
     };
@@ -1240,18 +1353,6 @@
       });
     }
 
-    const employeePrivacyToggle = document.querySelector('[data-employee-privacy-toggle]');
-    const employeePrivacyMask = document.querySelector('[data-employee-privacy-mask]');
-    function setEmployeePrivacyVisible(visible) {
-      employeePrivacyMask.hidden = visible;
-      employeePrivacyToggle.setAttribute('aria-pressed', String(visible));
-      employeePrivacyToggle.setAttribute('aria-label', `${visible ? '隐藏' : '显示'}业绩数据`);
-    }
-    employeePrivacyToggle.addEventListener('click', event => {
-      event.stopPropagation();
-      setEmployeePrivacyVisible(employeePrivacyToggle.getAttribute('aria-pressed') !== 'true');
-    });
-
     const reportApp = document.querySelector('.report-app');
     const reportTabs = [...document.querySelectorAll('[data-report-tab]')];
     const reportPanels = [...document.querySelectorAll('[data-report-panel]')];
@@ -1272,7 +1373,7 @@
 
     const reportPeriodData = {
       day: { label: '2026年09月15日', range: '近 7 日', compareLabel: '较昨日', comparisons: ['+4.8%', '+6.2%'], labels: ['09/09', '09/10', '09/11', '09/12', '09/13', '09/14', '今日'], values: [42, 55, 48, 76, 64, 84, 61] },
-      week: { label: '2026年09月14日－09月20日', range: '近 8 周', compareLabel: '较上周', comparisons: ['+7.6%', '+5.3%'], labels: ['第31周', '第32周', '第33周', '第34周', '第35周', '第36周', '第37周', '第38周'], values: [35, 48, 43, 67, 58, 76, 70, 82] },
+      week: { label: '2026年09月14日－09月20日', range: '近 7 周', compareLabel: '较上周', comparisons: ['+7.6%', '+5.3%'], labels: ['第32周', '第33周', '第34周', '第35周', '第36周', '第37周', '第38周'], values: [48, 43, 67, 58, 76, 70, 82] },
       month: { label: '2026年09月', range: '近 12 个月', compareLabel: '较上月', comparisons: ['+10.2%', '+8.1%'], labels: ['10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'], values: [38, 46, 44, 57, 53, 66, 61, 73, 69, 82, 77, 88] }
     };
     let activeReportPeriod = 'day';
@@ -1280,6 +1381,11 @@
     let selectedTrendIndex = null;
     let renderedTrendPoints = [];
     let renderedTrendValues = [];
+    let selectedReceiptTrendIndex = null;
+    let renderedReceiptSalesPoints = [];
+    let renderedReceiptReceiptPoints = [];
+    let renderedReceiptSalesValues = [];
+    let renderedReceiptReceiptValues = [];
 
     function formatTrendValue(metricValue, value) {
       if (metricValue.startsWith('¥')) {
@@ -1343,6 +1449,11 @@
       });
       const salesPoints = makePoints(salesValues);
       const receiptPoints = makePoints(receiptValues);
+      renderedReceiptSalesPoints = salesPoints;
+      renderedReceiptReceiptPoints = receiptPoints;
+      renderedReceiptSalesValues = salesValues;
+      renderedReceiptReceiptValues = receiptValues;
+      selectedReceiptTrendIndex = null;
       const axisText = value => value >= 10000 ? `¥${(value / 10000).toFixed(1)}万` : `¥${Math.round(value).toLocaleString('zh-CN')}`;
       document.querySelector('[data-receipt-trend-axis]').innerHTML =
         `<text class="report-trend-axis-label" x="${left - 6}" y="${top + 3}">${axisText(axisMax)}</text>` +
@@ -1354,6 +1465,37 @@
       document.querySelector('[data-receipt-trend-receipt-points]').innerHTML = receiptPoints.map(([x, y]) => `<circle class="receipt-trend-point-receipt" cx="${x}" cy="${y}" r="3"></circle>`).join('');
       document.querySelector('[data-receipt-trend-labels]').innerHTML = data.labels.map((label, index) => `<span style="left:${(salesPoints[index][0] / 330 * 100).toFixed(2)}%">${label}</span>`).join('');
       document.querySelector('[data-receipt-trend-range]').textContent = data.range;
+      renderReceiptTrendSelection(salesPoints.length - 1);
+    }
+
+    function renderReceiptTrendSelection(index) {
+      const data = reportPeriodData[activeReportPeriod];
+      const salesPoint = renderedReceiptSalesPoints[index];
+      const receiptPoint = renderedReceiptReceiptPoints[index];
+      const selection = document.querySelector('[data-receipt-trend-selection]');
+      const tooltip = document.querySelector('[data-receipt-trend-tooltip]');
+      if (!salesPoint || !receiptPoint) return;
+
+      selectedReceiptTrendIndex = index;
+      selection.hidden = false;
+      selection.querySelector('line').setAttribute('x1', salesPoint[0]);
+      selection.querySelector('line').setAttribute('x2', salesPoint[0]);
+      const circles = selection.querySelectorAll('circle');
+      circles[0].setAttribute('cx', salesPoint[0]);
+      circles[0].setAttribute('cy', salesPoint[1]);
+      circles[1].setAttribute('cx', receiptPoint[0]);
+      circles[1].setAttribute('cy', receiptPoint[1]);
+
+      tooltip.hidden = false;
+      tooltip.classList.toggle('edge-start', salesPoint[0] < 72);
+      tooltip.classList.toggle('edge-end', salesPoint[0] > 274);
+      tooltip.style.left = `${salesPoint[0] / 330 * 100}%`;
+      tooltip.style.top = `${Math.min(salesPoint[1], receiptPoint[1]) < 64 ? Math.max(salesPoint[1], receiptPoint[1]) + 12 : Math.min(salesPoint[1], receiptPoint[1]) - 66}px`;
+      tooltip.querySelector('[data-receipt-trend-tooltip-date]').textContent = data.labels[index];
+      tooltip.querySelector('[data-receipt-trend-tooltip-sales]').textContent = `门店业绩：¥${renderedReceiptSalesValues[index].toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      tooltip.querySelector('[data-receipt-trend-tooltip-receipt]').textContent = `收款合计：¥${renderedReceiptReceiptValues[index].toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      document.querySelectorAll('[data-receipt-trend-labels] span').forEach((label, labelIndex) => label.classList.toggle('is-selected', labelIndex === index));
+      document.querySelector('[data-receipt-trend-chart]').setAttribute('aria-label', `${data.labels[index]}，门店业绩¥${renderedReceiptSalesValues[index].toLocaleString('zh-CN')}，收款合计¥${renderedReceiptReceiptValues[index].toLocaleString('zh-CN')}。使用左右方向键切换数据点`);
     }
 
     function renderTrend() {
@@ -1402,6 +1544,7 @@
       document.querySelector('[data-trend-chart]').setAttribute('aria-label', `${metric.dataset.metric}趋势图，点击或使用左右方向键查看各时间点数据`);
       document.querySelectorAll('[data-report-date-label]').forEach(label => { label.textContent = data.label; });
       renderReceiptTrend();
+      renderTrendSelection(points.length - 1);
     }
 
     const reportDateLayer = document.querySelector('[data-report-date-layer]');
@@ -1504,9 +1647,9 @@
     }
     function makeWeekLabels(year, month, weekOfMonth) {
       const selectedWeekStart = getMonthWeekStart(year, month, weekOfMonth);
-      return Array.from({ length: 8 }, (_, index) => {
+      return Array.from({ length: 7 }, (_, index) => {
         const date = new Date(selectedWeekStart);
-        date.setDate(selectedWeekStart.getDate() - (7 - index) * 7);
+        date.setDate(selectedWeekStart.getDate() - (6 - index) * 7);
         return formatShortDate(date);
       });
     }
@@ -1549,7 +1692,7 @@
         weekEnd.setDate(weekStart.getDate() + 6);
         reportPeriodData.week.label = `${formatChineseDate(weekStart)}－${formatChineseDate(weekEnd).replace(`${weekEnd.getFullYear()}年`, '')}`;
         reportPeriodData.week.labels = makeWeekLabels(year, month, weekOfMonth);
-        reportPeriodData.week.values = makeTrendValues(8, month * 10 + weekOfMonth);
+        reportPeriodData.week.values = makeTrendValues(7, month * 10 + weekOfMonth);
       } else {
         const year = reportDateState.monthYear;
         const month = reportDateState.month;
@@ -1598,6 +1741,24 @@
       else if (nextIndex === null) nextIndex = event.key === 'ArrowLeft' ? renderedTrendPoints.length - 1 : 0;
       else nextIndex = Math.max(0, Math.min(renderedTrendPoints.length - 1, nextIndex + (event.key === 'ArrowLeft' ? -1 : 1)));
       renderTrendSelection(nextIndex);
+    });
+
+    const receiptTrendChart = document.querySelector('[data-receipt-trend-chart]');
+    receiptTrendChart.addEventListener('click', event => {
+      const bounds = receiptTrendChart.getBoundingClientRect();
+      const chartX = Math.max(0, Math.min(330, (event.clientX - bounds.left) / bounds.width * 330));
+      const nearestIndex = renderedReceiptSalesPoints.reduce((bestIndex, point, index) => Math.abs(point[0] - chartX) < Math.abs(renderedReceiptSalesPoints[bestIndex][0] - chartX) ? index : bestIndex, 0);
+      renderReceiptTrendSelection(nearestIndex);
+    });
+    receiptTrendChart.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) || !renderedReceiptSalesPoints.length) return;
+      event.preventDefault();
+      let nextIndex = selectedReceiptTrendIndex;
+      if (event.key === 'Home') nextIndex = 0;
+      else if (event.key === 'End') nextIndex = renderedReceiptSalesPoints.length - 1;
+      else if (nextIndex === null) nextIndex = event.key === 'ArrowLeft' ? renderedReceiptSalesPoints.length - 1 : 0;
+      else nextIndex = Math.max(0, Math.min(renderedReceiptSalesPoints.length - 1, nextIndex + (event.key === 'ArrowLeft' ? -1 : 1)));
+      renderReceiptTrendSelection(nextIndex);
     });
 
     const transactionData = {
@@ -1677,14 +1838,14 @@
     const reportSpecData = {
       core: {
         title: '核心数据',
-        intro: '统计口径：开始时间 ≤ 统计时间 < 结束时间；金额按分存储，前端转换为元并保留两位小数。',
+        intro: '',
         items: [
           ['开单实收', '统计周期内通过项目消费、产品购买订单实际收到的资金。', '含现金、微信、支付宝、银行卡和信用卡支付；不含卡付、团购记账、经理签单和办卡/充值。'],
           ['办卡/充值', '统计周期内顾客买卡、续卡、充值实际收到的本金。', '赠金、赠送次数不计入；同一笔卡业务不重复计入开单实收。'],
           ['订单退款', '统计周期内实际退回给顾客的资金，页面始终按正数展示。', '按退款成功时间归属，不回写原订单所在周期；不含退回卡余额或恢复次卡次数。'],
-          ['客单价', '平均每位成交客户的消费金额。', '客单价 = 开单实收 ÷ 成交客户；成交客户为 0 时不下发数值，前端展示 “—”。'],
-          ['成交客户', '统计周期内产生有效消费订单的到店客户数。', '同一客户在周期内多次到店按 1 人计；不含仅办卡充值的客户。'],
-          ['新增客户', '统计周期内首次建档并产生有效消费的客户数。', '按客户建档时间与首笔有效消费同时满足统计；老客户回流不计入。']
+          ['客单价', '平均每位开单客户的消费金额。', '客单价 = 开单实收 ÷ 开单客户；开单客户为 0 时不下发数值，前端展示 “—”。'],
+          ['开单客户', '统计周期内产生有效消费订单的客户统计人数；会员客户按客户 ID 去重，男女散客计入但无法跨单去重。客户开单后又发生退款，不扣减开单客户数。', '同一会员客户在周期内多次到店按 1 人计；男女散客按有效消费订单分别计数；不含仅办卡充值的客户。'],
+          ['新增会员', '统计周期内首次在当前门店建档并成为会员的去重人数。散客不是会员，因此不计入新增会员。', '按会员首次建档时间归属；老会员回流及男女散客不计入。']
         ]
       },
       transaction: {
@@ -1717,19 +1878,19 @@
       },
       'revenue-core': {
         title: '营收核心数据',
-        intro: '营业额与收款合计使用当前页面选中的日报、周报或月报周期，并在同一卡片中展示对应趋势。',
+        intro: '门店业绩与收款合计使用当前页面选中的日报、周报或月报周期，并在同一卡片中展示对应趋势。',
         items: [
-          ['营业额', '统计周期内门店发生的项目消费、产品消费金额，扣除订单退款后展示。', '包含开单实收、团购记账、卡付和经理签单形成的业务金额，不包含办卡/充值。'],
+          ['门店业绩', '统计周期内门店项目、产品、售卡/充值三类有效流水订单的金额之和，不区分支付方式，同一订单只按所属业务类型计入一次。未关联服务人员的订单仍计入；优惠券及其他权益折扣订单按折扣前的项目或商品原价计业绩。', '门店业绩按项目、产品、售卡/充值三类业务汇总，不按支付方式重复累计。'],
           ['收款合计', '统计周期内门店实际收到的资金净额。', '展示开单实收、办卡/充值及订单退款影响后的结果。'],
           ['周期对比', '展示当前周期相较上一对应周期的变化结果。', '日报对比上一日，周报对比上一周，月报对比上一月。'],
-          ['趋势', '两条折线分别展示营业额与收款合计的历史变化。', '日报展示近 7 日，周报展示近 8 周，月报展示近 12 个月。']
+          ['趋势', '两条折线分别展示门店业绩与收款合计的历史变化。', '日报展示近 7 日，周报展示近 7 周，月报展示近 12 个月。']
         ]
       },
       'revenue-composition': {
         title: '消费构成',
-        intro: '从消费内容角度展示当前统计周期内的营业额组成。',
+        intro: '从消费内容角度展示当前统计周期内的门店业绩组成。',
         items: [
-          ['退款前金额', '展示扣除订单退款之前的营业额。', '用于与退款后的营业额进行对照。'],
+          ['退款前金额', '展示扣除订单退款之前的门店业绩。', '用于与退款后的门店业绩进行对照。'],
           ['项目消费', '展示项目服务产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。'],
           ['产品消费', '展示门店产品销售产生的消费金额及其占比。', '金额和占比与圆环图对应颜色保持一致。']
         ]
@@ -1750,7 +1911,7 @@
         items: [
           ['订单退款金额', '展示统计周期内已完成退款的金额。', '页面按正数展示。'],
           ['退款笔数', '展示统计周期内已完成退款的记录数量。', '点击订单退款卡片可进入「订单流水－退款」Tab 查看明细。'],
-          ['退款率', '展示订单退款金额相对于退款前营业额的比例。', '无退款时展示 0%。'],
+          ['退款率', '展示订单退款金额相对于退款前门店业绩的比例。', '无退款时展示 0%。'],
           ['经理签单', '展示经理签单的金额、笔数及占比。', '当前仅展示汇总数据，不提供明细跳转。']
         ]
       }
@@ -1765,11 +1926,11 @@
       }).filter(Boolean);
     }
 
-    reportSpecData.core.items = prdDefinitionItems('overview', '核心数据', ['开单实收', '办卡/充值', '订单退款', '客单价', '成交客户', '新增客户']);
+    reportSpecData.core.items = prdDefinitionItems('overview', '核心数据', ['开单实收', '办卡/充值', '订单退款', '客单价', '开单客户', '新增会员']);
     reportSpecData.transaction.items = prdDefinitionItems('overview', '交易看板', ['消费方式', '消费构成']);
     reportSpecData.cards.items = prdDefinitionItems('overview', '办卡充值', ['办卡充值汇总', '储值卡', '套餐卡', '计次卡', '折扣卡']);
     reportSpecData.ranking.items = prdDefinitionItems('overview', '销售排行', ['销售排行汇总', '销售额排行', '销售数量排行']);
-    reportSpecData['revenue-core'].items = prdDefinitionItems('revenue', '核心数据与趋势', ['营业额', '收款合计', '周期对比与趋势']);
+    reportSpecData['revenue-core'].items = prdDefinitionItems('revenue', '核心数据与趋势', ['门店业绩', '收款合计', '周期对比与趋势']);
     reportSpecData['revenue-composition'].items = prdDefinitionItems('revenue', '消费构成与方式', ['消费构成']);
     reportSpecData['revenue-method'].items = prdDefinitionItems('revenue', '消费构成与方式', ['消费方式']);
     reportSpecData['revenue-risk'].items = prdDefinitionItems('revenue', '退款与异常', ['订单退款', '退款笔数与退款率', '经理签单']);
@@ -1779,8 +1940,10 @@
       const data = reportSpecData[key];
       if (!data) return;
       reportSpecTrigger = trigger || null;
-      document.querySelector('[data-report-spec-title]').textContent = data.title + ' · 数据口径说明';
-      document.querySelector('[data-report-spec-intro]').textContent = data.intro;
+      document.querySelector('[data-report-spec-title]').textContent = '数据口径说明';
+      const intro = document.querySelector('[data-report-spec-intro]');
+      intro.textContent = data.intro || '';
+      intro.hidden = !data.intro;
       document.querySelector('[data-report-spec-body]').innerHTML = data.items.map(item => '<div class="report-spec-item"><h4>' + item[0] + '</h4><p>' + item[1] + '</p>' + (item[2] ? '<p><em>' + item[2] + '</em></p>' : '') + '</div>').join('');
       reportSpecLayer.hidden = false;
       reportSpecLayer.querySelector('.report-spec-body').scrollTop = 0;
@@ -1834,7 +1997,6 @@
         const frame = document.querySelector(`#${pageKey} iframe`);
         frame?.contentWindow?.postMessage({ type: 'rtb-performance-state', state: 'default' }, '*');
         frame?.contentWindow?.postMessage({ type: 'rtb-privacy-state', visible: false }, '*');
-        if (pageKey === 'home-employee') setEmployeePrivacyVisible(false);
       }
       setActiveMenu(menuButton || pageButtons.find(button => button.dataset.prototypePage === pageKey));
     }
@@ -1866,16 +2028,12 @@
       const performanceState = state === 'performance-zero' ? 'zero' : state === 'performance-negative' ? 'negative' : 'default';
       frame?.contentWindow?.postMessage({ type: 'rtb-performance-state', state: performanceState }, '*');
       frame?.contentWindow?.postMessage({ type: 'rtb-privacy-state', visible: state !== 'hidden' }, '*');
-      if (currentPage === 'home-employee') setEmployeePrivacyVisible(state !== 'hidden');
     }));
 
     window.addEventListener('message', event => {
       if (event.data?.type === 'prototype-navigate' && event.data.page) {
         showPrototypePage(event.data.page);
-        if (event.data.page === 'revenue-analysis') showReportPanel('receipt');
-      }
-      if (event.data?.type === 'rtb-explain-state') {
-        document.querySelector('#home-employee')?.classList.toggle('employee-explain-open', Boolean(event.data.open));
+        if (event.data.page === 'revenue-analysis') showReportPanel(event.data.reportTarget || 'receipt');
       }
     });
 

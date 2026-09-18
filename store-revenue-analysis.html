@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>经营分析 · 收款</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --red: #ff2945;
+      --red-dark: #ed1737;
+      --ink: #20222a;
+      --muted: #858995;
+      --line: #eceef3;
+      --soft: #f5f6fa;
+      --green: #079868;
+      --orange: #ff8a22;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 18% 4%, #f7eaee 0, transparent 28%), #eef0f6;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    button { font: inherit; }
+    .stage { min-height: 100vh; display: grid; place-items: center; padding: 28px 12px; }
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      height: min(844px, calc(100vh - 40px));
+      min-height: 620px;
+      overflow: hidden;
+      border-radius: 36px;
+      background: #f4f5f9;
+      box-shadow: 0 26px 70px rgba(49, 54, 72, .18);
+    }
+    .scroll { height: 100%; overflow-y: auto; scrollbar-width: none; padding-bottom: 38px; }
+    .scroll::-webkit-scrollbar { display: none; }
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      color: #fff;
+      background: linear-gradient(145deg, #ff3049, #ff173b);
+      box-shadow: 0 4px 16px rgba(255, 41, 69, .18);
+    }
+    .status { display: flex; justify-content: space-between; padding: 14px 22px 7px; font-size: 14px; font-weight: 700; }
+    .nav { height: 53px; display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; padding: 0 12px 5px; }
+    .back, .help, .filter-button {
+      border: 0; background: transparent; cursor: pointer;
+    }
+    .back, .help { color: #fff; font-size: 26px; height: 40px; border-radius: 12px; }
+    .help { font-size: 16px; font-weight: 700; }
+    .nav h1 { margin: 0; text-align: center; font-size: 19px; letter-spacing: .2px; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-bottom: 1px solid var(--line); }
+    .tab {
+      position: relative; height: 48px; border: 0; background: #fff; color: #777b86; font-weight: 650; cursor: pointer;
+    }
+    .tab[aria-selected="true"] { color: var(--ink); }
+    .tab[aria-selected="true"]::after {
+      content: ""; position: absolute; left: 50%; bottom: 0; width: 30px; height: 3px; transform: translateX(-50%); border-radius: 4px; background: var(--red);
+    }
+    .filters { display: flex; align-items: center; padding: 12px 14px 4px; gap: 7px; }
+    .periods { display: flex; flex: 1; gap: 5px; }
+    .period, .filter-button {
+      min-height: 32px; padding: 0 13px; border-radius: 18px; border: 1px solid transparent; background: #fff; color: #777b86; font-size: 13px; cursor: pointer;
+    }
+    .period[aria-pressed="true"] { background: #ffe8ec; color: var(--red-dark); font-weight: 700; }
+    .filter-button { display: flex; align-items: center; gap: 4px; border-color: #e4e6ed; color: #424650; }
+    .filter-count { display: none; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--red); color: #fff; font-size: 10px; line-height: 16px; }
+    .filter-count.show { display: inline-block; }
+    .panel { padding: 8px 12px 0; }
+    .card { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 3px 12px rgba(39, 43, 60, .035); }
+    .card-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .card-title h2 { margin: 0; font-size: 16px; }
+    .hint { color: var(--muted); font-size: 12px; }
+    .hero { padding: 18px 16px 16px; background: linear-gradient(155deg, #fff 42%, #fff5f6); }
+    .hero-label { font-size: 14px; font-weight: 650; }
+    .info-dot { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-left: 4px; border: 1px solid #aeb2bc; border-radius: 50%; color: #9296a0; font: 700 10px/1 sans-serif; vertical-align: 1px; }
+    .hero-number { margin: 6px 0 14px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+    .hero-number strong { color: var(--red); font-size: 34px; letter-spacing: -.7px; }
+    .compare { color: var(--green); font-size: 12px; font-weight: 700; }
+    .core-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px dashed #e5e7ed; padding-top: 13px; }
+    .core-grid > div + div { border-left: 1px solid #e5e7ed; padding-left: 18px; }
+    .metric-label { color: #777b86; font-size: 12px; }
+    .metric-value { display: block; margin-top: 5px; font-size: 19px; }
+    .formula { margin: 12px 0 0; padding: 9px 11px; border-radius: 10px; background: #f7f8fb; color: #737783; font-size: 11px; }
+    .split-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+    .split-divider { width: 1px; height: 48px; background: var(--line); }
+    .split-row strong { display: block; margin-top: 5px; font-size: 21px; }
+    .tag { display: inline-block; margin-top: 4px; padding: 2px 7px; border-radius: 10px; background: #fff0e3; color: #e56b08; font-size: 10px; }
+    .stack { display: flex; height: 8px; overflow: hidden; border-radius: 5px; margin: 14px 0 7px; background: #eee; }
+    .stack span:first-child { width: 80%; background: var(--red); }
+    .stack span:last-child { width: 20%; background: #ffaf67; }
+    .legend { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+    .channel { display: grid; grid-template-columns: 58px 1fr 67px; align-items: center; gap: 8px; margin: 11px 0; font-size: 12px; }
+    .channel strong { text-align: right; font-size: 13px; }
+    .bar { height: 7px; overflow: hidden; background: #f0f1f5; border-radius: 5px; }
+    .bar i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, #ff3e58, #ff8a6e); }
+    .four-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .mini { padding: 12px; border-radius: 12px; background: var(--soft); }
+    .mini strong { display: block; margin-top: 6px; font-size: 17px; }
+    .mini small { color: var(--muted); }
+    .notice { margin-top: 10px; color: #9397a0; font-size: 11px; line-height: 1.6; }
+    .attention { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .attention > div { min-width: 0; padding: 11px 7px; border-radius: 12px; background: #fff7f2; text-align: center; }
+    .attention span { color: #878b95; font-size: 11px; white-space: nowrap; }
+    .attention strong { display: block; margin-top: 6px; font-size: 15px; }
+    .switch { display: flex; gap: 5px; }
+    .switch button { border: 0; border-radius: 12px; padding: 5px 8px; color: #858995; background: #f3f4f7; font-size: 10px; cursor: pointer; }
+    .switch button[aria-pressed="true"] { color: var(--red); background: #ffe9ed; }
+    .chart-total { margin: -5px 0 8px; font-size: 12px; color: var(--muted); }
+    .chart-total strong { color: var(--ink); font-size: 18px; margin-left: 4px; }
+    .chart { width: 100%; height: 122px; display: block; overflow: visible; }
+    .chart .grid { stroke: #eceef3; stroke-width: 1; stroke-dasharray: 3 4; }
+    .chart .area { fill: url(#fade); }
+    .chart .line { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .chart circle { fill: #fff; stroke: var(--red); stroke-width: 2; }
+    .axis { display: flex; justify-content: space-between; color: #a0a3ab; font-size: 10px; padding: 0 2px; }
+    .insight { position: relative; padding: 13px 14px 13px 42px; border-radius: 13px; background: #f8f9fc; margin-top: 8px; }
+    .insight::before { content: "↗"; position: absolute; left: 13px; top: 14px; display: grid; place-items: center; width: 21px; height: 21px; border-radius: 7px; background: #e5f7f0; color: var(--green); font-weight: 800; }
+    .insight.warn::before { content: "!"; background: #fff0e2; color: #ec7712; }
+    .insight strong { font-size: 13px; }
+    .insight p { margin: 5px 0 0; color: #747884; font-size: 11px; line-height: 1.55; }
+    .text-link { margin-top: 7px; border: 0; background: transparent; padding: 0; color: var(--red); font-size: 11px; cursor: pointer; }
+    .detail-summary { display: flex; justify-content: space-between; align-items: center; padding: 0 2px 9px; color: var(--muted); font-size: 12px; }
+    .detail-summary strong { color: var(--ink); }
+    .record { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .record:first-of-type { padding-top: 2px; }
+    .record:last-child { border-bottom: 0; padding-bottom: 0; }
+    .record-head, .record-foot { display: flex; justify-content: space-between; gap: 8px; }
+    .record-head strong { font-size: 14px; }
+    .record-head b { font-size: 16px; }
+    .record-meta { margin: 7px 0; color: #777b86; font-size: 11px; line-height: 1.6; }
+    .record-foot { color: #a0a3ac; font-size: 10px; }
+    .record-type { padding: 2px 7px; color: #e66b0d; background: #fff0e3; border-radius: 8px; }
+    .record-type.card { color: #c42758; background: #ffe8ef; }
+    .record-type.book { color: #725ec5; background: #efebff; }
+    .negative { color: var(--red); }
+    [hidden] { display: none !important; }
+    .scrim { position: absolute; inset: 0; z-index: 40; background: rgba(24, 27, 36, .42); opacity: 0; pointer-events: none; transition: opacity .2s; }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 41; max-height: 82%; overflow-y: auto; padding: 10px 18px 20px; border-radius: 24px 24px 0 0; background: #fff; transform: translateY(105%); transition: transform .24s ease; }
+    .sheet.open { transform: translateY(0); }
+    .grab { width: 38px; height: 4px; margin: 0 auto 15px; border-radius: 3px; background: #d9dbe1; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; }
+    .sheet-head h2 { margin: 0; font-size: 18px; }
+    .close { width: 34px; height: 34px; border: 0; border-radius: 50%; background: #f3f4f7; font-size: 20px; cursor: pointer; }
+    .filter-group { margin-top: 18px; }
+    .filter-group h3 { margin: 0 0 10px; font-size: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { min-width: 66px; border: 1px solid transparent; padding: 7px 11px; border-radius: 16px; background: #f4f5f8; color: #666a75; font-size: 12px; cursor: pointer; }
+    .chip[aria-pressed="true"] { border-color: #ff8e9e; color: var(--red); background: #fff0f2; }
+    .sheet-actions { position: sticky; bottom: -20px; display: grid; grid-template-columns: 1fr 2fr; gap: 9px; margin-top: 22px; padding: 10px 0 20px; background: #fff; }
+    .sheet-actions button { height: 43px; border-radius: 22px; border: 1px solid #e3e5eb; background: #fff; cursor: pointer; }
+    .sheet-actions .apply { color: #fff; border-color: var(--red); background: var(--red); font-weight: 700; }
+    .definitions { color: #666a75; font-size: 12px; line-height: 1.65; }
+    .definitions dt { color: var(--ink); font-weight: 700; margin-top: 12px; }
+    .definitions dd { margin: 2px 0 0; }
+    @media (max-width: 430px) {
+      .stage { padding: 0; }
+      .phone { width: 100%; height: 100vh; min-height: 100vh; border-radius: 0; }
+    }
+    @media (max-width: 350px) {
+      .period { padding-inline: 9px; }
+      .hero-number strong { font-size: 30px; }
+      .channel { grid-template-columns: 52px 1fr 60px; }
+      .card { padding: 14px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <section class="phone" aria-label="经营分析收款页面演示">
+      <div class="scroll">
+        <header class="top">
+          <div class="status"><span>15:36</span><span>▮▮▮　⌁　▰</span></div>
+          <div class="nav">
+            <button class="back" type="button" aria-label="返回首页">‹</button>
+            <h1>经营分析 · 收款</h1>
+            <button class="help" type="button" aria-label="查看页面数据口径">i</button>
+          </div>
+          <div class="tabs" role="tablist" aria-label="页面视图">
+            <button class="tab" role="tab" aria-selected="true" data-panel="overview">经营概览</button>
+            <button class="tab" role="tab" aria-selected="false" data-panel="details">收款明细</button>
+          </div>
+        </header>
+
+        <div class="filters">
+          <div class="periods" aria-label="统计周期">
+            <button class="period" type="button" aria-pressed="true">今日</button>
+            <button class="period" type="button" aria-pressed="false">本周</button>
+            <button class="period" type="button" aria-pressed="false">本月</button>
+            <button class="period" type="button" aria-pressed="false">自定义</button>
+          </div>
+          <button class="filter-button" type="button">筛选 <span class="filter-count">0</span></button>
+        </div>
+
+        <section class="panel" data-page="overview">
+          <article class="card hero">
+            <span class="hero-label">收款合计 <span class="info-dot">i</span></span>
+            <div class="hero-number"><strong>¥3,100.00</strong><span class="compare">↗ 较昨日 +6.2%</span></div>
+            <div class="core-grid">
+              <div><span class="metric-label">营业额</span><strong class="metric-value">¥3,500.00</strong></div>
+              <div><span class="metric-label">退款金额</span><strong class="metric-value">¥400.00</strong></div>
+            </div>
+            <p class="formula">收款合计 = 营业额 − 退款金额</p>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>收款来源</h2><span class="hint">实际收到的钱</span></div>
+            <div class="split-row">
+              <div><span class="metric-label">开单实收</span><strong>¥2,800.00</strong><span class="tag">占 80%</span></div>
+              <span class="split-divider"></span>
+              <div><span class="metric-label">办卡/充值</span><strong>¥700.00</strong><span class="tag">占 20%</span></div>
+            </div>
+            <div class="stack" aria-label="开单实收占80%，办卡充值占20%"><span></span><span></span></div>
+            <div class="legend"><span>消费订单带来的收款</span><span>预收款</span></div>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>收款渠道</h2><span class="hint">合计 ¥3,500.00</span></div>
+            <div class="channel"><span>微信</span><div class="bar"><i style="width:100%"></i></div><strong>¥1,500</strong></div>
+            <div class="channel"><span>支付宝</span><div class="bar"><i style="width:60%"></i></div><strong>¥900</strong></div>
+            <div class="channel"><span>银行卡</span><div class="bar"><i style="width:40%"></i></div><strong>¥600</strong></div>
+            <div class="channel"><span>信用卡</span><div class="bar"><i style="width:20%"></i></div><strong>¥300</strong></div>
+            <div class="channel"><span>现金</span><div class="bar"><i style="width:13%"></i></div><strong>¥200</strong></div>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>消费结算</h2><span class="hint">结算总额 ¥4,500.00</span></div>
+            <div class="four-grid">
+              <div class="mini"><small>现金类支付</small><strong>¥2,800</strong></div>
+              <div class="mini"><small>团购记账</small><strong>¥600</strong></div>
+              <div class="mini"><small>卡付</small><strong>¥800</strong></div>
+              <div class="mini"><small>经理签单</small><strong>¥300</strong></div>
+            </div>
+            <p class="notice">仅统计项目和产品消费；团购为记账金额，经理签单属于应收，均不计入收款合计。</p>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>消费构成</h2><span class="hint">劳动 + 产品</span></div>
+            <div class="split-row">
+              <div><span class="metric-label">项目消费</span><strong>¥3,700.00</strong><span class="tag">82.2%</span></div>
+              <span class="split-divider"></span>
+              <div><span class="metric-label">产品消费</span><strong>¥800.00</strong><span class="tag">17.8%</span></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>经营关注</h2><span class="hint">优先看异常</span></div>
+            <div class="attention">
+              <div><span>经理签单</span><strong>¥300</strong><small>3 笔</small></div>
+              <div><span>退款</span><strong>¥400</strong><small>2 笔</small></div>
+              <div><span>退款率</span><strong>11.4%</strong><small>按营业额</small></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-title">
+              <h2>近 7 日趋势</h2>
+              <div class="switch" aria-label="趋势指标">
+                <button type="button" aria-pressed="true" data-trend="net">收款合计</button>
+                <button type="button" aria-pressed="false" data-trend="collection">营业额</button>
+                <button type="button" aria-pressed="false" data-trend="consumption">消费</button>
+              </div>
+            </div>
+            <div class="chart-total">7 日合计 <strong data-chart-total>¥18,620</strong></div>
+            <svg class="chart" viewBox="0 0 330 122" role="img" aria-label="近七日收款合计趋势">
+              <defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff2945" stop-opacity=".2"/><stop offset="1" stop-color="#ff2945" stop-opacity="0"/></linearGradient></defs>
+              <line class="grid" x1="4" y1="26" x2="326" y2="26"/><line class="grid" x1="4" y1="67" x2="326" y2="67"/><line class="grid" x1="4" y1="108" x2="326" y2="108"/>
+              <path class="area" data-chart-area d="M5 84 L58 61 L111 72 L164 31 L217 48 L270 22 L325 51 L325 108 L5 108 Z"/>
+              <path class="line" data-chart-line d="M5 84 L58 61 L111 72 L164 31 L217 48 L270 22 L325 51"/>
+              <g data-chart-points></g>
+            </svg>
+            <div class="axis"><span>09/04</span><span>09/05</span><span>09/06</span><span>09/07</span><span>09/08</span><span>09/09</span><span>今日</span></div>
+          </article>
+
+          <article class="card">
+            <div class="card-title"><h2>经营提示</h2><span class="hint">根据本期数据</span></div>
+            <div class="insight"><strong>收款增长主要来自开单实收</strong><p>较昨日增加 ¥280，其中开单实收贡献约 76%，办卡/充值贡献约 24%。</p></div>
+            <div class="insight warn"><strong>消费高于实际收款 ¥1,000</strong><p>主要由卡付 ¥800 与经理签单 ¥300 形成，同时有团购记账 ¥600；注意它们不是当期现金流入。</p><button class="text-link" type="button" data-go-details>查看相关明细 ›</button></div>
+            <div class="insight"><strong>非现金结算占消费总额 37.8%</strong><p>卡付、团购记账和经理签单合计 ¥1,700，可结合明细关注储值消耗及签单情况。</p></div>
+          </article>
+        </section>
+
+        <section class="panel" data-page="details" hidden>
+          <div class="detail-summary"><span>当前共 <strong>18</strong> 条记录</span><span>金额按业务发生时间统计</span></div>
+          <article class="card">
+            <div class="record">
+              <div class="record-head"><strong><span class="record-type">项目消费</span> 洗剪吹</strong><b>¥368.00</b></div>
+              <div class="record-meta">顾客：王女士　员工：小美<br>结算：微信 ¥268 · 储值卡 ¥100</div>
+              <div class="record-foot"><span>09-10 15:18 · DD20260910018</span><span>已完成</span></div>
+            </div>
+            <div class="record">
+              <div class="record-head"><strong><span class="record-type card">储值充值</span> 充值 1,000</strong><b>¥1,000.00</b></div>
+              <div class="record-meta">顾客：陈先生　员工：阿杰<br>收款：支付宝 ¥1,000</div>
+              <div class="record-foot"><span>09-10 14:42 · CZ20260910006</span><span>已入账</span></div>
+            </div>
+            <div class="record">
+              <div class="record-head"><strong><span class="record-type book">团购记账</span> 染发套餐</strong><b>¥499.00</b></div>
+              <div class="record-meta">顾客：刘女士　员工：小美<br>结算：抖音团购记账 ¥499</div>
+              <div class="record-foot"><span>09-10 13:26 · DD20260910015</span><span>已核销</span></div>
+            </div>
+            <div class="record">
+              <div class="record-head"><strong><span class="record-type">产品购买</span> 护发精油</strong><b>¥280.00</b></div>
+              <div class="record-meta">顾客：赵女士　员工：店主<br>结算：经理签单 ¥280</div>
+              <div class="record-foot"><span>09-10 12:08 · DD20260910012</span><span>应收</span></div>
+            </div>
+            <div class="record">
+              <div class="record-head"><strong><span class="record-type card">退款</span> 烫发项目</strong><b class="negative">−¥400.00</b></div>
+              <div class="record-meta">顾客：周女士　经办：店主<br>原路退回：微信 ¥400</div>
+              <div class="record-foot"><span>09-10 10:35 · TK20260910002</span><span>已退款</span></div>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <div class="scrim" aria-hidden="true"></div>
+      <section class="sheet filter-sheet" role="dialog" aria-modal="true" aria-label="数据筛选" aria-hidden="true">
+        <div class="grab"></div>
+        <div class="sheet-head"><h2>筛选</h2><button class="close" type="button" aria-label="关闭">×</button></div>
+        <div class="filter-group"><h3>业务类型</h3><div class="chips" data-chip-group><button class="chip" aria-pressed="false">项目消费</button><button class="chip" aria-pressed="false">产品购买</button><button class="chip" aria-pressed="false">办卡/充值</button><button class="chip" aria-pressed="false">退款</button></div></div>
+        <div class="filter-group"><h3>支付 / 结算方式</h3><div class="chips" data-chip-group><button class="chip" aria-pressed="false">微信</button><button class="chip" aria-pressed="false">支付宝</button><button class="chip" aria-pressed="false">银行卡</button><button class="chip" aria-pressed="false">信用卡</button><button class="chip" aria-pressed="false">现金</button><button class="chip" aria-pressed="false">团购记账</button><button class="chip" aria-pressed="false">储值卡</button><button class="chip" aria-pressed="false">次卡</button><button class="chip" aria-pressed="false">经理签单</button></div></div>
+        <div class="filter-group"><h3>员工</h3><div class="chips" data-chip-group><button class="chip" aria-pressed="false">小美</button><button class="chip" aria-pressed="false">阿杰</button><button class="chip" aria-pressed="false">店主</button></div></div>
+        <div class="sheet-actions"><button class="reset" type="button">重置</button><button class="apply" type="button">应用筛选</button></div>
+      </section>
+
+      <section class="sheet definition-sheet" role="dialog" aria-modal="true" aria-label="统计口径说明" aria-hidden="true">
+        <div class="grab"></div>
+        <div class="sheet-head"><h2>统计口径说明</h2><button class="close" type="button" aria-label="关闭">×</button></div>
+        <dl class="definitions">
+          <dt>收款合计</dt><dd>营业额减去统计周期内已成功退款的金额，表示扣除退款后门店实际留下的资金。</dd>
+          <dt>营业额</dt><dd>开单实收与办卡/充值实收之和，表示扣除退款前实际收到的资金。</dd>
+          <dt>消费结算总额</dt><dd>项目与产品消费使用现金类支付、团购记账、卡付、经理签单结算的金额合计。</dd>
+          <dt>团购记账</dt><dd>记录顾客使用第三方平台团购券抵扣的金额；当前未对接平台结算，不代表当期实际到账。</dd>
+          <dt>卡付</dt><dd>顾客使用此前购买的储值卡或次卡完成消费的金额，不计入当期收款。</dd>
+          <dt>经理签单</dt><dd>经理签单形成的应收款，不属于现金收入；第一期暂不追踪后续回款。</dd>
+          <dt>退款率</dt><dd>退款金额 ÷ 营业额，用于快速观察退款对实际收款的影响。</dd>
+        </dl>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const pageTabs = [...document.querySelectorAll('.tab')];
+    const pages = [...document.querySelectorAll('[data-page]')];
+    function showPage(name) {
+      pageTabs.forEach(tab => tab.setAttribute('aria-selected', String(tab.dataset.panel === name)));
+      pages.forEach(page => page.hidden = page.dataset.page !== name);
+      document.querySelector('.scroll').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    pageTabs.forEach(tab => tab.addEventListener('click', () => showPage(tab.dataset.panel)));
+    document.querySelectorAll('[data-go-details]').forEach(button => button.addEventListener('click', () => showPage('details')));
+
+    const compareLabels = { '今日': '较昨日', '本周': '较上周同期', '本月': '较上月同期', '自定义': '较上一周期' };
+    document.querySelectorAll('.period').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('.period').forEach(item => item.setAttribute('aria-pressed', 'false'));
+      button.setAttribute('aria-pressed', 'true');
+      document.querySelector('.compare').textContent = `↗ ${compareLabels[button.textContent]} +6.2%`;
+    }));
+
+    const phone = document.querySelector('.phone');
+    const scrim = document.querySelector('.scrim');
+    const sheets = [...document.querySelectorAll('.sheet')];
+    function openSheet(sheet) {
+      sheets.forEach(item => { item.classList.remove('open'); item.setAttribute('aria-hidden', 'true'); });
+      scrim.classList.add('open');
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden', 'false');
+      sheet.querySelector('button')?.focus();
+    }
+    function closeSheets() {
+      scrim.classList.remove('open');
+      sheets.forEach(item => { item.classList.remove('open'); item.setAttribute('aria-hidden', 'true'); });
+    }
+    document.querySelector('.filter-button').addEventListener('click', () => openSheet(document.querySelector('.filter-sheet')));
+    document.querySelector('.help').addEventListener('click', () => openSheet(document.querySelector('.definition-sheet')));
+    document.querySelectorAll('.close').forEach(button => button.addEventListener('click', closeSheets));
+    scrim.addEventListener('click', closeSheets);
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeSheets(); });
+
+    document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
+      chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true'));
+    }));
+    document.querySelector('.reset').addEventListener('click', () => document.querySelectorAll('.chip').forEach(chip => chip.setAttribute('aria-pressed', 'false')));
+    document.querySelector('.apply').addEventListener('click', () => {
+      const count = document.querySelectorAll('.chip[aria-pressed="true"]').length;
+      const badge = document.querySelector('.filter-count');
+      badge.textContent = count;
+      badge.classList.toggle('show', count > 0);
+      closeSheets();
+    });
+
+    const trends = {
+      net: { total: '¥18,620', values: [84, 61, 72, 31, 48, 22, 51], label: '近七日收款合计趋势' },
+      collection: { total: '¥21,460', values: [78, 54, 65, 25, 39, 18, 43], label: '近七日营业额趋势' },
+      consumption: { total: '¥26,880', values: [68, 47, 58, 36, 27, 42, 20], label: '近七日消费结算趋势' }
+    };
+    function drawTrend(name) {
+      const data = trends[name];
+      const points = data.values.map((y, index) => `${5 + index * (320 / 6)} ${y}`);
+      const line = `M${points.join(' L')}`;
+      document.querySelector('[data-chart-line]').setAttribute('d', line);
+      document.querySelector('[data-chart-area]').setAttribute('d', `${line} L325 108 L5 108 Z`);
+      document.querySelector('[data-chart-points]').innerHTML = points.map(point => { const [x,y] = point.split(' '); return `<circle cx="${x}" cy="${y}" r="3.5"/>`; }).join('');
+      document.querySelector('[data-chart-total]').textContent = data.total;
+      document.querySelector('.chart').setAttribute('aria-label', data.label);
+    }
+    document.querySelectorAll('[data-trend]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-trend]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+      button.setAttribute('aria-pressed', 'true');
+      drawTrend(button.dataset.trend);
+    }));
+    drawTrend('net');
+
+    document.querySelector('.back').addEventListener('click', () => {
+      const embedded = new URLSearchParams(window.location.search).get('embed');
+      if (embedded && window.parent !== window) {
+        window.parent.postMessage({ type: 'prototype-navigate', page: 'home-owner' }, '*');
+        return;
+      }
+      window.location.href = 'store-home-data-cards.html';
+    });
+  </script>
+</body>
+</html>
